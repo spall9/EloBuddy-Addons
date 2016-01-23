@@ -489,7 +489,14 @@ namespace MagicianRyze
             {
                 if (Champion.HasBuff("ryzepassivecharged")
                     || Champion.GetBuffCount("ryzepassivestack") >= ComboMenu["Pult"].Cast<Slider>().CurrentValue)
-                    R.Cast();
+                {
+                    var target = GetEnemy(Q.Range, GameObjectType.AIHeroClient);
+                    if (ComboMenu["Rstun"].Cast<CheckBox>().CurrentValue
+                    && target.HasBuff("RyzeW"))
+                        R.Cast();
+                    if (!ComboMenu["Rstun"].Cast<CheckBox>().CurrentValue)
+                        R.Cast();
+                }
             }
         }
 
