@@ -190,7 +190,8 @@ namespace DefenderTaric
             ComboMenu = DefenderTaricMenu.AddSubMenu("Combo Features", "ComboFeatures");
             ComboMenu.AddGroupLabel("Combo Feautres");
             ComboMenu.AddLabel("Combo Modes: - Use when ready to fully engage");
-            ComboMenu.Add("ComboM", new CheckBox("EWR"));
+            ComboMenu.Add("ComboM", new CheckBox("ComboMode"));
+            ComboMenu.Add("ComboF", new Slider("EWR Combo", 1, 1, 2));
             ComboMenu.AddSeparator(1);
             ComboMenu.AddLabel("Independent boxes for Spells:");
             ComboMenu.Add("Wcombo", new Slider("Use W if Health % - 0 is off", 25));
@@ -297,21 +298,22 @@ namespace DefenderTaric
         {
             if (SettingMenu["Autolvl"].Cast<CheckBox>().CurrentValue && Champion.SpellTrainingPoints >= 1)
                 LevelerMode();
+            ComboMenu["ComboF"].DisplayName = ComboMenu["ComboF"].Cast<Slider>().CurrentValue == 1 ? "ERW" : "EWR";
             if (Champion.IsDead) return;
 
             if (DefenderTaricMenu["Easter Egg"].Cast<CheckBox>().CurrentValue && Champion.HasBuff("recall"))
                 Player.DoEmote(Emote.Joke);
 
-            ComboMenu["ComboM"].DisplayName = ComboMenu["ComboM"].Cast<CheckBox>().CurrentValue == false ? "ERW" : "EWR";
-
             if (Orbwalker.IsAutoAttacking) return;
             switch (Orbwalker.ActiveModesFlags)
             {
                 case Orbwalker.ActiveModes.Combo:
-                    if (ComboMenu["ComboM"].Cast<CheckBox>().CurrentValue)
+                {
+                    if (ComboMenu["ComboF"].Cast<Slider>().DisplayName == "EWR")
                         EwrComboMode();
-                    else
+                    if (ComboMenu["ComboF"].Cast<Slider>().DisplayName == "ERW")
                         ErwComboMode();
+                }
                     break;
                 case Orbwalker.ActiveModes.Harass:
                     HarassMode();
@@ -353,6 +355,7 @@ namespace DefenderTaric
 
         public static void EwrComboMode()
         {
+            if (!ComboMenu["ComboM"].Cast<CheckBox>().CurrentValue) return;
             if (ComboMenu["Pautos"].Cast<CheckBox>().CurrentValue && Champion.HasBuff("taricgemcraftbuff"))
             {
                 var target = GetEnemy(Champion.GetAutoAttackRange(), GameObjectType.AIHeroClient);
@@ -413,6 +416,8 @@ namespace DefenderTaric
 
         public static void ErwComboMode()
         {
+            if (!ComboMenu["ComboM"].Cast<CheckBox>().CurrentValue) return;
+            if (ComboMenu["ComboM"].Cast<CheckBox>().CurrentValue) return;
             if (ComboMenu["Pautos"].Cast<CheckBox>().CurrentValue && Champion.HasBuff("taricgemcraftbuff"))
             {
                 var target = GetEnemy(Champion.GetAutoAttackRange(), GameObjectType.AIHeroClient);

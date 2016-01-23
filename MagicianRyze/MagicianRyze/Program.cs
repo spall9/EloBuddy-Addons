@@ -176,6 +176,45 @@ namespace MagicianRyze
                 0.02f*Champion.MaxMana);
         }
 
+        public static void CastQ(Obj_AI_Base target)
+        {
+            if (target != null && target.IsValidTarget(Q.Range)
+                && ComboMenu["Qcombo"].Cast<CheckBox>().CurrentValue
+                && Q.IsReady())
+                Q.Cast(target);
+        }
+
+        public static void CastW(Obj_AI_Base target)
+        {
+            if (target != null && target.IsValidTarget(W.Range)
+                && ComboMenu["Wcombo"].Cast<CheckBox>().CurrentValue
+                && W.IsReady())
+                W.Cast(target);
+        }
+
+        public static void CastE(Obj_AI_Base target)
+        {
+            if (target != null && target.IsValidTarget(E.Range)
+                && ComboMenu["Ecombo"].Cast<CheckBox>().CurrentValue
+                && E.IsReady())
+                E.Cast(target);
+        }
+
+        public static void CastR(Obj_AI_Base target)
+        {
+            if (target != null && target.IsValidTarget(W.Range)
+                && ComboMenu["Rcombo"].Cast<CheckBox>().CurrentValue
+                && target.Health > QDamage(target) + EDamage(target)
+                && R.IsReady())
+            {
+                if (ComboMenu["Rstun"].Cast<CheckBox>().CurrentValue
+                    && target.HasBuff("RyzeW"))
+                    R.Cast();
+                if (!ComboMenu["Rstun"].Cast<CheckBox>().CurrentValue)
+                    R.Cast();
+            }
+        }
+
         public static void Main()
         {
             Loading.OnLoadingComplete += Loading_OnLoadingComplete;
@@ -203,12 +242,14 @@ namespace MagicianRyze
             ComboMenu.AddGroupLabel("Combo Features");
             ComboMenu.AddLabel("Combo Modes:");
             ComboMenu.Add("ComboM", new CheckBox("ComboMode"));
+            ComboMenu.Add("ComboF", new Slider("Regular", 1, 1, 2));
             ComboMenu.AddSeparator(1);
             ComboMenu.AddLabel("Independent boxes for Spells:");
             ComboMenu.Add("Qcombo", new CheckBox("Use Q"));
             ComboMenu.Add("Wcombo", new CheckBox("Use W"));
             ComboMenu.Add("Ecombo", new CheckBox("Use E"));
             ComboMenu.Add("Rcombo", new CheckBox("Use R"));
+            ComboMenu.Add("Rstun", new CheckBox("Only R if Target Rooted"));
             ComboMenu.AddSeparator(1);
             ComboMenu.Add("Pult", new Slider("Passive stacks to Ult", 4, 0, 4));
 
@@ -356,13 +397,19 @@ namespace MagicianRyze
         {
             if (SettingMenu["Autolvl"].Cast<CheckBox>().CurrentValue && Champion.SpellTrainingPoints >= 1)
                 LevelerMode();
+            ComboMenu["ComboF"].DisplayName = ComboMenu["ComboF"].Cast<Slider>().CurrentValue == 1
+                ? "Regular"
+                : "Slutty";
             if (Champion.IsDead) return;
 
             if (Orbwalker.IsAutoAttacking) return;
             switch (Orbwalker.ActiveModesFlags)
             {
                 case Orbwalker.ActiveModes.Combo:
-                    ComboMode();
+                    if (ComboMenu["ComboF"].Cast<Slider>().DisplayName == "Regular")
+                        RegularCombo();
+                    if (ComboMenu["ComboF"].Cast<Slider>().DisplayName == "Slutty")
+                        SluttyCombo();
                     break;
                 case Orbwalker.ActiveModes.Harass:
                     HarassMode();
@@ -413,7 +460,7 @@ namespace MagicianRyze
             }
         }
 
-        public static void ComboMode()
+        public static void RegularCombo()
         {
             if (Champion.HasBuff("RyzeR"))
             {
@@ -443,6 +490,105 @@ namespace MagicianRyze
                 if (Champion.HasBuff("ryzepassivecharged")
                     || Champion.GetBuffCount("ryzepassivestack") >= ComboMenu["Pult"].Cast<Slider>().CurrentValue)
                     R.Cast();
+            }
+        }
+
+        public static void SluttyCombo()
+        {
+            if (Champion.HasBuff("RyzeR"))
+            {
+                UltimateMode(GameObjectType.AIHeroClient);
+                return;
+            }
+            var expires = Champion.Spellbook.GetSpell(SpellSlot.Q).CooldownExpires;
+            var cd = (int) (expires - (Game.Time - 1));
+            if (W.IsReady() && !(cd < 2.5f))
+            {
+                Orbwalker.DisableAttacking = true;
+            }
+            else
+            {
+                Orbwalker.DisableAttacking = false;
+            }
+
+            var target = TargetSelector.GetTarget(Q.Range, DamageType.Magical);
+            if (target != null && target.IsValidTarget(Q.Range))
+            {
+                var bcount = Champion.GetBuffCount("ryzepassivestack");
+
+                if (!Champion.HasBuff("ryzepassivecharged"))
+                {
+                    switch (bcount)
+                    {
+                        case 0:
+                            CastQ(target);
+                            CastE(target);
+                            CastW(target);
+                            CastR(target);
+                            break;
+                        case 1:
+                            CastQ(target);
+                            CastE(target);
+                            CastW(target);
+                            CastR(target);
+                            break;
+                        case 2:
+                            CastQ(target);
+                            CastW(target);
+                            CastE(target);
+                            CastR(target);
+                            break;
+                        case 3:
+                            CastQ(target);
+                            CastE(target);
+                            CastW(target);
+                            CastR(target);
+                            break;
+                        case 4:
+                            CastW(target);
+                            CastQ(target);
+                            CastE(target);
+                            CastR(target);
+                            break;
+                    }
+                }
+                else
+                {
+                    CastW(target);
+                    CastQ(target);
+                    CastE(target);
+                    CastR(target);
+                }
+            }
+            else
+            {
+                if (target != null && target.IsValidTarget(W.Range)
+                    && ComboMenu["Wcombo"].Cast<CheckBox>().CurrentValue
+                    && W.IsReady())
+                    W.Cast(target);
+                if (target != null && target.IsValidTarget(Q.Range)
+                    && ComboMenu["Qcombo"].Cast<CheckBox>().CurrentValue
+                    && Q.IsReady())
+                    Q.Cast(target);
+                if (target != null && target.IsValidTarget(E.Range)
+                    && ComboMenu["Ecombo"].Cast<CheckBox>().CurrentValue
+                    && E.IsReady())
+                    E.Cast(target);
+            }
+            if (target != null
+                && (Champion.GetBuffCount("ryzepassivestack") == 4
+                    || Champion.HasBuff("ryzepassivecharged"))
+                && ComboMenu["Rcombo"].Cast<CheckBox>().CurrentValue
+                && R.IsReady())
+            {
+                if (!Q.IsReady() && !W.IsReady() && !E.IsReady())
+                {
+                    if (ComboMenu["Rstun"].Cast<CheckBox>().CurrentValue
+                        && target.HasBuff("RyzeW"))
+                        R.Cast();
+                    if (!ComboMenu["Rstun"].Cast<CheckBox>().CurrentValue)
+                        R.Cast();
+                }
             }
         }
 
