@@ -23,7 +23,10 @@ namespace ArsenalActivator
         public static Menu ArsenalActivatorMenu;
 
         // Grab Player
-        public static AIHeroClient Player = ObjectManager.Player;
+        public static AIHeroClient Champion
+        {
+            get { return Player.Instance; }
+        }
 
         public static Obj_AI_Base GetAlly(float range, GameObjectType gametype)
         {
@@ -33,15 +36,15 @@ namespace ArsenalActivator
                     return EntityManager.Heroes.Allies
                         .OrderByDescending(a => a.Health)
                         .FirstOrDefault(a => a.IsAlly
-                                             && a.IsValidTarget(range) && a.Distance(Player) <= range
+                                             && a.IsValidTarget(range) && a.Distance(Champion) <= range
                                              && !a.IsInvulnerable && !a.IsZombie
-                                             && !Player.IsRecalling());
+                                             && !Champion.IsRecalling());
                 case GameObjectType.obj_AI_Minion:
                     return EntityManager.MinionsAndMonsters.AlliedMinions
                         .OrderByDescending(a => a.Health)
                         .FirstOrDefault(a => a.IsAlly
-                                             && a.IsValidTarget(range) && a.Distance(Player) <= range
-                                             && !Player.IsRecalling());
+                                             && a.IsValidTarget(range) && a.Distance(Champion) <= range
+                                             && !Champion.IsRecalling());
             }
             return null;
         }
@@ -54,16 +57,16 @@ namespace ArsenalActivator
                     return EntityManager.Heroes.Enemies
                         .OrderByDescending(a => a.Health)
                         .FirstOrDefault(a => a.IsEnemy
-                                             && a.IsValidTarget(range) && a.Distance(Player) <= range
+                                             && a.IsValidTarget(range) && a.Distance(Champion) <= range
                                              && !a.IsInvulnerable && !a.IsZombie
-                                             && !a.HasBuff("ChronoShift") && !Player.IsRecalling());
+                                             && !a.HasBuff("ChronoShift") && !Champion.IsRecalling());
                 case GameObjectType.obj_AI_Minion:
                     return EntityManager.MinionsAndMonsters.EnemyMinions
                         .OrderByDescending(a => a.Health)
                         .FirstOrDefault(a => a.IsEnemy
-                                             && a.IsValidTarget(range) && a.Distance(Player) <= range
+                                             && a.IsValidTarget(range) && a.Distance(Champion) <= range
                                              && !a.HasBuff("BannerOfCommand")
-                                             && !Player.IsRecalling());
+                                             && !Champion.IsRecalling());
             }
             return null;
         }
@@ -74,9 +77,9 @@ namespace ArsenalActivator
                         .Get<Obj_AI_Base>()
                         .OrderByDescending(a => a.Health)
                         .FirstOrDefault(a => a.IsEnemy && a.Type == gametype
-                                             && a.IsValidTarget(range) && a.Distance(Player) <= range
+                                             && a.IsValidTarget(range) && a.Distance(Champion) <= range
                                              && !a.IsInvulnerable && !a.IsZombie
-                                             && !a.HasBuff("ChronoShift") && !Player.IsRecalling()
+                                             && !a.HasBuff("ChronoShift") && !Champion.IsRecalling()
                                              && a.Health <= damage);
         }
 
@@ -89,8 +92,8 @@ namespace ArsenalActivator
                         EntityManager.Turrets.Allies.OrderByDescending(a => a.Health)
                             .FirstOrDefault(
                                 a =>
-                                    a.IsAlly && a.IsValidTarget(range) && a.Distance(Player) <= range &&
-                                    !a.IsInvulnerable && !Player.IsRecalling());
+                                    a.IsAlly && a.IsValidTarget(range) && a.Distance(Champion) <= range &&
+                                    !a.IsInvulnerable && !Champion.IsRecalling());
             }
             return null;
         }
@@ -104,8 +107,8 @@ namespace ArsenalActivator
                         EntityManager.Turrets.Enemies.OrderByDescending(a => a.Health)
                             .FirstOrDefault(
                                 a =>
-                                    a.IsEnemy && a.IsValidTarget(range) && a.Distance(Player) <= range &&
-                                    !a.IsInvulnerable && !Player.IsRecalling());
+                                    a.IsEnemy && a.IsValidTarget(range) && a.Distance(Champion) <= range &&
+                                    !a.IsInvulnerable && !Champion.IsRecalling());
             }
             return null;
         }

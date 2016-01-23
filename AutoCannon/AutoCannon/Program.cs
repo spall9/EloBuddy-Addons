@@ -20,16 +20,19 @@ namespace AutoCannon
         public static Spell.Skillshot Throw;
 
         // Grab Player
-        public static AIHeroClient Player = ObjectManager.Player;
+        public static AIHeroClient Champion
+        {
+            get { return Player.Instance; }
+        }
 
         // Grab Enemy
         public static Obj_AI_Base GetEnemy(float range, GameObjectType gametype)
         {
             return ObjectManager.Get<Obj_AI_Base>()
                 .OrderBy(a => a.Health).FirstOrDefault(a => a.IsEnemy
-                                                            && a.Type == gametype && !Player.IsRecalling()
+                                                            && a.Type == gametype && !Champion.IsRecalling()
                                                             && !a.IsDead && a.IsValidTarget(range) && !a.IsInvulnerable
-                                                            && a.Distance(Player) <= range);
+                                                            && a.Distance(Champion) <= range);
         }
 
         // Grab KSable Enemy
@@ -41,7 +44,7 @@ namespace AutoCannon
                                                             && !a.IsDead && a.IsValidTarget(range) && !a.IsInvulnerable
                                                             && !a.HasBuff("ChronoShift")
                                                             && a.Health <= damage
-                                                            && a.Distance(Player) <= range);
+                                                            && a.Distance(Champion) <= range);
         }
 
         private static void Main()
@@ -68,14 +71,14 @@ namespace AutoCannon
 
             // Setting variable
             SpellDataInst sumspell = null;
-            if (EloBuddy.Player.GetSpell(SpellSlot.Summoner1).Name == "summonersnowball")
-                sumspell = EloBuddy.Player.GetSpell(SpellSlot.Summoner1);
-            if (EloBuddy.Player.GetSpell(SpellSlot.Summoner2).Name == "summonersnowball")
-                sumspell = EloBuddy.Player.GetSpell(SpellSlot.Summoner2);
-            if (EloBuddy.Player.GetSpell(SpellSlot.Summoner1).Name == "summonerporothrow")
-                sumspell = EloBuddy.Player.GetSpell(SpellSlot.Summoner1);
-            else if (EloBuddy.Player.GetSpell(SpellSlot.Summoner2).Name == "summonerporothrow")
-                sumspell = EloBuddy.Player.GetSpell(SpellSlot.Summoner2);
+            if (Player.GetSpell(SpellSlot.Summoner1).Name == "summonersnowball")
+                sumspell = Player.GetSpell(SpellSlot.Summoner1);
+            if (Player.GetSpell(SpellSlot.Summoner2).Name == "summonersnowball")
+                sumspell = Player.GetSpell(SpellSlot.Summoner2);
+            if (Player.GetSpell(SpellSlot.Summoner1).Name == "summonerporothrow")
+                sumspell = Player.GetSpell(SpellSlot.Summoner1);
+            else if (Player.GetSpell(SpellSlot.Summoner2).Name == "summonerporothrow")
+                sumspell = Player.GetSpell(SpellSlot.Summoner2);
 
             if (sumspell != null)
             {
@@ -109,7 +112,7 @@ namespace AutoCannon
             if (!Throw.IsOnCooldown && Throw.Name != "snowballfollowupcast" && Throw.Name != "porothrowfollowupcast")
             {
                 // calculate damage
-                var damage = Throw.Name == "summonersnowball" ? 10 + 5*Player.Level : 20 + 10*Player.Level;
+                var damage = Throw.Name == "summonersnowball" ? 10 + 5*Champion.Level : 20 + 10*Champion.Level;
 
                 var kstarget = GetKs(Throw.Range, damage, GameObjectType.AIHeroClient);
                 if (kstarget != null)
@@ -125,7 +128,7 @@ namespace AutoCannon
 
         private static void Drawing_OnDraw(EventArgs args)
         {
-            Drawing.DrawCircle(Player.Position, Throw.Range, Color.CadetBlue);
+            Drawing.DrawCircle(Champion.Position, Throw.Range, Color.CadetBlue);
         }
     }
 }

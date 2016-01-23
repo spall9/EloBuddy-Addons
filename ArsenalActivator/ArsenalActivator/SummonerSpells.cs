@@ -20,7 +20,7 @@ namespace ArsenalActivator
         public static Menu SummonerSpellMenu;
 
         // Player
-        public static Obj_AI_Base Player = Program.Player;
+        public static AIHeroClient Champion = Program.Champion;
 
         // Skills
         public static SpellDataInst Sumspell1;
@@ -53,100 +53,100 @@ namespace ArsenalActivator
         // Locate
         public static void FindSummonerSpells()
         {
-            switch (EloBuddy.Player.GetSpell(SpellSlot.Summoner1).Name)
+            switch (Player.GetSpell(SpellSlot.Summoner1).Name)
             {
                 case "summonerbarrier":
-                    Sumspell1 = EloBuddy.Player.GetSpell(SpellSlot.Summoner1);
+                    Sumspell1 = Player.GetSpell(SpellSlot.Summoner1);
                     break;
                 case "summonermana":
-                    Sumspell1 = EloBuddy.Player.GetSpell(SpellSlot.Summoner1);
+                    Sumspell1 = Player.GetSpell(SpellSlot.Summoner1);
                     break;
                 case "summonerclairvoyance":
-                    Sumspell1 = EloBuddy.Player.GetSpell(SpellSlot.Summoner1);
+                    Sumspell1 = Player.GetSpell(SpellSlot.Summoner1);
                     break;
                 case "summonerboost":
-                    Sumspell1 = EloBuddy.Player.GetSpell(SpellSlot.Summoner1);
+                    Sumspell1 = Player.GetSpell(SpellSlot.Summoner1);
                     break;
                 case "summonerexhaust":
-                    Sumspell1 = EloBuddy.Player.GetSpell(SpellSlot.Summoner1);
+                    Sumspell1 = Player.GetSpell(SpellSlot.Summoner1);
                     break;
                 case "summonerflash":
-                    Sumspell1 = EloBuddy.Player.GetSpell(SpellSlot.Summoner1);
+                    Sumspell1 = Player.GetSpell(SpellSlot.Summoner1);
                     break;
                 case "summonerodingarrison":
-                    Sumspell1 = EloBuddy.Player.GetSpell(SpellSlot.Summoner1);
+                    Sumspell1 = Player.GetSpell(SpellSlot.Summoner1);
                     break;
                 case "summonerhaste":
-                    Sumspell1 = EloBuddy.Player.GetSpell(SpellSlot.Summoner1);
+                    Sumspell1 = Player.GetSpell(SpellSlot.Summoner1);
                     break;
                 case "summonerheal":
-                    Sumspell1 = EloBuddy.Player.GetSpell(SpellSlot.Summoner1);
+                    Sumspell1 = Player.GetSpell(SpellSlot.Summoner1);
                     break;
                 case "summonerdot":
-                    Sumspell1 = EloBuddy.Player.GetSpell(SpellSlot.Summoner1);
+                    Sumspell1 = Player.GetSpell(SpellSlot.Summoner1);
                     break;
                 case "summonersnowball":
-                    Sumspell1 = EloBuddy.Player.GetSpell(SpellSlot.Summoner1);
+                    Sumspell1 = Player.GetSpell(SpellSlot.Summoner1);
                     break;
                 case "summonerporothrow":
-                    Sumspell1 = EloBuddy.Player.GetSpell(SpellSlot.Summoner1);
+                    Sumspell1 = Player.GetSpell(SpellSlot.Summoner1);
                     break;
                 case "summonersmite":
-                    Sumspell1 = EloBuddy.Player.GetSpell(SpellSlot.Summoner1);
+                    Sumspell1 = Player.GetSpell(SpellSlot.Summoner1);
                     break;
                 case "summonerteleport":
-                    Sumspell1 = EloBuddy.Player.GetSpell(SpellSlot.Summoner1);
+                    Sumspell1 = Player.GetSpell(SpellSlot.Summoner1);
                     break;
                 case "summonerpororecall":
-                    Sumspell1 = EloBuddy.Player.GetSpell(SpellSlot.Summoner1);
+                    Sumspell1 = Player.GetSpell(SpellSlot.Summoner1);
                     break;
             }
-            switch (EloBuddy.Player.GetSpell(SpellSlot.Summoner2).Name)
+            switch (Player.GetSpell(SpellSlot.Summoner2).Name)
             {
                 case "summonerbarrier":
-                    Sumspell2 = EloBuddy.Player.GetSpell(SpellSlot.Summoner2);
+                    Sumspell2 = Player.GetSpell(SpellSlot.Summoner2);
                     break;
                 case "summonermana":
-                    Sumspell2 = EloBuddy.Player.GetSpell(SpellSlot.Summoner2);
+                    Sumspell2 = Player.GetSpell(SpellSlot.Summoner2);
                     break;
                 case "summonerclairvoyance":
-                    Sumspell2 = EloBuddy.Player.GetSpell(SpellSlot.Summoner2);
+                    Sumspell2 = Player.GetSpell(SpellSlot.Summoner2);
                     break;
                 case "summonerboost":
-                    Sumspell2 = EloBuddy.Player.GetSpell(SpellSlot.Summoner2);
+                    Sumspell2 = Player.GetSpell(SpellSlot.Summoner2);
                     break;
                 case "summonerexhaust":
-                    Sumspell2 = EloBuddy.Player.GetSpell(SpellSlot.Summoner2);
+                    Sumspell2 = Player.GetSpell(SpellSlot.Summoner2);
                     break;
                 case "summonerflash":
-                    Sumspell2 = EloBuddy.Player.GetSpell(SpellSlot.Summoner2);
+                    Sumspell2 = Player.GetSpell(SpellSlot.Summoner2);
                     break;
                 case "summonerodingarrison":
-                    Sumspell2 = EloBuddy.Player.GetSpell(SpellSlot.Summoner2);
+                    Sumspell2 = Player.GetSpell(SpellSlot.Summoner2);
                     break;
                 case "summonerhaste":
-                    Sumspell2 = EloBuddy.Player.GetSpell(SpellSlot.Summoner2);
+                    Sumspell2 = Player.GetSpell(SpellSlot.Summoner2);
                     break;
                 case "summonerheal":
-                    Sumspell2 = EloBuddy.Player.GetSpell(SpellSlot.Summoner2);
+                    Sumspell2 = Player.GetSpell(SpellSlot.Summoner2);
                     break;
                 case "summonerdot":
-                    Sumspell2 = EloBuddy.Player.GetSpell(SpellSlot.Summoner2);
+                    Sumspell2 = Player.GetSpell(SpellSlot.Summoner2);
                     break;
                 case "summonersnowball":
-                    Sumspell2 = EloBuddy.Player.GetSpell(SpellSlot.Summoner2);
+                    Sumspell2 = Player.GetSpell(SpellSlot.Summoner2);
                     break;
                 case "summonerporothrow":
-                    Sumspell2 = EloBuddy.Player.GetSpell(SpellSlot.Summoner2);
+                    Sumspell2 = Player.GetSpell(SpellSlot.Summoner2);
                     break;
                 case "summonersmite":
-                    Sumspell2 = EloBuddy.Player.GetSpell(SpellSlot.Summoner2);
+                    Sumspell2 = Player.GetSpell(SpellSlot.Summoner2);
                     break;
                 case "summonerteleport":
-                    Sumspell2 = EloBuddy.Player.GetSpell(SpellSlot.Summoner2);
+                    Sumspell2 = Player.GetSpell(SpellSlot.Summoner2);
                     break;
                 case "summonerpororecall":
-                    Sumspell2 = EloBuddy.Player.GetSpell(SpellSlot.Summoner2);
+                    Sumspell2 = Player.GetSpell(SpellSlot.Summoner2);
                     break;
             }
         }
@@ -343,13 +343,13 @@ namespace ArsenalActivator
         {
             // Barrier
             if (Barrier != null)
-                Barriershield = 95 + 20*Program.Player.Level;
+                Barriershield = 95 + 20*Champion.Level;
             // Mark
             if (Mark != null)
-                Markdamage = 10 + 5*Program.Player.Level;
+                Markdamage = 10 + 5*Champion.Level;
             // Poro Throw
             if (Porothrow != null)
-                Porothrowdamage = 20 + 10*Program.Player.Level;
+                Porothrowdamage = 20 + 10*Champion.Level;
             // Smite
             if (Smite != null)
             {
@@ -388,13 +388,13 @@ namespace ArsenalActivator
                             {
                                 0, 390, 410, 430, 450, 480, 510, 540, 570, 600, 640, 680, 720, 760, 800, 850, 900, 950,
                                 1000
-                            }[Program.Player.Level];
+                            }[Champion.Level];
                         break;
                     case SmiteName.Challenging:
-                        Smitedamage = 54 + 6*Program.Player.Level;
+                        Smitedamage = 54 + 6*Champion.Level;
                         break;
                     case SmiteName.Chilling:
-                        Smitedamage = 20 + 8*Program.Player.Level;
+                        Smitedamage = 20 + 8*Champion.Level;
                         break;
                 }
             }
@@ -418,7 +418,7 @@ namespace ArsenalActivator
 
                 // Restore self
                 if (SummonerSpellMenu["clarityself"].Cast<Slider>().CurrentValue > 0
-                    && (Player.ManaPercent <= SummonerSpellMenu["clarityself"].Cast<Slider>().CurrentValue))
+                    && (Champion.ManaPercent <= SummonerSpellMenu["clarityself"].Cast<Slider>().CurrentValue))
                     Clarity.Cast();
                 // Restore ally
                 if (ally != null
@@ -428,29 +428,29 @@ namespace ArsenalActivator
             }
             // CLEANSE
             if (Cleanse != null && !Cleanse.IsOnCooldown &&
-                ((Player.HasBuffOfType(BuffType.Blind) && SummonerSpellMenu["Cblind"].Cast<CheckBox>().CurrentValue)
+                ((Champion.HasBuffOfType(BuffType.Blind) && SummonerSpellMenu["Cblind"].Cast<CheckBox>().CurrentValue)
                  ||
-                 (Player.HasBuffOfType(BuffType.Charm) && SummonerSpellMenu["Ccharm"].Cast<CheckBox>().CurrentValue)
-                 || (Player.HasBuffOfType(BuffType.Fear) && SummonerSpellMenu["Cfear"].Cast<CheckBox>().CurrentValue)
-                 || (Player.HasBuffOfType(BuffType.Flee) && SummonerSpellMenu["Cflee"].Cast<CheckBox>().CurrentValue)
+                 (Champion.HasBuffOfType(BuffType.Charm) && SummonerSpellMenu["Ccharm"].Cast<CheckBox>().CurrentValue)
+                 || (Champion.HasBuffOfType(BuffType.Fear) && SummonerSpellMenu["Cfear"].Cast<CheckBox>().CurrentValue)
+                 || (Champion.HasBuffOfType(BuffType.Flee) && SummonerSpellMenu["Cflee"].Cast<CheckBox>().CurrentValue)
                  ||
-                 (Player.HasBuffOfType(BuffType.Polymorph) &&
+                 (Champion.HasBuffOfType(BuffType.Polymorph) &&
                   SummonerSpellMenu["Cpolymorph"].Cast<CheckBox>().CurrentValue)
                  ||
-                 (Player.HasBuffOfType(BuffType.Silence) &&
+                 (Champion.HasBuffOfType(BuffType.Silence) &&
                   SummonerSpellMenu["Csilence"].Cast<CheckBox>().CurrentValue)
                  ||
-                 (Player.HasBuffOfType(BuffType.Sleep) && SummonerSpellMenu["Csleep"].Cast<CheckBox>().CurrentValue)
-                 || (Player.HasBuffOfType(BuffType.Slow) && SummonerSpellMenu["Cslow"].Cast<CheckBox>().CurrentValue)
+                 (Champion.HasBuffOfType(BuffType.Sleep) && SummonerSpellMenu["Csleep"].Cast<CheckBox>().CurrentValue)
+                 || (Champion.HasBuffOfType(BuffType.Slow) && SummonerSpellMenu["Cslow"].Cast<CheckBox>().CurrentValue)
                  ||
-                 (Player.HasBuffOfType(BuffType.Snare) && SummonerSpellMenu["Csnare"].Cast<CheckBox>().CurrentValue)
-                 || (Player.HasBuffOfType(BuffType.Stun) && SummonerSpellMenu["Cstun"].Cast<CheckBox>().CurrentValue)
+                 (Champion.HasBuffOfType(BuffType.Snare) && SummonerSpellMenu["Csnare"].Cast<CheckBox>().CurrentValue)
+                 || (Champion.HasBuffOfType(BuffType.Stun) && SummonerSpellMenu["Cstun"].Cast<CheckBox>().CurrentValue)
                  ||
-                 (Player.HasBuffOfType(BuffType.Taunt) && SummonerSpellMenu["Ctaunt"].Cast<CheckBox>().CurrentValue)
+                 (Champion.HasBuffOfType(BuffType.Taunt) && SummonerSpellMenu["Ctaunt"].Cast<CheckBox>().CurrentValue)
                  ||
-                 (Player.HasBuff("summonerexhaust") && SummonerSpellMenu["Cexhaust"].Cast<CheckBox>().CurrentValue)
+                 (Champion.HasBuff("summonerexhaust") && SummonerSpellMenu["Cexhaust"].Cast<CheckBox>().CurrentValue)
                  ||
-                 (Player.HasBuff("summonerdot") && Player.Health <= 50 + 20*Program.Player.Level &&
+                 (Champion.HasBuff("summonerdot") && Champion.Health <= 50 + 20*Champion.Level &&
                   SummonerSpellMenu["Cignite"].Cast<CheckBox>().CurrentValue))) Cleanse.Cast();
             // EXHAUST
             if (Exhaust != null && !Exhaust.IsOnCooldown)
@@ -461,7 +461,7 @@ namespace ArsenalActivator
 
                 // Exhaust for self
                 if (target != null
-                    && Player.HealthPercent <= SummonerSpellMenu["exhaustself"].Cast<Slider>().CurrentValue
+                    && Champion.HealthPercent <= SummonerSpellMenu["exhaustself"].Cast<Slider>().CurrentValue
                     && target.IsAttackingPlayer)
                     Exhaust.Cast(target);
                 // Exhaust for ally
@@ -483,8 +483,8 @@ namespace ArsenalActivator
 
                 // Heal self
                 if (SummonerSpellMenu["healself"].Cast<Slider>().CurrentValue > 0
-                    && (Player.HealthPercent <= SummonerSpellMenu["healself"].Cast<Slider>().CurrentValue)
-                    && !Player.HasBuff("summonerheal"))
+                    && (Champion.HealthPercent <= SummonerSpellMenu["healself"].Cast<Slider>().CurrentValue)
+                    && !Champion.HasBuff("summonerheal"))
                     Heal.Cast();
                 // Heal ally
                 if (ally != null
@@ -545,7 +545,7 @@ namespace ArsenalActivator
                     && SummonerSpellMenu["smitechill"].Cast<CheckBox>().CurrentValue)
                     Smite.Cast(ks);
 
-                var target = Program.GetEnemy(Player.GetAutoAttackRange(), GameObjectType.AIHeroClient);
+                var target = Program.GetEnemy(Champion.GetAutoAttackRange(), GameObjectType.AIHeroClient);
                 if (target != null && Smitename == SmiteName.Challenging
                     && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo)
                     && SummonerSpellMenu["smiteduel"].Cast<CheckBox>().CurrentValue)
@@ -623,21 +623,21 @@ namespace ArsenalActivator
             if (!SummonerSpellMenu["DrawSS"].Cast<CheckBox>().CurrentValue) return;
 
             if (Clarity != null)
-                Drawing.DrawCircle(Player.Position, Clarity.Range, Color.FromArgb(41, 221, 225));
+                Drawing.DrawCircle(Champion.Position, Clarity.Range, Color.FromArgb(41, 221, 225));
             if (Exhaust != null)
-                Drawing.DrawCircle(Player.Position, Exhaust.Range, Color.FromArgb(233, 200, 80));
+                Drawing.DrawCircle(Champion.Position, Exhaust.Range, Color.FromArgb(233, 200, 80));
             if (Garrison != null)
-                Drawing.DrawCircle(Player.Position, Garrison.Range, Color.FromArgb(156, 255, 140));
+                Drawing.DrawCircle(Champion.Position, Garrison.Range, Color.FromArgb(156, 255, 140));
             if (Heal != null)
-                Drawing.DrawCircle(Player.Position, Heal.Range, Color.FromArgb(145, 243, 104));
+                Drawing.DrawCircle(Champion.Position, Heal.Range, Color.FromArgb(145, 243, 104));
             if (Ignite != null)
-                Drawing.DrawCircle(Player.Position, Ignite.Range, Color.FromArgb(232, 59, 11));
+                Drawing.DrawCircle(Champion.Position, Ignite.Range, Color.FromArgb(232, 59, 11));
             if (Mark != null)
-                Drawing.DrawCircle(Player.Position, Mark.Range, Color.FromArgb(228, 236, 255));
+                Drawing.DrawCircle(Champion.Position, Mark.Range, Color.FromArgb(228, 236, 255));
             if (Porothrow != null)
-                Drawing.DrawCircle(Player.Position, Porothrow.Range, Color.FromArgb(114, 218, 213));
+                Drawing.DrawCircle(Champion.Position, Porothrow.Range, Color.FromArgb(114, 218, 213));
             if (Smite != null)
-                Drawing.DrawCircle(Player.Position, Smite.Range, Color.FromArgb(255, 182, 16));
+                Drawing.DrawCircle(Champion.Position, Smite.Range, Color.FromArgb(255, 182, 16));
         }
     }
 }

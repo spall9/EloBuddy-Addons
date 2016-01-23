@@ -11,10 +11,10 @@ namespace ArsenalActivator
         public static Menu OffensiveItemMenu, DefensiveItemMenu, ConsumableItemMenu, TrinketItemMenu;
 
         // Grab Objects
-        public static AIHeroClient Player = Program.Player;
+        public static AIHeroClient Champion = Program.Champion;
 
         // Grab Item[]
-        public static InventorySlot[] Itemlist = Player.InventoryItems;
+        public static InventorySlot[] Itemlist = Champion.InventoryItems;
 
         // Sliders
         public static float Seraphs;
@@ -88,7 +88,7 @@ namespace ArsenalActivator
                     && DefensiveItemMenu["Bannercall"].Cast<CheckBox>().CurrentValue
                     && allyminion != null && allyminion.IsAlly
                     && BoCCheck(allyminion.BaseSkinName)
-                    && allyminion.Distance(Player) <= 1200
+                    && allyminion.Distance(Champion) <= 1200
                     && allyminion.Health >= allyminion.MaxHealth*0.5f
                     && item.CanUseItem())
                     item.Cast(allyminion);
@@ -96,25 +96,25 @@ namespace ArsenalActivator
                 if (item.Id == ItemId.Bilgewater_Cutlass
                     && OffensiveItemMenu["Cutlasscall"].Cast<CheckBox>().CurrentValue
                     && target != null
-                    && (target.Health <= Player.CalculateDamageOnUnit(target, DamageType.Magical, 100)
-                        || (!target.IsFacing(Player) && target.HealthPercent <= 50))
-                    && target.Distance(Player) <= 550
+                    && (target.Health <= Champion.CalculateDamageOnUnit(target, DamageType.Magical, 100)
+                        || (!target.IsFacing(Champion) && target.HealthPercent <= 50))
+                    && target.Distance(Champion) <= 550
                     && item.CanUseItem())
                     item.Cast(target);
                 // Blade of the Ruined King -- needs test
                 if (item.Id == ItemId.Blade_of_the_Ruined_King
                     && OffensiveItemMenu["Botrkcall"].Cast<CheckBox>().CurrentValue
                     && target != null
-                    && (target.Health <= Player.CalculateDamageOnUnit(target, DamageType.Physical, BotrkCheck(target))
-                        || (!target.IsFacing(Player) && target.HealthPercent <= 50))
-                    && target.Distance(Player) <= 550
+                    && (target.Health <= Champion.CalculateDamageOnUnit(target, DamageType.Physical, BotrkCheck(target))
+                        || (!target.IsFacing(Champion) && target.HealthPercent <= 50))
+                    && target.Distance(Champion) <= 550
                     && item.CanUseItem())
                     item.Cast(target);
                 // Corruption Potion
                 if (item.Id == (ItemId) 2033
-                    && Player.HealthPercent <= FlaskDark
-                    && !Player.HasBuff("ItemDarkCrystalFlask")
-                    && !Player.IsInShopRange() && item.CanUseItem())
+                    && Champion.HealthPercent <= FlaskDark
+                    && !Champion.HasBuff("ItemDarkCrystalFlask")
+                    && !Champion.IsInShopRange() && item.CanUseItem())
                     item.Cast();
                 // Diet Poro-Snax
                 if (item.Id == (ItemId) 2054
@@ -125,16 +125,16 @@ namespace ArsenalActivator
                 if (item.Id == ItemId.Elixir_of_Iron
                     && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo)
                     && ConsumableItemMenu["Ironcall"].Cast<CheckBox>().CurrentValue
-                    && !Player.HasBuff("ElixirOfWrath") && !Player.HasBuff("ElixirOfSorcery")
-                    && Player.CountAlliesInRange(Player.GetAutoAttackRange()) >= 1
+                    && !Champion.HasBuff("ElixirOfWrath") && !Champion.HasBuff("ElixirOfSorcery")
+                    && Champion.CountAlliesInRange(Champion.GetAutoAttackRange()) >= 1
                     && item.CanUseItem())
                     item.Cast();
                 // Elixir of Sorcery
                 if (item.Id == ItemId.Elixir_of_Sorcery
                     && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo)
                     && ConsumableItemMenu["Sorcerycall"].Cast<CheckBox>().CurrentValue
-                    && !Player.HasBuff("ElixirOfIron") && !Player.HasBuff("ElixirOfWrath")
-                    && (Player.CountEnemiesInRange(Player.GetAutoAttackRange()) >= 1
+                    && !Champion.HasBuff("ElixirOfIron") && !Champion.HasBuff("ElixirOfWrath")
+                    && (Champion.CountEnemiesInRange(Champion.GetAutoAttackRange()) >= 1
                         || (turret != null && turret.IsEnemy))
                     && item.CanUseItem())
                     item.Cast();
@@ -142,24 +142,24 @@ namespace ArsenalActivator
                 if (item.Id == ItemId.Elixir_of_Wrath
                     && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo)
                     && ConsumableItemMenu["Wrathcall"].Cast<CheckBox>().CurrentValue
-                    && !Player.HasBuff("ElixirOfIron") && !Player.HasBuff("ElixirOfSorcery")
-                    && Player.CountEnemiesInRange(Player.GetAutoAttackRange()) >= 1
+                    && !Champion.HasBuff("ElixirOfIron") && !Champion.HasBuff("ElixirOfSorcery")
+                    && Champion.CountEnemiesInRange(Champion.GetAutoAttackRange()) >= 1
                     && item.CanUseItem())
                     item.Cast();
                 // Frost Queen's Claim -- needs test
                 if (item.Id == ItemId.Frost_Queens_Claim
-                    && Player.CountEnemiesInRange(5000) >= 2
+                    && Champion.CountEnemiesInRange(5000) >= 2
                     && target != null
-                    && target.Distance(Player) <= 5000
-                    && ((!target.IsFacing(Player) && target.HealthPercent <= 50)
-                    || (Player.CountEnemiesInRange(5000) >= 4 && target.IsFacing(Player)))
+                    && target.Distance(Champion) <= 5000
+                    && ((!target.IsFacing(Champion) && target.HealthPercent <= 50)
+                    || (Champion.CountEnemiesInRange(5000) >= 4 && target.IsFacing(Champion)))
                     && item.CanUseItem())
                     item.Cast();
                 // Health Potion
                 if (item.Id == ItemId.Health_Potion
-                    && Player.HealthPercent <= HealthPot
-                    && !Player.HasBuff("RegenerationPotion")
-                    && !Player.IsInShopRange() && item.CanUseItem())
+                    && Champion.HealthPercent <= HealthPot
+                    && !Champion.HasBuff("RegenerationPotion")
+                    && !Champion.IsInShopRange() && item.CanUseItem())
                     item.Cast();
                 // Hextech Sweeper -- needs test
                 /* if (item.Id == ItemId.Hextech_Sweeper
@@ -185,15 +185,15 @@ namespace ArsenalActivator
                     item.Cast(target);*/
                 // Hunter's Potion
                 if (item.Id == (ItemId) 2032
-                    && Player.HealthPercent <= FlaskJungle
-                    && !Player.HasBuff("ItemCrystalFlaskJungle")
-                    && !Player.IsInShopRange() && item.CanUseItem())
+                    && Champion.HealthPercent <= FlaskJungle
+                    && !Champion.HasBuff("ItemCrystalFlaskJungle")
+                    && !Champion.IsInShopRange() && item.CanUseItem())
                     item.Cast();
                 // Muramana
                 if (item.Id == (ItemId) 3042
                     && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo)
                     && OffensiveItemMenu["Muracall"].Cast<CheckBox>().CurrentValue
-                    && Player.ManaPercent >= 3 && Player.CountEnemiesInRange(Player.GetAutoAttackRange()) > 0
+                    && Champion.ManaPercent >= 3 && Champion.CountEnemiesInRange(Champion.GetAutoAttackRange()) > 0
                     && item.CanUseItem())
                     item.Cast();
                 // Oracle's Extract -- needs test
@@ -210,26 +210,26 @@ namespace ArsenalActivator
                     item.Cast();
                 // Regeneration Potion
                 if (item.Id == (ItemId) 2031
-                    && Player.HealthPercent <= Flask
-                    && !Player.HasBuff("ItemCrystalFlask")
-                    && !Player.IsInShopRange() && item.CanUseItem())
+                    && Champion.HealthPercent <= Flask
+                    && !Champion.HasBuff("ItemCrystalFlask")
+                    && !Champion.IsInShopRange() && item.CanUseItem())
                     item.Cast();
                 // Seraph's Embrace
                 if ((item.Id == (ItemId) 3040 || item.Id == (ItemId) 3048)
-                    && Player.HealthPercent <= Seraphs
-                    && Player.ManaPercent > 20 && item.CanUseItem())
+                    && Champion.HealthPercent <= Seraphs
+                    && Champion.ManaPercent > 20 && item.CanUseItem())
                     item.Cast();
                 // Total Biscuit of Rejuvenation
                 if (item.Id == (ItemId) 2010
-                    && Player.HealthPercent <= Biscuit
-                    && !Player.HasBuff("ItemMiniRegenPotion")
-                    && !Player.IsInShopRange() && item.CanUseItem())
+                    && Champion.HealthPercent <= Biscuit
+                    && !Champion.HasBuff("ItemMiniRegenPotion")
+                    && !Champion.IsInShopRange() && item.CanUseItem())
                     item.Cast();
                 // Youmuu's Ghostblade
                 if (item.Id == ItemId.Youmuus_Ghostblade
                     && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo)
                     && OffensiveItemMenu["Youmuucall"].Cast<CheckBox>().CurrentValue
-                    && Player.CountEnemiesInRange(Player.GetAutoAttackRange()) >= 1
+                    && Champion.CountEnemiesInRange(Champion.GetAutoAttackRange()) >= 1
                     && item.CanUseItem())
                     item.Cast();
             }
