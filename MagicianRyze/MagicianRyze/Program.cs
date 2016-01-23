@@ -242,7 +242,7 @@ namespace MagicianRyze
             ComboMenu.AddGroupLabel("Combo Features");
             ComboMenu.AddLabel("Combo Modes:");
             ComboMenu.Add("ComboM", new CheckBox("ComboMode"));
-            ComboMenu.Add("ComboF", new Slider("Counter", 1, 1, 2));
+            ComboMenu.Add("ComboF", new Slider("Ryze Combo", 1, 1, 2));
             ComboMenu.AddSeparator(1);
             ComboMenu.AddLabel("Independent boxes for Spells:");
             ComboMenu.Add("Qcombo", new CheckBox("Use Q"));
@@ -398,17 +398,17 @@ namespace MagicianRyze
             if (SettingMenu["Autolvl"].Cast<CheckBox>().CurrentValue && Champion.SpellTrainingPoints >= 1)
                 LevelerMode();
             ComboMenu["ComboF"].DisplayName = ComboMenu["ComboF"].Cast<Slider>().CurrentValue == 1
-                ? "Counter"
-                : "Slutty";
+                ? "Counter Combo - My Personal Settings"
+                : "Slutty Combo - Fastest Ryze Combo";
             if (Champion.IsDead) return;
 
             if (Orbwalker.IsAutoAttacking) return;
             switch (Orbwalker.ActiveModesFlags)
             {
                 case Orbwalker.ActiveModes.Combo:
-                    if (ComboMenu["ComboF"].Cast<Slider>().DisplayName == "Counter")
+                    if (ComboMenu["ComboF"].Cast<Slider>().DisplayName.Contains("Counter"))
                         CounterCombo();
-                    if (ComboMenu["ComboF"].Cast<Slider>().DisplayName == "Slutty")
+                    if (ComboMenu["ComboF"].Cast<Slider>().DisplayName.Contains("Slutty"))
                         SluttyCombo();
                     break;
                 case Orbwalker.ActiveModes.Harass:
