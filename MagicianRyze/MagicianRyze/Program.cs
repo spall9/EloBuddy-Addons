@@ -41,10 +41,7 @@ namespace MagicianRyze
         public static InventorySlot[] Itemlist = Champion.InventoryItems;
 
         // Player
-        public static AIHeroClient Champion
-        {
-            get { return Player.Instance; }
-        }
+        public static AIHeroClient Champion { get { return Player.Instance; } }
 
         // Get Entities
         public static Obj_AI_Base GetAlly(float range, GameObjectType gametype)
@@ -242,7 +239,7 @@ namespace MagicianRyze
             ComboMenu.AddGroupLabel("Combo Features");
             ComboMenu.AddLabel("Combo Modes:");
             ComboMenu.Add("ComboM", new CheckBox("ComboMode"));
-            ComboMenu.Add("ComboF", new Slider("Ryze Combo", 1, 1, 2));
+            ComboMenu.Add("ComboF", new Slider("Counter Combo - My Personal Settings", 1, 1, 2));
             ComboMenu.AddSeparator(1);
             ComboMenu.AddLabel("Independent boxes for Spells:");
             ComboMenu.Add("Qcombo", new CheckBox("Use Q"));
@@ -322,6 +319,8 @@ namespace MagicianRyze
             SettingMenu.AddLabel("Automatic Leveler");
             SettingMenu.Add("Autolvl", new CheckBox("Auto Leveler"));
             SettingMenu.AddSeparator(1);
+            SettingMenu.AddLabel("Ultimate Mode - QWE");
+            SettingMenu.Add("UltM", new CheckBox("Ultimate Mode"));
             SettingMenu.AddLabel("Automatic Tear Stacker");
             SettingMenu.Add("StackM", new CheckBox("Stack Mode"));
             SettingMenu.AddSeparator(1);
@@ -406,9 +405,9 @@ namespace MagicianRyze
             switch (Orbwalker.ActiveModesFlags)
             {
                 case Orbwalker.ActiveModes.Combo:
-                    if (ComboMenu["ComboF"].Cast<Slider>().DisplayName.Contains("Counter"))
+                    if (ComboMenu["ComboF"].Cast<Slider>().DisplayName == "Counter Combo - My Personal Settings")
                         CounterCombo();
-                    if (ComboMenu["ComboF"].Cast<Slider>().DisplayName.Contains("Slutty"))
+                    if (ComboMenu["ComboF"].Cast<Slider>().DisplayName == "Slutty Combo - Fastest Ryze Combo")
                         SluttyCombo();
                     break;
                 case Orbwalker.ActiveModes.Harass:
@@ -462,7 +461,8 @@ namespace MagicianRyze
 
         public static void CounterCombo()
         {
-            if (Champion.HasBuff("RyzeR"))
+            if (Champion.HasBuff("RyzeR")
+                && SettingMenu["UltM"].Cast<CheckBox>().CurrentValue)
             {
                 UltimateMode(GameObjectType.AIHeroClient);
                 return;
@@ -477,7 +477,7 @@ namespace MagicianRyze
             {
                 var target = GetEnemy(Q.Range, GameObjectType.AIHeroClient);
                 if (target != null)
-                    Q.Cast(Q.GetPrediction(target).CastPosition);
+                    Q.Cast(target);
             }
             if (ComboMenu["Ecombo"].Cast<CheckBox>().CurrentValue && E.IsReady())
             {
@@ -502,37 +502,22 @@ namespace MagicianRyze
 
         public static void SluttyCombo()
         {
-            if (Champion.HasBuff("RyzeR"))
+            if (Champion.HasBuff("RyzeR")
+                && SettingMenu["UltM"].Cast<CheckBox>().CurrentValue)
             {
                 UltimateMode(GameObjectType.AIHeroClient);
                 return;
             }
-            var expires = Champion.Spellbook.GetSpell(SpellSlot.Q).CooldownExpires;
-            var cd = (int) (expires - (Game.Time - 1));
-            if (W.IsReady() && !(cd < 2.5f))
-            {
-                Orbwalker.DisableAttacking = true;
-            }
-            else
-            {
-                Orbwalker.DisableAttacking = false;
-            }
 
-            var target = TargetSelector.GetTarget(Q.Range, DamageType.Magical);
-            if (target != null && target.IsValidTarget(Q.Range))
+            var target = GetEnemy(Q.Range, GameObjectType.AIHeroClient);
+            if (target != null)
             {
                 var bcount = Champion.GetBuffCount("ryzepassivestack");
 
-                if (!Champion.HasBuff("ryzepassivecharged"))
+                if (!Champion.HasBuff("ryzepassivecharged") && bcount > 0)
                 {
                     switch (bcount)
                     {
-                        case 0:
-                            CastQ(target);
-                            CastE(target);
-                            CastW(target);
-                            CastR(target);
-                            break;
                         case 1:
                             CastQ(target);
                             CastE(target);
@@ -567,21 +552,7 @@ namespace MagicianRyze
                     CastR(target);
                 }
             }
-            else
-            {
-                if (target != null && target.IsValidTarget(W.Range)
-                    && ComboMenu["Wcombo"].Cast<CheckBox>().CurrentValue
-                    && W.IsReady())
-                    W.Cast(target);
-                if (target != null && target.IsValidTarget(Q.Range)
-                    && ComboMenu["Qcombo"].Cast<CheckBox>().CurrentValue
-                    && Q.IsReady())
-                    Q.Cast(target);
-                if (target != null && target.IsValidTarget(E.Range)
-                    && ComboMenu["Ecombo"].Cast<CheckBox>().CurrentValue
-                    && E.IsReady())
-                    E.Cast(target);
-            }
+
             if (target != null
                 && (Champion.GetBuffCount("ryzepassivestack") == 4
                     || Champion.HasBuff("ryzepassivecharged"))
@@ -601,7 +572,8 @@ namespace MagicianRyze
 
         public static void HarassMode()
         {
-            if (Champion.HasBuff("RyzeR"))
+            if (Champion.HasBuff("RyzeR")
+                && SettingMenu["UltM"].Cast<CheckBox>().CurrentValue)
             {
                 UltimateMode(GameObjectType.AIHeroClient);
                 return;
@@ -611,13 +583,14 @@ namespace MagicianRyze
             {
                 var target = GetEnemy(Q.Range, GameObjectType.AIHeroClient);
                 if (target != null)
-                    Q.Cast(Q.GetPrediction(target).CastPosition);
+                    Q.Cast(target);
             }
         }
 
         public static void JungleMode()
         {
-            if (Champion.HasBuff("RyzeR"))
+            if (Champion.HasBuff("RyzeR")
+                && SettingMenu["UltM"].Cast<CheckBox>().CurrentValue)
             {
                 UltimateMode(GameObjectType.obj_AI_Minion, true);
                 return;
@@ -627,7 +600,7 @@ namespace MagicianRyze
             {
                 var target = GetEnemy(Q.Range, GameObjectType.obj_AI_Minion);
                 if (target != null && target.IsMonster)
-                    Q.Cast(Q.GetPrediction(target).CastPosition);
+                    Q.Cast(target);
             }
             if (JungleMenu["Wjungle"].Cast<CheckBox>().CurrentValue && W.IsReady())
             {
@@ -645,7 +618,8 @@ namespace MagicianRyze
 
         public static void LaneClearMode()
         {
-            if (Champion.HasBuff("RyzeR"))
+            if (Champion.HasBuff("RyzeR")
+                && SettingMenu["UltM"].Cast<CheckBox>().CurrentValue)
             {
                 UltimateMode(GameObjectType.obj_AI_Minion);
                 return;
@@ -655,7 +629,7 @@ namespace MagicianRyze
             {
                 var target = GetEnemy(Q.Range, GameObjectType.obj_AI_Minion);
                 if (target != null && !target.IsMonster)
-                    Q.Cast(Q.GetPrediction(target).CastPosition);
+                    Q.Cast(target);
             }
             if (LaneClearMenu["Wlanec"].Cast<CheckBox>().CurrentValue && W.IsReady())
             {
@@ -673,7 +647,8 @@ namespace MagicianRyze
 
         public static void LastHitMode()
         {
-            if (Champion.HasBuff("RyzeR"))
+            if (Champion.HasBuff("RyzeR")
+                && SettingMenu["UltM"].Cast<CheckBox>().CurrentValue)
             {
                 UltimateMode(GameObjectType.obj_AI_Minion);
                 return;
@@ -683,7 +658,7 @@ namespace MagicianRyze
             {
                 var target = GetEnemyKs(AttackSpell.Q, GameObjectType.obj_AI_Minion);
                 if (target != null && !target.IsMonster)
-                    Q.Cast(Q.GetPrediction(target).CastPosition);
+                    Q.Cast(target);
             }
             if (LastHitMenu["Wlasthit"].Cast<CheckBox>().CurrentValue && W.IsReady())
             {
@@ -707,7 +682,7 @@ namespace MagicianRyze
                 {
                     var target = GetEnemy(Q.Range, type);
                     if (target != null && target.IsMonster)
-                        Q.Cast(Q.GetPrediction(target).CastPosition);
+                        Q.Cast(target);
                 }
                 if (W.IsReady())
                 {
@@ -751,7 +726,7 @@ namespace MagicianRyze
             {
                 var target = GetEnemyKs(AttackSpell.Q, GameObjectType.AIHeroClient);
                 if (target != null)
-                    Q.Cast(Q.GetPrediction(target).CastPosition);
+                    Q.Cast(target);
             }
             if (KillStealMenu["Wks"].Cast<CheckBox>().CurrentValue && W.IsReady())
             {
