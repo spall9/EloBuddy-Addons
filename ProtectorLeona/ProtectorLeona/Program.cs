@@ -25,24 +25,23 @@ namespace ProtectorLeona
         public static Menu ProtectorLeonaMenu,
             ComboMenu,
             HarassMenu,
-            JungleMenu,
-            LaneClearMenu,
-            LastHitMenu,
-            KillStealMenu,
             DrawingMenu,
             SettingMenu;
 
         // Player
-        public static AIHeroClient Leona = Player.Instance;
+        public static AIHeroClient Champion
+        {
+            get { return Player.Instance; }
+        }
 
         // Skills
         public static Spell.Active W;
         public static Spell.Skillshot E;
         public static Spell.Skillshot R;
         public static int Leonaskin;
-        public static InventorySlot[] Itemlist = Leona.InventoryItems;
+        public static InventorySlot[] Itemlist = Champion.InventoryItems;
 
-        public static Spell.Active Q = new Spell.Active(SpellSlot.Q, (uint) (Leona.GetAutoAttackRange() + 30));
+        public static Spell.Active Q = new Spell.Active(SpellSlot.Q, (uint) (Champion.GetAutoAttackRange() + 30));
 
         // Get Entities
         public static Obj_AI_Base GetAlly(float range, GameObjectType gametype)
@@ -53,15 +52,15 @@ namespace ProtectorLeona
                     return EntityManager.Heroes.Allies
                         .OrderByDescending(a => a.Health)
                         .FirstOrDefault(a => a.IsAlly
-                                             && a.IsValidTarget(range) && a.Distance(Leona) <= range
+                                             && a.IsValidTarget(range) && a.Distance(Champion) <= range
                                              && !a.IsInvulnerable && !a.IsZombie
-                                             && !Leona.IsRecalling());
+                                             && !Champion.IsRecalling());
                 case GameObjectType.obj_AI_Minion:
                     return EntityManager.MinionsAndMonsters.AlliedMinions
                         .OrderByDescending(a => a.Health)
                         .FirstOrDefault(a => a.IsAlly
-                                             && a.IsValidTarget(range) && a.Distance(Leona) <= range
-                                             && !Leona.IsRecalling());
+                                             && a.IsValidTarget(range) && a.Distance(Champion) <= range
+                                             && !Champion.IsRecalling());
             }
             return null;
         }
@@ -74,18 +73,18 @@ namespace ProtectorLeona
                     return EntityManager.Heroes.Enemies
                         .OrderByDescending(a => a.Health)
                         .FirstOrDefault(a => a.IsEnemy
-                                             && a.IsValidTarget(range) && a.Distance(Leona) <= range
+                                             && a.IsValidTarget(range) && a.Distance(Champion) <= range
                                              && !a.IsInvulnerable && !a.IsZombie
                                              && !a.HasBuff("BlackShield") && !a.HasBuff("SivirE") &&
                                              !a.HasBuff("FioraW")
-                                             && !a.HasBuff("ChronoShift") && !Leona.IsRecalling());
+                                             && !a.HasBuff("ChronoShift") && !Champion.IsRecalling());
                 case GameObjectType.obj_AI_Minion:
                     return EntityManager.MinionsAndMonsters.EnemyMinions
                         .OrderByDescending(a => a.Health)
                         .FirstOrDefault(a => a.IsEnemy
-                                             && a.IsValidTarget(range) && a.Distance(Leona) <= range
+                                             && a.IsValidTarget(range) && a.Distance(Champion) <= range
                                              && !a.HasBuff("BannerOfCommand")
-                                             && !Leona.IsRecalling());
+                                             && !Champion.IsRecalling());
             }
             return null;
         }
@@ -99,33 +98,33 @@ namespace ProtectorLeona
                         .Get<Obj_AI_Base>()
                         .OrderByDescending(a => a.Health)
                         .FirstOrDefault(a => a.IsEnemy && a.Type == gametype
-                                             && a.IsValidTarget(Q.Range) && a.Distance(Leona) <= Q.Range
+                                             && a.IsValidTarget(Q.Range) && a.Distance(Champion) <= Q.Range
                                              && !a.IsInvulnerable && !a.IsZombie
                                              && !a.HasBuff("BlackShield") && !a.HasBuff("SivirE") &&
                                              !a.HasBuff("FioraW")
-                                             && !a.HasBuff("ChronoShift") && !Leona.IsRecalling()
+                                             && !a.HasBuff("ChronoShift") && !Champion.IsRecalling()
                                              && a.Health <= QDamage(a));
                 case AttackSpell.E:
                     return ObjectManager
                         .Get<Obj_AI_Base>()
                         .OrderByDescending(a => a.Health)
                         .FirstOrDefault(a => a.IsEnemy && a.Type == gametype
-                                             && a.IsValidTarget(E.Range) && a.Distance(Leona) <= E.Range
+                                             && a.IsValidTarget(E.Range) && a.Distance(Champion) <= E.Range
                                              && !a.IsInvulnerable && !a.IsZombie
                                              && !a.HasBuff("BlackShield") && !a.HasBuff("SivirE") &&
                                              !a.HasBuff("FioraW")
-                                             && !a.HasBuff("ChronoShift") && !Leona.IsRecalling()
+                                             && !a.HasBuff("ChronoShift") && !Champion.IsRecalling()
                                              && a.Health <= EDamage(a));
                 case AttackSpell.R:
                     return ObjectManager
                         .Get<Obj_AI_Base>()
                         .OrderByDescending(a => a.Health)
                         .FirstOrDefault(a => a.IsEnemy && a.Type == gametype
-                                             && a.IsValidTarget(R.Range) && a.Distance(Leona) <= R.Range
+                                             && a.IsValidTarget(R.Range) && a.Distance(Champion) <= R.Range
                                              && !a.IsInvulnerable && !a.IsZombie
                                              && !a.HasBuff("BlackShield") && !a.HasBuff("SivirE") &&
                                              !a.HasBuff("FioraW")
-                                             && !a.HasBuff("ChronoShift") && !Leona.IsRecalling()
+                                             && !a.HasBuff("ChronoShift") && !Champion.IsRecalling()
                                              && a.Health <= RDamage(a));
             }
             return null;
@@ -139,9 +138,9 @@ namespace ProtectorLeona
                     return EntityManager.Turrets.Allies
                         .OrderByDescending(a => a.Health)
                         .FirstOrDefault(a => a.IsAlly
-                                             && a.IsValidTarget(range) && a.Distance(Leona) <= range
+                                             && a.IsValidTarget(range) && a.Distance(Champion) <= range
                                              && !a.IsInvulnerable
-                                             && !Leona.IsRecalling());
+                                             && !Champion.IsRecalling());
             }
             return null;
         }
@@ -154,9 +153,9 @@ namespace ProtectorLeona
                     return EntityManager.Turrets.Enemies
                         .OrderByDescending(a => a.Health)
                         .FirstOrDefault(a => a.IsEnemy
-                                             && a.IsValidTarget(range) && a.Distance(Leona) <= range
+                                             && a.IsValidTarget(range) && a.Distance(Champion) <= range
                                              && !a.IsInvulnerable
-                                             && !Leona.IsRecalling());
+                                             && !Champion.IsRecalling());
             }
             return null;
         }
@@ -164,31 +163,31 @@ namespace ProtectorLeona
         // Spell Calculators
         public static float QDamage(Obj_AI_Base target)
         {
-            return Leona.CalculateDamageOnUnit(target, DamageType.Magical,
+            return Champion.CalculateDamageOnUnit(target, DamageType.Magical,
                 new float[] {0, 40, 70, 100, 130, 160}[Q.Level]
-                + 0.3f*Leona.FlatMagicDamageMod
-                + Leona.GetAutoAttackDamage(target));
+                + 0.3f*Champion.FlatMagicDamageMod
+                + Champion.GetAutoAttackDamage(target));
         }
 
         public static float WDamage(Obj_AI_Base target)
         {
-            return Leona.CalculateDamageOnUnit(target, DamageType.Magical,
+            return Champion.CalculateDamageOnUnit(target, DamageType.Magical,
                 new float[] {0, 60, 110, 160, 210, 260}[W.Level]
-                + 0.4f*Leona.FlatMagicDamageMod);
+                + 0.4f*Champion.FlatMagicDamageMod);
         }
 
         public static float EDamage(Obj_AI_Base target)
         {
-            return Leona.CalculateDamageOnUnit(target, DamageType.Magical,
+            return Champion.CalculateDamageOnUnit(target, DamageType.Magical,
                 new float[] {0, 60, 100, 140, 180, 220}[E.Level]
-                + 0.4f*Leona.FlatMagicDamageMod);
+                + 0.4f*Champion.FlatMagicDamageMod);
         }
 
         public static float RDamage(Obj_AI_Base target)
         {
-            return Leona.CalculateDamageOnUnit(target, DamageType.Magical,
+            return Champion.CalculateDamageOnUnit(target, DamageType.Magical,
                 new float[] {0, 150, 250, 350}[E.Level]
-                + 0.8f*Leona.FlatMagicDamageMod);
+                + 0.8f*Champion.FlatMagicDamageMod);
         }
 
         public static void Main()
@@ -199,8 +198,8 @@ namespace ProtectorLeona
         public static void Loading_OnLoadingComplete(EventArgs args)
         {
             //Confirming Champion
-            if (Leona.ChampionName != "Leona") return;
-            Leonaskin = Leona.SkinId;
+            if (Champion.ChampionName != "Leona") return;
+            Leonaskin = Champion.SkinId;
 
             W = new Spell.Active(SpellSlot.W, 275);
             E = new Spell.Skillshot(SpellSlot.E, 875, SkillShotType.Linear, 250, 2000, 70)
@@ -268,11 +267,8 @@ namespace ProtectorLeona
             SettingMenu.Add("Gapcmode", new CheckBox("Gap Closer Mode"));
             SettingMenu.Add("EQgapc", new CheckBox("Use E & Q to gapclose"));
 
-            if (SettingMenu["Interruptmode"].Cast<CheckBox>().CurrentValue)
-                Interrupter.OnInterruptableSpell += InterruptMode;
-            if (SettingMenu["Gapcmode"].Cast<CheckBox>().CurrentValue)
-                Gapcloser.OnGapcloser += GapCloserMode;
-
+            Interrupter.OnInterruptableSpell += InterruptMode;
+            Gapcloser.OnGapcloser += GapCloserMode;
             Game.OnTick += Game_OnTick;
             Game.OnUpdate += Game_OnUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
@@ -280,7 +276,7 @@ namespace ProtectorLeona
 
         public static void Game_OnUpdate(EventArgs args)
         {
-            Leona.SetSkinId(DrawingMenu["DrawS"].Cast<CheckBox>().CurrentValue
+            Champion.SetSkinId(DrawingMenu["DrawS"].Cast<CheckBox>().CurrentValue
                 ? DrawingMenu["Skins"].Cast<Slider>().CurrentValue
                 : Leonaskin);
         }
@@ -289,7 +285,7 @@ namespace ProtectorLeona
         {
             Color color;
 
-            switch (Leona.SkinId)
+            switch (Champion.SkinId)
             {
                 default:
                     color = Color.Transparent;
@@ -324,52 +320,57 @@ namespace ProtectorLeona
             }
             if (!DrawingMenu["DrawM"].Cast<CheckBox>().CurrentValue) return;
             if (DrawingMenu["Qdraw"].Cast<CheckBox>().CurrentValue && Q.IsLearned)
-                Drawing.DrawCircle(Leona.Position, Q.Range, color);
+                Drawing.DrawCircle(Champion.Position, Q.Range, color);
             if (DrawingMenu["Wdraw"].Cast<CheckBox>().CurrentValue && W.IsLearned)
-                Drawing.DrawCircle(Leona.Position, W.Range, color);
+                Drawing.DrawCircle(Champion.Position, W.Range, color);
             if (DrawingMenu["Edraw"].Cast<CheckBox>().CurrentValue && E.IsLearned)
-                Drawing.DrawCircle(Leona.Position, E.Range, color);
+                Drawing.DrawCircle(Champion.Position, E.Range, color);
             if (DrawingMenu["Rdraw"].Cast<CheckBox>().CurrentValue && R.IsLearned)
-                Drawing.DrawCircle(Leona.Position, R.Range, color);
+                Drawing.DrawCircle(Champion.Position, R.Range, color);
         }
 
         public static void Game_OnTick(EventArgs args)
         {
-            if (Leona.IsDead) return;
-            if (SettingMenu["Autolvl"].Cast<CheckBox>().CurrentValue && Leona.SpellTrainingPoints >= 1)
+            if (Champion.IsDead) return;
+            if (SettingMenu["Autolvl"].Cast<CheckBox>().CurrentValue && Champion.SpellTrainingPoints >= 1)
                 LevelerMode();
 
-            if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
-                ComboMode();
-            if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Harass) &&
-                Leona.ManaPercent >= HarassMenu["Harassmana"].Cast<Slider>().CurrentValue)
-                HarassMode();
+            if (Orbwalker.IsAutoAttacking) return;
+            switch (Orbwalker.ActiveModesFlags)
+            {
+                case Orbwalker.ActiveModes.Combo:
+                    ComboMode();
+                    break;
+                case Orbwalker.ActiveModes.Harass:
+                    HarassMode();
+                    break;
+            }
         }
 
         public static void LevelerMode()
         {
             int[] leveler = {1, 3, 2, 2, 2, 4, 2, 1, 2, 1, 4, 1, 1, 3, 3, 4, 3, 3};
-            var avapoints = Leona.SpellTrainingPoints;
+            var avapoints = Champion.SpellTrainingPoints;
             while (avapoints >= 1)
             {
-                var skill = leveler[Leona.Level - avapoints];
+                var skill = leveler[Champion.Level - avapoints];
 
                 switch (skill)
                 {
                     default:
-                        Leona.Spellbook.LevelSpell(SpellSlot.Unknown);
+                        Champion.Spellbook.LevelSpell(SpellSlot.Unknown);
                         break;
                     case 1:
-                        Leona.Spellbook.LevelSpell(SpellSlot.Q);
+                        Champion.Spellbook.LevelSpell(SpellSlot.Q);
                         break;
                     case 2:
-                        Leona.Spellbook.LevelSpell(SpellSlot.W);
+                        Champion.Spellbook.LevelSpell(SpellSlot.W);
                         break;
                     case 3:
-                        Leona.Spellbook.LevelSpell(SpellSlot.E);
+                        Champion.Spellbook.LevelSpell(SpellSlot.E);
                         break;
                     case 4:
-                        Leona.Spellbook.LevelSpell(SpellSlot.R);
+                        Champion.Spellbook.LevelSpell(SpellSlot.R);
                         break;
                 }
                 avapoints--;
@@ -380,7 +381,7 @@ namespace ProtectorLeona
         {
             if (SettingMenu["Aattack"].Cast<CheckBox>().CurrentValue)
             {
-                var target = GetEnemy(Leona.GetAutoAttackRange(), GameObjectType.AIHeroClient);
+                var target = GetEnemy(Champion.GetAutoAttackRange(), GameObjectType.AIHeroClient);
                 if (target != null && Orbwalker.CanAutoAttack)
                     Player.IssueOrder(GameObjectOrder.AttackTo, target);
             }
@@ -404,7 +405,7 @@ namespace ProtectorLeona
                 Orbwalker.ResetAutoAttack();
             }
             if (ComboMenu["Rcombo"].Cast<CheckBox>().CurrentValue && R.IsReady()
-                && Leona.CountEnemiesInRange(R.Range) >= ComboMenu["Rlimiter"].Cast<Slider>().CurrentValue)
+                && Champion.CountEnemiesInRange(R.Range) >= ComboMenu["Rlimiter"].Cast<Slider>().CurrentValue)
             {
                 var target = GetEnemy(R.Range, GameObjectType.AIHeroClient);
                 if (target != null && !target.IsUnderEnemyturret())
@@ -414,9 +415,10 @@ namespace ProtectorLeona
 
         public static void HarassMode()
         {
+            if (Champion.ManaPercent < HarassMenu["Harassmana"].Cast<Slider>().CurrentValue) return;
             if (SettingMenu["Aattack"].Cast<CheckBox>().CurrentValue)
             {
-                var target = GetEnemy(Leona.GetAutoAttackRange(), GameObjectType.AIHeroClient);
+                var target = GetEnemy(Champion.GetAutoAttackRange(), GameObjectType.AIHeroClient);
                 if (target != null && Orbwalker.CanAutoAttack)
                     Player.IssueOrder(GameObjectOrder.AttackTo, target);
             }
@@ -437,6 +439,7 @@ namespace ProtectorLeona
 
         public static void InterruptMode(Obj_AI_Base sender, Interrupter.InterruptableSpellEventArgs args)
         {
+            if (!SettingMenu["Interruptmode"].Cast<CheckBox>().CurrentValue) return;
             if (sender != null && !sender.IsUnderEnemyturret())
             {
                 if (SettingMenu["EQinterrupt"].Cast<CheckBox>().CurrentValue
@@ -450,7 +453,7 @@ namespace ProtectorLeona
                         if (Orbwalker.CanAutoAttack)
                             Orbwalker.ForcedTarget = target;
                         if (!target.HasBuff("leonazenithbladeroot")
-                            && Leona.IsInAutoAttackRange(target))
+                            && Champion.IsInAutoAttackRange(target))
                         {
                             Q.Cast();
                             Orbwalker.ResetAutoAttack();
@@ -474,6 +477,7 @@ namespace ProtectorLeona
 
         public static void GapCloserMode(Obj_AI_Base sender, Gapcloser.GapcloserEventArgs args)
         {
+            if (!SettingMenu["Gapcmode"].Cast<CheckBox>().CurrentValue) return;
             if (sender != null && !sender.IsUnderEnemyturret()
                 && SettingMenu["EQgapc"].Cast<CheckBox>().CurrentValue
                 && Q.IsReady() && E.IsReady())
@@ -485,7 +489,7 @@ namespace ProtectorLeona
                     if (Orbwalker.CanAutoAttack)
                         Player.IssueOrder(GameObjectOrder.AttackTo, target);
                     if (!target.HasBuff("leonazenithbladeroot")
-                        && Leona.IsInAutoAttackRange(target))
+                        && Champion.IsInAutoAttackRange(target))
                     {
                         Q.Cast();
                         if (Orbwalker.CanAutoAttack)

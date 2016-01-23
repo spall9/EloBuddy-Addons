@@ -34,6 +34,13 @@ namespace BallistaKogMaw
             DrawingMenu,
             SettingMenu;
 
+
+        // Player
+        public static AIHeroClient Champion
+        {
+            get { return Player.Instance; }
+        }
+
         // Skills
         public static Spell.Skillshot Q;
         public static Spell.Skillshot E;
@@ -53,12 +60,6 @@ namespace BallistaKogMaw
             MinimumHitChance = HitChance.High,
             AllowedCollisionCount = int.MaxValue
         };
-
-        // Player
-        public static AIHeroClient Champion
-        {
-            get { return Player.Instance; }
-        }
 
         public static Obj_AI_Base GetAlly(float range, GameObjectType gametype)
         {
