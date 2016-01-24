@@ -56,8 +56,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="KogMaw.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="LevelerManager.cs" />
+    <Compile Include="MenuManager.cs" />
+    <Compile Include="ModeManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SpellManager.cs" />
+    <Compile Include="TargetManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
