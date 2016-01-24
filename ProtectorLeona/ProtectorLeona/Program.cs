@@ -31,7 +31,7 @@ namespace ProtectorLeona
         // Player
         public static AIHeroClient Champion
         {
-            get { return Player.Instance; }
+            get { return ObjectManager.Player; }
         }
 
         // Skills
@@ -39,7 +39,7 @@ namespace ProtectorLeona
         public static Spell.Skillshot E;
         public static Spell.Skillshot R;
         public static int Leonaskin;
-        public static InventorySlot[] Itemlist = Champion.InventoryItems;
+        public static InventorySlot[] Itemlist;
 
         public static Spell.Active Q = new Spell.Active(SpellSlot.Q, (uint) (Champion.GetAutoAttackRange() + 30));
 
