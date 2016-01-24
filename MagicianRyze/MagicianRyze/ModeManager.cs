@@ -146,19 +146,19 @@ namespace MagicianRyze
             if (Champion.ManaPercent < MenuManager.JungleMenu["Junglemana"].Cast<Slider>().CurrentValue) return;
             if (MenuManager.JungleMenu["Qjungle"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.Q, false, true);
+                var target = TargetManager.GetMinionTarget(SpellManager.Q, DamageType.Magical, false, true);
                 if (target != null)
                     SpellManager.CastQ(target);
             }
             if (MenuManager.JungleMenu["Wjungle"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.W, false, true);
+                var target = TargetManager.GetMinionTarget(SpellManager.W, DamageType.Magical, false, true);
                 if (target != null)
                     SpellManager.CastW(target);
             }
             if (MenuManager.JungleMenu["Ejungle"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.E, false, true);
+                var target = TargetManager.GetMinionTarget(SpellManager.E, DamageType.Magical, false, true);
                 if (target != null)
                     SpellManager.CastE(target);
             }
@@ -175,19 +175,19 @@ namespace MagicianRyze
             if (Champion.ManaPercent < MenuManager.LaneClearMenu["Lanecmana"].Cast<Slider>().CurrentValue) return;
             if (MenuManager.LaneClearMenu["Qlanec"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.Q);
+                var target = TargetManager.GetMinionTarget(SpellManager.Q, DamageType.Magical);
                 if (target != null)
                     SpellManager.CastQ(target);
             }
             if (MenuManager.LaneClearMenu["Wlanec"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.W);
+                var target = TargetManager.GetMinionTarget(SpellManager.W, DamageType.Magical);
                 if (target != null)
                     SpellManager.CastW(target);
             }
             if (MenuManager.LaneClearMenu["Elanec"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.E);
+                var target = TargetManager.GetMinionTarget(SpellManager.E, DamageType.Magical);
                 if (target != null)
                     SpellManager.CastE(target);
             }
@@ -204,21 +204,21 @@ namespace MagicianRyze
             if (Champion.ManaPercent < MenuManager.LastHitMenu["Lasthitmana"].Cast<Slider>().CurrentValue) return;
             if (MenuManager.LastHitMenu["Qlasthit"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.Q);
+                var target = TargetManager.GetMinionTarget(SpellManager.Q, DamageType.Magical, false, false, SpellManager.QDamage());
                 if (target != null)
-                    SpellManager.CastQ(target, true);
+                    SpellManager.CastQ(target);
             }
             if (MenuManager.LastHitMenu["Wlasthit"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.W);
+                var target = TargetManager.GetMinionTarget(SpellManager.W, DamageType.Magical, false, false, SpellManager.QDamage());
                 if (target != null)
-                    SpellManager.CastW(target, true);
+                    SpellManager.CastW(target);
             }
             if (MenuManager.LastHitMenu["Elasthit"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.E);
+                var target = TargetManager.GetMinionTarget(SpellManager.E, DamageType.Magical, false, false, SpellManager.QDamage());
                 if (target != null)
-                    SpellManager.CastE(target, true);
+                    SpellManager.CastE(target);
             }
         }
 
@@ -254,19 +254,19 @@ namespace MagicianRyze
                     {
                         if (SpellManager.Q.IsReady())
                         {
-                            var target = TargetManager.GetMinionTarget(SpellManager.Q, false, true);
+                            var target = TargetManager.GetMinionTarget(SpellManager.Q, DamageType.Magical, false, true);
                             if (target != null)
                                 SpellManager.CastQ(target);
                         }
                         if (SpellManager.W.IsReady())
                         {
-                            var target = TargetManager.GetMinionTarget(SpellManager.W, false, true);
+                            var target = TargetManager.GetMinionTarget(SpellManager.W, DamageType.Magical, false, true);
                             if (target != null)
                                 SpellManager.CastW(target);
                         }
                         if (SpellManager.E.IsReady())
                         {
-                            var target = TargetManager.GetMinionTarget(SpellManager.E, false, true);
+                            var target = TargetManager.GetMinionTarget(SpellManager.E, DamageType.Magical, false, true);
                             if (target != null)
                                 SpellManager.CastE(target);
                         }
@@ -275,19 +275,19 @@ namespace MagicianRyze
                     {
                         if (SpellManager.Q.IsReady())
                         {
-                            var target = TargetManager.GetMinionTarget(SpellManager.Q);
+                            var target = TargetManager.GetMinionTarget(SpellManager.Q, DamageType.Magical);
                             if (target != null)
                                 SpellManager.CastQ(target);
                         }
                         if (SpellManager.W.IsReady())
                         {
-                            var target = TargetManager.GetMinionTarget(SpellManager.W);
+                            var target = TargetManager.GetMinionTarget(SpellManager.W, DamageType.Magical);
                             if (target != null)
                                 SpellManager.CastW(target);
                         }
                         if (SpellManager.E.IsReady())
                         {
-                            var target = TargetManager.GetMinionTarget(SpellManager.E);
+                            var target = TargetManager.GetMinionTarget(SpellManager.E, DamageType.Magical);
                             if (target != null)
                                 SpellManager.CastE(target);
                         }
@@ -301,21 +301,21 @@ namespace MagicianRyze
         {
             if (MenuManager.KillStealMenu["Qks"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.Q, DamageType.Magical);
+                var target = TargetManager.GetChampionTarget(SpellManager.Q, DamageType.Magical, false, SpellManager.QDamage());
                 if (target != null)
-                    SpellManager.CastQ(target, true);
+                    SpellManager.CastQ(target);
             }
             if (MenuManager.KillStealMenu["Wks"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.W, DamageType.Magical);
+                var target = TargetManager.GetChampionTarget(SpellManager.W, DamageType.Magical, false, SpellManager.QDamage());
                 if (target != null)
-                    SpellManager.CastW(target, true);
+                    SpellManager.CastW(target);
             }
             if (MenuManager.KillStealMenu["Eks"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.E, DamageType.Magical);
+                var target = TargetManager.GetChampionTarget(SpellManager.E, DamageType.Magical, false, SpellManager.QDamage());
                 if (target != null)
-                    SpellManager.CastE(target, true);
+                    SpellManager.CastE(target);
             }
         }
 

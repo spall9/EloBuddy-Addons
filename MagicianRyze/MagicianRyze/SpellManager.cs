@@ -35,63 +35,45 @@ namespace MagicianRyze
         }
 
         // Champion Specified Abilities
-        public static float QDamage(Obj_AI_Base target)
+        public static float QDamage()
         {
-            return Champion.CalculateDamageOnUnit(target, DamageType.Magical,
-                new float[] { 0, 60, 85, 110, 135, 160 }[Q.Level] + 0.55f * Champion.FlatMagicDamageMod +
-                new[] { 0f, 0.02f, 0.025f, 0.03f, 0.035f, 0.04f }[Q.Level] * Champion.MaxMana);
+            return new float[] { 0, 60, 85, 110, 135, 160 }[Q.Level] 
+                + 0.55f * Champion.FlatMagicDamageMod 
+                + new[] { 0f, 0.02f, 0.025f, 0.03f, 0.035f, 0.04f }[Q.Level] * Champion.MaxMana;
         }
 
-        public static float WDamage(Obj_AI_Base target)
+        public static float WDamage()
         {
-            return Champion.CalculateDamageOnUnit(target, DamageType.Magical,
-                new float[] { 0, 80, 100, 120, 140, 160 }[W.Level] + 0.4f * Champion.FlatMagicDamageMod +
-                0.025f * Champion.MaxMana);
+            return new float[] { 0, 80, 100, 120, 140, 160 }[W.Level]
+                + 0.4f * Champion.FlatMagicDamageMod 
+                + 0.025f * Champion.MaxMana;
         }
 
-        public static float EDamage(Obj_AI_Base target)
+        public static float EDamage()
         {
-            return Champion.CalculateDamageOnUnit(target, DamageType.Magical,
-                new float[] { 0, 36, 52, 68, 84, 100 }[E.Level] + 0.2f * Champion.FlatMagicDamageMod +
-                0.02f * Champion.MaxMana);
+            return new float[] { 0, 36, 52, 68, 84, 100 }[E.Level]
+                + 0.2f * Champion.FlatMagicDamageMod 
+                + 0.02f * Champion.MaxMana;
         }
 
         // Cast Methods
-        public static void CastQ(Obj_AI_Base target, bool isKs = false)
+        public static void CastQ(Obj_AI_Base target)
         {
             if (target == null) return;
-            if (isKs && target.Health <= QDamage(target))
-            {
-                if (Q.IsReady())
-                    Q.Cast(target);
-                return;
-            }
             if (Q.IsReady())
                 Q.Cast(target);
         }
 
-        public static void CastW(Obj_AI_Base target, bool isKs = false)
+        public static void CastW(Obj_AI_Base target)
         {
             if (target == null) return;
-            if (isKs && target.Health <= WDamage(target))
-            {
-                if (W.IsReady())
-                    W.Cast(target);
-                return;
-            }
             if (W.IsReady())
                 W.Cast(target);
         }
 
-        public static void CastE(Obj_AI_Base target, bool isKs = false)
+        public static void CastE(Obj_AI_Base target)
         {
             if (target == null) return;
-            if (isKs && target.Health <= EDamage(target))
-            {
-                if (E.IsReady())
-                    E.Cast(target);
-                return;
-            }
             if (E.IsReady())
                 E.Cast(target);
         }
@@ -99,7 +81,7 @@ namespace MagicianRyze
         public static void CastR(Obj_AI_Base target)
         {
             if (target != null && R.IsReady()
-                && target.Health > QDamage(target) + EDamage(target)
+                && target.Health > QDamage() + EDamage()
                 )
             {
                 if (MenuManager.ComboMenu["Rstun"].Cast<CheckBox>().CurrentValue
