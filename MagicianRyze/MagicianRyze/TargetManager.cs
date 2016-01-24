@@ -1,0 +1,70 @@
+﻿using System.Linq;
+using EloBuddy;
+using EloBuddy.SDK;
+
+namespace MagicianRyze
+{
+    internal class TargetManager
+    {
+        // Clone Character Object
+        public static AIHeroClient Champion = Program.Champion;
+
+        public static void Initialize()
+        {
+        }
+
+        public static AIHeroClient GetChampionTarget(Spell.SpellBase spell, DamageType damagetype, bool isAlly = false)
+        {
+            var herotype = EntityManager.Heroes.AllHeroes;
+            var targets = herotype.OrderBy(a => a.HealthPercent)
+                .Where(a => a.IsValidTarget(spell.Range) && ((isAlly && a.IsAlly) || (!isAlly && a.IsEnemy))
+                            && !a.IsDead && !a.IsZombie
+                            && TargetStatus(a)
+                            && !Champion.IsRecalling()
+                            && spell.IsInRange(a));
+            return TargetSelector.GetTarget(targets, damagetype);
+        }
+
+        public static Obj_AI_Minion GetMinionTarget(Spell.SpellBase spell, bool isAlly = false, bool isMonster = false)
+        {
+            var teamtype = EntityManager.UnitTeam.Enemy;
+            if (isAlly)
+                teamtype = EntityManager.UnitTeam.Ally;
+            var miniontype = EntityManager.MinionsAndMonsters.GetLaneMinions(teamtype, Champion.ServerPosition, spell.Range).ToArray();
+            if (isMonster)
+                miniontype = EntityManager.MinionsAndMonsters.GetJungleMonsters(Champion.ServerPosition, spell.Range).ToArray();
+
+            // Check list objects
+            if (miniontype.Length == 0) return null;
+
+            var target = miniontype
+                .OrderBy(a => a.HealthPercent)
+                .FirstOrDefault(a => a.IsValidTarget(spell.Range) && ((isAlly && a.IsAlly) || (!isAlly && a.IsEnemy))
+                                     && ((isMonster && a.IsMonster) || (!isMonster && !a.IsMonster))
+                                     && !a.IsDead && !a.IsZombie
+                                     && TargetStatus(a)
+                                     && !Champion.IsRecalling()
+                                     && spell.IsInRange(a));
+            return target;
+        }
+
+        public static Obj_AI_Turret GetTurretTarget(Spell.SpellBase spell, bool isAlly = false)
+        {
+            var turrettype = EntityManager.Turrets.AllTurrets;
+            var target = turrettype.OrderByDescending(a => a.HealthPercent)
+                .FirstOrDefault(a => a.IsValidTarget(spell.Range) && ((isAlly && a.IsAlly) || (!isAlly && a.IsEnemy))
+                                     && !a.IsDead && !isAlly
+                                     && !Champion.IsRecalling()
+                                     && spell.IsInRange(a));
+            return target;
+        }
+
+        public static bool TargetStatus(Obj_AI_Base target)
+        {
+            return !target.Buffs.Any(a => a.IsValid()
+                                          && a.DisplayName == "Chrono Shift"
+                                          && a.DisplayName == "FioraW"
+                                          && a.Type == BuffType.SpellShield);
+        }
+    }
+}
