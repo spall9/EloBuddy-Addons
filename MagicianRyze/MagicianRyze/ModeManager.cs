@@ -204,19 +204,19 @@ namespace MagicianRyze
             if (Champion.ManaPercent < MenuManager.LastHitMenu["Lasthitmana"].Cast<Slider>().CurrentValue) return;
             if (MenuManager.LastHitMenu["Qlasthit"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.Q, DamageType.Magical, false, false, SpellManager.QDamage());
+                var target = TargetManager.GetMinionTarget(SpellManager.Q, DamageType.Magical, false, false, true, SpellManager.QDamage());
                 if (target != null)
                     SpellManager.CastQ(target);
             }
             if (MenuManager.LastHitMenu["Wlasthit"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.W, DamageType.Magical, false, false, SpellManager.QDamage());
+                var target = TargetManager.GetMinionTarget(SpellManager.W, DamageType.Magical, false, false, true, SpellManager.WDamage());
                 if (target != null)
                     SpellManager.CastW(target);
             }
             if (MenuManager.LastHitMenu["Elasthit"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.E, DamageType.Magical, false, false, SpellManager.QDamage());
+                var target = TargetManager.GetMinionTarget(SpellManager.E, DamageType.Magical, false, false, true, SpellManager.EDamage());
                 if (target != null)
                     SpellManager.CastE(target);
             }
@@ -307,13 +307,13 @@ namespace MagicianRyze
             }
             if (MenuManager.KillStealMenu["Wks"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.W, DamageType.Magical, false, SpellManager.QDamage());
+                var target = TargetManager.GetChampionTarget(SpellManager.W, DamageType.Magical, false, SpellManager.WDamage());
                 if (target != null)
                     SpellManager.CastW(target);
             }
             if (MenuManager.KillStealMenu["Eks"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.E, DamageType.Magical, false, SpellManager.QDamage());
+                var target = TargetManager.GetChampionTarget(SpellManager.E, DamageType.Magical, false, SpellManager.EDamage());
                 if (target != null)
                     SpellManager.CastE(target);
             }
