@@ -13,14 +13,14 @@ namespace ArsenalActivator
         {
         }
 
-        public static AIHeroClient GetChampionTarget(float range, DamageType damagetype, bool isAlly = false, float ksdamage = -1)
+        public static AIHeroClient GetChampionTarget(float range, DamageType damagetype, bool isAlly = false, float ksdamage = -1f)
         {
             var herotype = EntityManager.Heroes.AllHeroes;
             var targets = herotype.OrderBy(a => a.HealthPercent)
                 .Where(a => a.IsValidTarget(range) && ((isAlly && a.IsAlly) || (!isAlly && a.IsEnemy))
                             && !a.IsDead && !a.IsZombie
                             && TargetStatus(a)
-                            && (ksdamage > -1 && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, ksdamage))
+                            && ((ksdamage > -1f && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, ksdamage)) || ksdamage == -1)
                             && !Champion.IsRecalling()
                             && a.Distance(Champion) <= range);
             return TargetSelector.GetTarget(targets, damagetype);
@@ -44,7 +44,7 @@ namespace ArsenalActivator
                                      && ((isMonster && a.IsMonster) || (!isMonster && !a.IsMonster))
                                      && !a.IsDead && !a.IsZombie
                                      && TargetStatus(a)
-                                     && (ksdamage > -1 && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, ksdamage))
+                                     && ((ksdamage > -1 && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, ksdamage)) || ksdamage == -1)
                                      && !Champion.IsRecalling()
                                      && a.Distance(Champion) <= range);
             return target;
