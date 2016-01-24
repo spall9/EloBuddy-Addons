@@ -25,6 +25,7 @@ namespace BallistaKogMaw
             ComboMenu.Add("Wcombo", new CheckBox("Use W"));
             ComboMenu.Add("Ecombo", new CheckBox("Use E"));
             ComboMenu.Add("Rcombo", new CheckBox("Use R"));
+            ComboMenu.Add("Ultcombo", new Slider("Max R Stacks", 2, 1, 10));
 
             // Harass Menu
             HarassMenu = BallistaKogMawMenu.AddSubMenu("Harass Features", "HarassFeatures");
@@ -34,6 +35,7 @@ namespace BallistaKogMaw
             HarassMenu.Add("Wharass", new CheckBox("Use W", false));
             HarassMenu.Add("Eharass", new CheckBox("Use E", false));
             HarassMenu.Add("Rharass", new CheckBox("Use R", false));
+            HarassMenu.Add("Ultharass", new Slider("Max R Stacks", 1, 1, 10));
             HarassMenu.AddSeparator(1);
             HarassMenu.Add("Harassmana", new Slider("Mana Limiter at Mana %", 25));
 
@@ -45,6 +47,7 @@ namespace BallistaKogMaw
             JungleMenu.Add("Wjungle", new CheckBox("Use W"));
             JungleMenu.Add("Ejungle", new CheckBox("Use E", false));
             JungleMenu.Add("Rjungle", new CheckBox("Use R", false));
+            JungleMenu.Add("Ultjungle", new Slider("Max R Stacks", 1, 1, 10));
             JungleMenu.AddSeparator(1);
             JungleMenu.Add("Junglemana", new Slider("Mana Limiter at Mana %", 25));
 
@@ -56,6 +59,7 @@ namespace BallistaKogMaw
             LaneClearMenu.Add("Wlanec", new CheckBox("Use W", false));
             LaneClearMenu.Add("Elanec", new CheckBox("Use E", false));
             LaneClearMenu.Add("Rlanec", new CheckBox("Use R", false));
+            LaneClearMenu.Add("Ultlanec", new Slider("Max R Stacks", 1, 1, 10));
             LaneClearMenu.AddSeparator(1);
             LaneClearMenu.Add("Lanecmana", new Slider("Mana Limiter at Mana %", 25));
 
@@ -66,6 +70,7 @@ namespace BallistaKogMaw
             LastHitMenu.Add("Qlasthit", new CheckBox("Use Q"));
             LastHitMenu.Add("Wlasthit", new CheckBox("Use W"));
             LastHitMenu.Add("Rlasthit", new CheckBox("Use R", false));
+            LastHitMenu.Add("Ultlasthit", new Slider("Max R Stacks", 1, 1, 10));
             LastHitMenu.AddSeparator(1);
             LastHitMenu.Add("Lasthitmana", new Slider("Mana Limiter at Mana %", 25));
 

@@ -34,7 +34,8 @@ namespace BallistaKogMaw
                 if (target != null)
                     SpellManager.CastE(target);
             }
-            if (MenuManager.ComboMenu["Rcombo"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.ComboMenu["Rcombo"].Cast<CheckBox>().CurrentValue
+                && Champion.GetBuffCount("kogmawlivingartillerycost") <= MenuManager.ComboMenu["Ultcombo"].Cast<Slider>().CurrentValue)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.R, DamageType.Mixed);
                 if (target != null)
@@ -63,7 +64,8 @@ namespace BallistaKogMaw
                 if (target != null)
                     SpellManager.CastE(target);
             }
-            if (MenuManager.HarassMenu["Rharass"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.HarassMenu["Rharass"].Cast<CheckBox>().CurrentValue
+                && Champion.GetBuffCount("kogmawlivingartillerycost") <= MenuManager.HarassMenu["Ultharass"].Cast<Slider>().CurrentValue)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.R, DamageType.Mixed);
                 if (target != null)
@@ -92,7 +94,8 @@ namespace BallistaKogMaw
                 if (target != null)
                     SpellManager.CastE(target);
             }
-            if (MenuManager.JungleMenu["Rjungle"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.JungleMenu["Rjungle"].Cast<CheckBox>().CurrentValue
+                && Champion.GetBuffCount("kogmawlivingartillerycost") <= MenuManager.JungleMenu["Ultjungle"].Cast<Slider>().CurrentValue)
             {
                 var target = TargetManager.GetMinionTarget(SpellManager.R, DamageType.Mixed, false, true);
                 if (target != null)
@@ -121,7 +124,8 @@ namespace BallistaKogMaw
                 if (target != null)
                     SpellManager.CastE(target);
             }
-            if (MenuManager.LaneClearMenu["Rlanec"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.LaneClearMenu["Rlanec"].Cast<CheckBox>().CurrentValue
+                && Champion.GetBuffCount("kogmawlivingartillerycost") <= MenuManager.LaneClearMenu["Ultlanec"].Cast<Slider>().CurrentValue)
             {
                 var target = TargetManager.GetMinionTarget(SpellManager.R, DamageType.Mixed);
                 if (target != null)
@@ -144,7 +148,8 @@ namespace BallistaKogMaw
                 if (target != null)
                     SpellManager.CastW(target);
             }
-            if (MenuManager.LastHitMenu["Rlasthit"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.LastHitMenu["Rlasthit"].Cast<CheckBox>().CurrentValue
+                && Champion.GetBuffCount("kogmawlivingartillerycost") <= MenuManager.LastHitMenu["Ultlasthit"].Cast<Slider>().CurrentValue)
             {
                 var target = TargetManager.GetMinionTarget(SpellManager.R, DamageType.Mixed, false, false, SpellManager.RDamage());
                 if (target != null)
