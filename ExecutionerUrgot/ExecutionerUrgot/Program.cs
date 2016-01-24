@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Drawing;
-using System.Linq;
 using EloBuddy;
 using EloBuddy.SDK;
-using EloBuddy.SDK.Enumerations;
 using EloBuddy.SDK.Events;
-using EloBuddy.SDK.Menu;
 using EloBuddy.SDK.Menu.Values;
 
 namespace ExecutionerUrgot
@@ -13,286 +10,41 @@ namespace ExecutionerUrgot
     // Created by Counter
     internal class Program
     {
-        // Enum for Spells
-        public enum AttackSpell
-        {
-            Q,
-            Q2,
-            E
-        }
+        // Grab Player Attributes
+        public static AIHeroClient Champion { get { return Player.Instance; } }
+        public static int ChampionSkin;
 
-        // Menus
-        public static Menu ExecutionerUrgotMenu,
-            ComboMenu,
-            HarassMenu,
-            JungleMenu,
-            LaneClearMenu,
-            LastHitMenu,
-            KillStealMenu,
-            DrawingMenu,
-            SettingMenu;
-
-        // Player
-        public static AIHeroClient Champion = Player.Instance;
-
-        // Skills
-        public static Spell.Skillshot Q;
-        public static Spell.Targeted Q2;
-        public static Spell.Active W;
-        public static Spell.Skillshot E;
-        public static int Urgotskin;
-        public static InventorySlot[] Itemlist = Champion.InventoryItems;
-
-        public static Spell.Targeted R = new Spell.Targeted(SpellSlot.R,
-            (uint) (400 + 150*Champion.Spellbook.GetSpell(SpellSlot.R).Level));
-
-        // Get Entities
-        public static Obj_AI_Base GetAlly(float range, GameObjectType gametype)
-        {
-            switch (gametype)
-            {
-                case GameObjectType.AIHeroClient:
-                    return EntityManager.Heroes.Allies
-                        .OrderByDescending(a => a.Health)
-                        .FirstOrDefault(a => a.IsAlly
-                                             && a.IsValidTarget(range) && a.Distance(Champion) <= range
-                                             && !a.IsInvulnerable && !a.IsZombie
-                                             && !Champion.IsRecalling());
-                case GameObjectType.obj_AI_Minion:
-                    return EntityManager.MinionsAndMonsters.AlliedMinions
-                        .OrderByDescending(a => a.Health)
-                        .FirstOrDefault(a => a.IsAlly
-                                             && a.IsValidTarget(range) && a.Distance(Champion) <= range
-                                             && !Champion.IsRecalling());
-            }
-            return null;
-        }
-
-        public static Obj_AI_Base GetEnemy(float range, GameObjectType gametype, bool noBuff = true)
-        {
-            switch (gametype)
-            {
-                case GameObjectType.AIHeroClient:
-                    return EntityManager.Heroes.Enemies
-                        .OrderByDescending(a => a.Health)
-                        .FirstOrDefault(a => a.IsEnemy
-                                             && a.IsValidTarget(range) && a.Distance(Champion) <= range
-                                             && !a.IsInvulnerable && !a.IsZombie
-                                             && !a.HasBuff("BlackShield") && !a.HasBuff("SivirE") &&
-                                             !a.HasBuff("FioraW")
-                                             && !a.HasBuff("ChronoShift")
-                                             && (noBuff || a.HasBuff("UrgotPlasmaGernade"))
-                                             && !Champion.IsRecalling());
-                case GameObjectType.obj_AI_Minion:
-                    return EntityManager.MinionsAndMonsters.EnemyMinions
-                        .OrderByDescending(a => a.Health)
-                        .FirstOrDefault(a => a.IsEnemy
-                                             && a.IsValidTarget(range) && a.Distance(Champion) <= range
-                                             && !a.HasBuff("BannerOfCommand")
-                                             && (noBuff || a.HasBuff("UrgotPlasmaGernade"))
-                                             && !Champion.IsRecalling());
-            }
-            return null;
-        }
-
-        public static Obj_AI_Base GetEnemyKs(AttackSpell spell, GameObjectType gametype)
-        {
-            float range = 0;
-            switch (spell)
-            {
-                case AttackSpell.Q:
-                    range = Q.Range;
-                    break;
-                case AttackSpell.E:
-                    range = E.Range;
-                    break;
-            }
-
-            return ObjectManager
-                .Get<Obj_AI_Base>()
-                .OrderByDescending(a => a.Health)
-                .FirstOrDefault(a => a.IsEnemy && a.Type == gametype
-                                     && a.IsValidTarget(range) && a.Distance(Champion) <= range
-                                     && !a.IsInvulnerable && !a.IsZombie
-                                     && !a.HasBuff("BlackShield") && !a.HasBuff("SivirE") &&
-                                     !a.HasBuff("FioraW")
-                                     && !a.HasBuff("ChronoShift") && !Champion.IsRecalling()
-                                     &&
-                                     ((spell == AttackSpell.Q2 && a.Health <= Q2Damage(a) &&
-                                       a.HasBuff("UrgotPlasmaGernade")) ||
-                                      (spell == AttackSpell.Q && a.Health <= QDamage(a) &&
-                                       !a.HasBuff("UrgotPlasmaGernade")) ||
-                                      (spell == AttackSpell.E && a.Health <= EDamage(a))));
-        }
-
-        public static Obj_AI_Base GetAlliedObjective(float range, GameObjectType gametype)
-        {
-            switch (gametype)
-            {
-                case GameObjectType.obj_AI_Turret:
-                    return
-                        EntityManager.Turrets.Allies.OrderByDescending(a => a.Health)
-                            .FirstOrDefault(
-                                a =>
-                                    a.IsAlly && a.IsValidTarget(range) && a.Distance(Champion) <= range &&
-                                    !a.IsInvulnerable && !Champion.IsRecalling());
-            }
-            return null;
-        }
-
-        public static Obj_AI_Base GetEnemyObjective(float range, GameObjectType gametype)
-        {
-            switch (gametype)
-            {
-                case GameObjectType.obj_AI_Turret:
-                    return
-                        EntityManager.Turrets.Enemies.OrderByDescending(a => a.Health)
-                            .FirstOrDefault(
-                                a =>
-                                    a.IsEnemy && a.IsValidTarget(range) && a.Distance(Champion) <= range &&
-                                    !a.IsInvulnerable && !Champion.IsRecalling());
-            }
-            return null;
-        }
-
-        // Spell Calculators
-        private static float QDamage(Obj_AI_Base target)
-        {
-            return Champion.CalculateDamageOnUnit(target, DamageType.Physical,
-                new float[] {0, 10, 40, 70, 100, 130}[Q.Level] + 0.85f*Champion.FlatPhysicalDamageMod);
-        }
-
-        private static float Q2Damage(Obj_AI_Base target)
-        {
-            return QDamage(target);
-        }
-
-        private static float EDamage(Obj_AI_Base target)
-        {
-            return Champion.CalculateDamageOnUnit(target, DamageType.Physical,
-                new float[] {0, 75, 130, 185, 240, 295}[E.Level] + 0.6f*Champion.FlatPhysicalDamageMod);
-        }
-
-        private static void Main()
+        public static void Main()
         {
             Loading.OnLoadingComplete += Loading_OnLoadingComplete;
         }
 
         private static void Loading_OnLoadingComplete(EventArgs args)
         {
-            // Confirming Champion
+            // Validate Player.Instace is Addon Champion
             if (Champion.ChampionName != "Urgot") return;
-            Urgotskin = Champion.SkinId;
+            ChampionSkin = Champion.SkinId;
 
-            Q = new Spell.Skillshot(SpellSlot.Q, 1000, SkillShotType.Linear, 125, 1600, 60)
-            {
-                MinimumHitChance = HitChance.High,
-                AllowedCollisionCount = 0
-            };
-            Q2 = new Spell.Targeted(SpellSlot.Q, 1200);
-            W = new Spell.Active(SpellSlot.W);
-            E = new Spell.Skillshot(SpellSlot.E, 900, SkillShotType.Circular, 250, 1500, 210)
-            {
-                MinimumHitChance = HitChance.High,
-                AllowedCollisionCount = int.MaxValue
-            };
+            // Initialize classes
+            SpellManager.Initialize();
+            MenuManager.Initialize();
+            TargetManager.Initialize();
+            ModeManager.Initialize();
 
-            ExecutionerUrgotMenu = MainMenu.AddMenu("ExecutionerUrgot", "ExecutionerUrgot");
-            ExecutionerUrgotMenu.AddGroupLabel("Executioner Urgot");
-
-            ComboMenu = ExecutionerUrgotMenu.AddSubMenu("Combo Features", "ComboFeatures");
-            ComboMenu.AddGroupLabel("Combo Features");
-            ComboMenu.AddLabel("Combo Modes:");
-            ComboMenu.Add("ComboM", new CheckBox("ComboMode"));
-            ComboMenu.AddSeparator(1);
-            ComboMenu.AddLabel("Independent boxes for Spells:");
-            ComboMenu.Add("Qcombo", new CheckBox("Use Q"));
-            ComboMenu.Add("Wcombo", new CheckBox("Use W for slow"));
-            ComboMenu.Add("Ecombo", new CheckBox("Use E"));
-            ComboMenu.AddLabel("Urgot will cast R when Slider # equals # of Enemies.");
-            ComboMenu.Add("Rcombo", new Slider("Use R - 0 is off", 5, 0, 5));
-
-            HarassMenu = ExecutionerUrgotMenu.AddSubMenu("Harass Features", "HarassFeatures");
-            HarassMenu.AddGroupLabel("Harass Features");
-            HarassMenu.AddLabel("Independent boxes for Spells:");
-            HarassMenu.Add("Qharass", new CheckBox("Use Q"));
-            HarassMenu.Add("Eharass", new CheckBox("Use E"));
-            HarassMenu.AddSeparator(1);
-            HarassMenu.Add("Harassmana", new Slider("Mana Limiter at Mana %", 25));
-
-            JungleMenu = ExecutionerUrgotMenu.AddSubMenu("Jungle Features", "JungleFeatures");
-            JungleMenu.AddGroupLabel("Jungle Features");
-            JungleMenu.AddLabel("Independent boxes for Spells:");
-            JungleMenu.Add("Qjungle", new CheckBox("Use Q"));
-            JungleMenu.Add("Ejungle", new CheckBox("Use E"));
-            JungleMenu.AddSeparator(1);
-            JungleMenu.Add("Junglemana", new Slider("Mana Limiter at Mana %", 25));
-
-            LaneClearMenu = ExecutionerUrgotMenu.AddSubMenu("Lane Clear Features", "LaneClearFeatures");
-            LaneClearMenu.AddGroupLabel("Lane Clear Features");
-            LaneClearMenu.AddLabel("Independent boxes for Spells:");
-            LaneClearMenu.Add("Qlanec", new CheckBox("Use Q"));
-            LaneClearMenu.Add("Elanec", new CheckBox("Use E", false));
-            LaneClearMenu.AddSeparator(1);
-            LaneClearMenu.Add("Lanecmana", new Slider("Mana Limiter at Mana %", 25));
-
-            LastHitMenu = ExecutionerUrgotMenu.AddSubMenu("Last Hit Features", "LastHitFeatures");
-            LastHitMenu.AddGroupLabel("Last Hit Features");
-            LastHitMenu.AddLabel("Independent boxes for Spells:");
-            LastHitMenu.Add("Qlasthit", new CheckBox("Use Q"));
-            LastHitMenu.AddSeparator(1);
-            LastHitMenu.Add("Lasthitmana", new Slider("Mana Limiter at Mana %", 25));
-
-            KillStealMenu = ExecutionerUrgotMenu.AddSubMenu("KS Features", "KSFeatures");
-            KillStealMenu.AddGroupLabel("Kill Steal Features");
-            KillStealMenu.Add("KSmode", new CheckBox("KS Mode"));
-            KillStealMenu.AddSeparator(1);
-            KillStealMenu.AddLabel("Independent boxes for Spells:");
-            KillStealMenu.Add("Qks", new CheckBox("Use Q in KS"));
-            KillStealMenu.Add("Eks", new CheckBox("Use E in KS", false));
-
-            DrawingMenu = ExecutionerUrgotMenu.AddSubMenu("Drawing Features", "DrawingFeatures");
-            DrawingMenu.AddGroupLabel("Drawing Features");
-            DrawingMenu.Add("DrawM", new CheckBox("Draw Mode"));
-            DrawingMenu.AddSeparator(1);
-            DrawingMenu.AddLabel("Independent boxes for Spells:");
-            DrawingMenu.Add("Qdraw", new CheckBox("Draw Q"));
-            DrawingMenu.Add("Edraw", new CheckBox("Draw E"));
-            DrawingMenu.Add("Rdraw", new CheckBox("Draw R"));
-            DrawingMenu.AddSeparator(1);
-            DrawingMenu.AddLabel("Skin Designer");
-            DrawingMenu.Add("DrawS", new CheckBox("Draw Skin Design"));
-            DrawingMenu.Add("Skins", new Slider("Skin Designer: ", 2, 0, 3));
-
-            SettingMenu = ExecutionerUrgotMenu.AddSubMenu("Settings", "Settings");
-            SettingMenu.AddGroupLabel("Settings");
-            SettingMenu.AddLabel("Automatic Leveler");
-            SettingMenu.Add("Autolvl", new CheckBox("Auto Leveler"));
-            SettingMenu.AddSeparator(1);
-            SettingMenu.AddLabel("Auto R - While under ally turret/base, grab enemy");
-            SettingMenu.Add("Grabmode", new CheckBox("Auto R Mode"));
-            SettingMenu.AddLabel("Automatic Tear Stacker");
-            SettingMenu.Add("StackM", new CheckBox("Stack Mode"));
-            SettingMenu.AddSeparator(1);
-            SettingMenu.AddLabel("Interrupter");
-            SettingMenu.Add("Interruptmode", new CheckBox("Interrupt Mode"));
-            SettingMenu.Add("Rinterrupt", new CheckBox("Use R to interrupt"));
-            SettingMenu.AddLabel("Gap Closer");
-            SettingMenu.Add("Gapcmode", new CheckBox("Gap Closer Mode", false));
-            SettingMenu.Add("Rgapc", new CheckBox("Use R to gapclose"));
-
-            Interrupter.OnInterruptableSpell += InterruptMode;
-            Gapcloser.OnGapcloser += GapCloserMode;
-            Game.OnTick += Game_OnTick;
-            Game.OnUpdate += Game_OnUpdate;
+            // Listen to Events
             Drawing.OnDraw += Drawing_OnDraw;
+            Game.OnUpdate += Game_OnUpdate;
+            Game.OnTick += SpellManager.ConfigSpells;
+            Game.OnTick += Game_OnTick;
+            Interrupter.OnInterruptableSpell += ModeManager.InterruptMode;
+            Gapcloser.OnGapcloser += ModeManager.GapCloserMode;
         }
 
         private static void Game_OnUpdate(EventArgs args)
         {
-            Champion.SetSkinId(DrawingMenu["DrawS"].Cast<CheckBox>().CurrentValue
-                ? DrawingMenu["Skins"].Cast<Slider>().CurrentValue
-                : Urgotskin);
+            Champion.SetSkinId(MenuManager.DrawingMenu["DrawS"].Cast<CheckBox>().CurrentValue
+                ? MenuManager.DrawingMenu["Skins"].Cast<Slider>().CurrentValue
+                : ChampionSkin);
         }
 
         private static void Drawing_OnDraw(EventArgs args)
@@ -300,6 +52,7 @@ namespace ExecutionerUrgot
             Color color;
             Color color2;
 
+            // Setup Designer Coloration
             switch (Champion.SkinId)
             {
                 default:
@@ -324,266 +77,53 @@ namespace ExecutionerUrgot
                     break;
             }
 
-            if (!DrawingMenu["DrawM"].Cast<CheckBox>().CurrentValue) return;
-            if (DrawingMenu["Qdraw"].Cast<CheckBox>().CurrentValue && Q.IsLearned)
+            // Apply Designer Color into Circle
+            if (!MenuManager.DrawingMenu["DrawM"].Cast<CheckBox>().CurrentValue) return;
+            if (MenuManager.DrawingMenu["Qdraw"].Cast<CheckBox>().CurrentValue && SpellManager.Q.IsLearned)
             {
-                Drawing.DrawCircle(Champion.Position, Q.Range, color);
-                Drawing.DrawCircle(Champion.Position, Q2.Range, color2);
+                Drawing.DrawCircle(Champion.Position, SpellManager.Q.Range, color);
+                Drawing.DrawCircle(Champion.Position, SpellManager.Q2.Range, color2);
             }
-            if (DrawingMenu["Edraw"].Cast<CheckBox>().CurrentValue && E.IsLearned)
-                Drawing.DrawCircle(Champion.Position, E.Range, color);
-            if (DrawingMenu["Rdraw"].Cast<CheckBox>().CurrentValue && R.IsLearned)
-                Drawing.DrawCircle(Champion.Position, R.Range, color);
+            if (MenuManager.DrawingMenu["Edraw"].Cast<CheckBox>().CurrentValue && SpellManager.E.IsLearned)
+                Drawing.DrawCircle(Champion.Position, SpellManager.E.Range, color);
+            if (MenuManager.DrawingMenu["Rdraw"].Cast<CheckBox>().CurrentValue && SpellManager.R.IsLearned)
+                Drawing.DrawCircle(Champion.Position, SpellManager.R.Range, color);
         }
 
         private static void Game_OnTick(EventArgs args)
         {
+            // Initialize Leveler
+            if (MenuManager.SettingMenu["Autolvl"].Cast<CheckBox>().CurrentValue && Champion.SpellTrainingPoints >= 1)
+                LevelerManager.Initialize();
+            // No Responce While Dead
             if (Champion.IsDead) return;
-            if (SettingMenu["Autolvl"].Cast<CheckBox>().CurrentValue && Champion.SpellTrainingPoints >= 1)
-                LevelerMode();
 
+            // Mode Activation
             if (Orbwalker.IsAutoAttacking) return;
             switch (Orbwalker.ActiveModesFlags)
             {
                 case Orbwalker.ActiveModes.Combo:
-                    ComboMode();
+                    ModeManager.ComboMode();
                     break;
                 case Orbwalker.ActiveModes.Harass:
-                    HarassMode();
+                    ModeManager.HarassMode();
                     break;
                 case Orbwalker.ActiveModes.JungleClear:
-                    JungleMode();
+                    ModeManager.JungleMode();
                     break;
                 case Orbwalker.ActiveModes.LaneClear:
-                    LaneClearMode();
+                    ModeManager.LaneClearMode();
                     break;
                 case Orbwalker.ActiveModes.LastHit:
-                    LastHitMode();
+                    ModeManager.LastHitMode();
                     break;
             }
-            if (KillStealMenu["KSmode"].Cast<CheckBox>().CurrentValue)
-                KsMode();
-            if (SettingMenu["StackM"].Cast<CheckBox>().CurrentValue)
-                StackMode();
-            if (SettingMenu["Grabmode"].Cast<CheckBox>().CurrentValue)
-                GrabMode();
-        }
-
-        public static void LevelerMode()
-        {
-            int[] leveler = {1, 3, 1, 2, 1, 4, 1, 2, 1, 2, 4, 2, 2, 3, 3, 4, 3, 3};
-            var avapoints = Champion.SpellTrainingPoints;
-            while (avapoints >= 1)
-            {
-                var skill = leveler[Champion.Level - avapoints];
-
-                switch (skill)
-                {
-                    default:
-                        Champion.Spellbook.LevelSpell(SpellSlot.Unknown);
-                        break;
-                    case 1:
-                        Champion.Spellbook.LevelSpell(SpellSlot.Q);
-                        break;
-                    case 2:
-                        Champion.Spellbook.LevelSpell(SpellSlot.W);
-                        break;
-                    case 3:
-                        Champion.Spellbook.LevelSpell(SpellSlot.E);
-                        break;
-                    case 4:
-                        Champion.Spellbook.LevelSpell(SpellSlot.R);
-                        break;
-                }
-                avapoints--;
-            }
-        }
-
-        public static void ComboMode()
-        {
-            if (ComboMenu["Qcombo"].Cast<CheckBox>().CurrentValue && Q.IsReady())
-            {
-                var btarget = GetEnemy(Q2.Range, GameObjectType.AIHeroClient, false);
-                if (btarget != null)
-                    Q2.Cast(btarget);
-                else
-                {
-                    var target = GetEnemy(Q.Range, GameObjectType.AIHeroClient);
-                    if (target != null)
-                        Q.Cast(Q.GetPrediction(target).CastPosition);
-                }
-            }
-            if (ComboMenu["Wcombo"].Cast<CheckBox>().CurrentValue && W.IsReady())
-            {
-                var target = GetEnemy(Q2.Range, GameObjectType.AIHeroClient, false);
-                if (target != null && !target.IsFacing(Champion))
-                    W.Cast();
-            }
-            if (ComboMenu["Ecombo"].Cast<CheckBox>().CurrentValue && E.IsReady())
-            {
-                var target = GetEnemy(E.Range, GameObjectType.AIHeroClient);
-                if (target != null)
-                    E.Cast(E.GetPrediction(target).CastPosition);
-            }
-            if (ComboMenu["Rcombo"].Cast<Slider>().CurrentValue != 0 &&
-                Champion.CountEnemiesInRange(R.Range) == ComboMenu["Rcombo"].Cast<Slider>().CurrentValue && R.IsReady())
-            {
-                var target = GetEnemy(R.Range, GameObjectType.AIHeroClient);
-                if (target != null)
-                    R.Cast(target);
-            }
-        }
-
-        public static void HarassMode()
-        {
-            if (Champion.ManaPercent < LastHitMenu["Lasthitmana"].Cast<Slider>().CurrentValue) return;
-            if (HarassMenu["Qharass"].Cast<CheckBox>().CurrentValue && Q.IsReady())
-            {
-                var btarget = GetEnemy(Q2.Range, GameObjectType.AIHeroClient, false);
-                if (btarget != null)
-                    Q2.Cast(btarget);
-                else
-                {
-                    var target = GetEnemy(Q.Range, GameObjectType.AIHeroClient);
-                    if (target != null)
-                        Q.Cast(Q.GetPrediction(target).CastPosition);
-                }
-            }
-            if (HarassMenu["Eharass"].Cast<CheckBox>().CurrentValue && E.IsReady())
-            {
-                var target = GetEnemy(E.Range, GameObjectType.AIHeroClient);
-                if (target != null)
-                    E.Cast(E.GetPrediction(target).CastPosition);
-            }
-        }
-
-        public static void JungleMode()
-        {
-            if (Champion.ManaPercent < JungleMenu["Junglemana"].Cast<Slider>().CurrentValue) return;
-            if (JungleMenu["Qjungle"].Cast<CheckBox>().CurrentValue && Q.IsReady())
-            {
-                var btarget = GetEnemy(Q2.Range, GameObjectType.obj_AI_Minion, false);
-                if (btarget != null && btarget.IsMonster)
-                    Q2.Cast(btarget);
-                else
-                {
-                    var target = GetEnemy(Q.Range, GameObjectType.obj_AI_Minion);
-                    if (target != null && target.IsMonster)
-                        Q.Cast(Q.GetPrediction(target).CastPosition);
-                }
-            }
-            if (JungleMenu["Ejungle"].Cast<CheckBox>().CurrentValue && E.IsReady())
-            {
-                var target = GetEnemy(E.Range, GameObjectType.obj_AI_Minion);
-                if (target != null && target.IsMonster)
-                    E.Cast(E.GetPrediction(target).CastPosition);
-            }
-        }
-
-        public static void LaneClearMode()
-        {
-            if (Champion.ManaPercent < LaneClearMenu["Lanecmana"].Cast<Slider>().CurrentValue) return;
-            if (LaneClearMenu["Qlanec"].Cast<CheckBox>().CurrentValue && Q.IsReady())
-            {
-                var btarget = GetEnemy(Q2.Range, GameObjectType.obj_AI_Minion, false);
-                if (btarget != null && !btarget.IsMonster)
-                    Q2.Cast(btarget);
-                else
-                {
-                    var target = GetEnemy(Q.Range, GameObjectType.obj_AI_Minion);
-                    if (target != null && !target.IsMonster)
-                        Q.Cast(Q.GetPrediction(target).CastPosition);
-                }
-            }
-            if (LaneClearMenu["Elanec"].Cast<CheckBox>().CurrentValue && E.IsReady())
-            {
-                var target = GetEnemy(E.Range, GameObjectType.obj_AI_Minion);
-                if (target != null && !target.IsMonster)
-                    E.Cast(E.GetPrediction(target).CastPosition);
-            }
-        }
-
-        public static void LastHitMode()
-        {
-            if (Champion.ManaPercent < LastHitMenu["Lasthitmana"].Cast<Slider>().CurrentValue) return;
-            if (LastHitMenu["Qlasthit"].Cast<CheckBox>().CurrentValue && Q.IsReady())
-            {
-                var btarget = GetEnemyKs(AttackSpell.Q2, GameObjectType.obj_AI_Minion);
-                if (btarget != null && !btarget.IsMonster)
-                    Q2.Cast(btarget);
-                else
-                {
-                    var target = GetEnemyKs(AttackSpell.Q, GameObjectType.obj_AI_Minion);
-                    if (target != null && !target.IsMonster)
-                        Q.Cast(Q.GetPrediction(target).CastPosition);
-                }
-            }
-        }
-
-        public static void KsMode()
-        {
-            if (KillStealMenu["Qks"].Cast<CheckBox>().CurrentValue && Q.IsReady())
-            {
-                var btarget = GetEnemyKs(AttackSpell.Q2, GameObjectType.AIHeroClient);
-                if (btarget != null)
-                    Q2.Cast(btarget);
-                else
-                {
-                    var target = GetEnemyKs(AttackSpell.Q, GameObjectType.AIHeroClient);
-                    if (target != null)
-                        Q.Cast(Q.GetPrediction(target).CastPosition);
-                }
-            }
-            if (KillStealMenu["Eks"].Cast<CheckBox>().CurrentValue && E.IsReady())
-            {
-                var target = GetEnemyKs(AttackSpell.E, GameObjectType.AIHeroClient);
-                if (target != null)
-                    E.Cast(E.GetPrediction(target).CastPosition);
-            }
-        }
-
-        public static void GrabMode()
-        {
-            if (!R.IsReady()) return;
-            var target = GetEnemy(R.Range, GameObjectType.AIHeroClient);
-            var objective = GetAlliedObjective(R.Range, GameObjectType.obj_AI_Turret);
-
-            if (target != null & objective != null && Champion.IsInRange(objective, R.Range))
-                R.Cast(target);
-        }
-
-        public static void StackMode()
-        {
-            foreach (var item in Itemlist)
-            {
-                if ((item.Id == ItemId.Tear_of_the_Goddess || item.Id == ItemId.Tear_of_the_Goddess_Crystal_Scar ||
-                     item.Id == ItemId.Archangels_Staff || item.Id == ItemId.Archangels_Staff_Crystal_Scar ||
-                     item.Id == ItemId.Manamune || item.Id == ItemId.Manamune_Crystal_Scar) && item.Stacks < 750 &&
-                    Champion.IsInShopRange() && Q.IsReady())
-                    Q.Cast(Champion);
-            }
-        }
-
-        public static void InterruptMode(Obj_AI_Base sender, Interrupter.InterruptableSpellEventArgs args)
-        {
-            if (!SettingMenu["Interruptmode"].Cast<CheckBox>().CurrentValue) return;
-            if (sender != null && SettingMenu["Rinterrupt"].Cast<CheckBox>().CurrentValue && R.IsReady())
-            {
-                var target = GetEnemy(R.Range, GameObjectType.AIHeroClient);
-                if (target != null)
-                    R.Cast(target);
-            }
-        }
-
-        public static void GapCloserMode(Obj_AI_Base sender, Gapcloser.GapcloserEventArgs args)
-        {
-            if (!SettingMenu["Gapcmode"].Cast<CheckBox>().CurrentValue) return;
-            if (sender != null && SettingMenu["Rgapc"].Cast<CheckBox>().CurrentValue && R.IsReady())
-            {
-                var target = GetEnemy(R.Range, GameObjectType.AIHeroClient);
-                if (target != null)
-                    R.Cast(target);
-            }
+            if (MenuManager.KillStealMenu["KSmode"].Cast<CheckBox>().CurrentValue)
+                ModeManager.KsMode();
+            if (MenuManager.SettingMenu["StackM"].Cast<CheckBox>().CurrentValue)
+                ModeManager.StackMode();
+            if (MenuManager.SettingMenu["Grabmode"].Cast<CheckBox>().CurrentValue)
+                ModeManager.GrabMode();
         }
     }
 }
