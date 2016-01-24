@@ -204,19 +204,19 @@ namespace MagicianRyze
             if (Champion.ManaPercent < MenuManager.LastHitMenu["Lasthitmana"].Cast<Slider>().CurrentValue) return;
             if (MenuManager.LastHitMenu["Qlasthit"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.Q, DamageType.Magical, false, false, true, SpellManager.QDamage());
+                var target = TargetManager.GetMinionTarget(SpellManager.Q, DamageType.Magical, false, false, SpellManager.QDamage());
                 if (target != null)
                     SpellManager.CastQ(target);
             }
             if (MenuManager.LastHitMenu["Wlasthit"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.W, DamageType.Magical, false, false, true, SpellManager.WDamage());
+                var target = TargetManager.GetMinionTarget(SpellManager.W, DamageType.Magical, false, false, SpellManager.WDamage());
                 if (target != null)
                     SpellManager.CastW(target);
             }
             if (MenuManager.LastHitMenu["Elasthit"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.E, DamageType.Magical, false, false, true, SpellManager.EDamage());
+                var target = TargetManager.GetMinionTarget(SpellManager.E, DamageType.Magical, false, false, SpellManager.EDamage());
                 if (target != null)
                     SpellManager.CastE(target);
             }
