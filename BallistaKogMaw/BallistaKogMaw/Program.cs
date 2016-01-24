@@ -14,7 +14,7 @@ namespace BallistaKogMaw
         public static AIHeroClient Champion { get { return Player.Instance; } }
         public static int ChampionSkin;
 
-        // Get Entities
+        // Global Passive Target
         public static Obj_AI_Base Ptarget;
 
 
