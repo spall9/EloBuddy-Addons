@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Linq;
 using EloBuddy;
-using EloBuddy.SDK;
 using EloBuddy.SDK.Events;
-using EloBuddy.SDK.Menu;
 
 namespace ArsenalActivator
 {
@@ -19,100 +16,9 @@ namespace ArsenalActivator
         // B TTHA names: "HA_OrderMinionMelee", "HA_OrderMinionRanged", "HA_OrderMinionSiege", "HA_OrderMinionSuper"
         // R TTHA names: "HA_ChaosMinionMelee", "HA_ChaosMinionRanged", "HA_ChaosMinionSiege", "HA_ChaosMinionSuper"
 
-        // Menu
-        public static Menu ArsenalActivatorMenu;
+        // Grab Player Attributes
+        public static AIHeroClient Champion { get { return Player.Instance; } }
 
-        // Grab Player
-        public static AIHeroClient Champion
-        {
-            get { return Player.Instance; }
-        }
-
-        public static Obj_AI_Base GetAlly(float range, GameObjectType gametype)
-        {
-            switch (gametype)
-            {
-                case GameObjectType.AIHeroClient:
-                    return EntityManager.Heroes.Allies
-                        .OrderByDescending(a => a.Health)
-                        .FirstOrDefault(a => a.IsAlly
-                                             && a.IsValidTarget(range) && a.Distance(Champion) <= range
-                                             && !a.IsInvulnerable && !a.IsZombie
-                                             && !Champion.IsRecalling());
-                case GameObjectType.obj_AI_Minion:
-                    return EntityManager.MinionsAndMonsters.AlliedMinions
-                        .OrderByDescending(a => a.Health)
-                        .FirstOrDefault(a => a.IsAlly
-                                             && a.IsValidTarget(range) && a.Distance(Champion) <= range
-                                             && !Champion.IsRecalling());
-            }
-            return null;
-        }
-
-        public static Obj_AI_Base GetEnemy(float range, GameObjectType gametype)
-        {
-            switch (gametype)
-            {
-                case GameObjectType.AIHeroClient:
-                    return EntityManager.Heroes.Enemies
-                        .OrderByDescending(a => a.Health)
-                        .FirstOrDefault(a => a.IsEnemy
-                                             && a.IsValidTarget(range) && a.Distance(Champion) <= range
-                                             && !a.IsInvulnerable && !a.IsZombie
-                                             && !a.HasBuff("ChronoShift") && !Champion.IsRecalling());
-                case GameObjectType.obj_AI_Minion:
-                    return EntityManager.MinionsAndMonsters.EnemyMinions
-                        .OrderByDescending(a => a.Health)
-                        .FirstOrDefault(a => a.IsEnemy
-                                             && a.IsValidTarget(range) && a.Distance(Champion) <= range
-                                             && !a.HasBuff("BannerOfCommand")
-                                             && !Champion.IsRecalling());
-            }
-            return null;
-        }
-
-        public static Obj_AI_Base GetEnemyKs(float range, float damage, GameObjectType gametype)
-        {
-            return ObjectManager
-                        .Get<Obj_AI_Base>()
-                        .OrderByDescending(a => a.Health)
-                        .FirstOrDefault(a => a.IsEnemy && a.Type == gametype
-                                             && a.IsValidTarget(range) && a.Distance(Champion) <= range
-                                             && !a.IsInvulnerable && !a.IsZombie
-                                             && !a.HasBuff("ChronoShift") && !Champion.IsRecalling()
-                                             && a.Health <= damage);
-        }
-
-        public static Obj_AI_Base GetAlliedObjective(float range, GameObjectType gametype)
-        {
-            switch (gametype)
-            {
-                case GameObjectType.obj_AI_Turret:
-                    return
-                        EntityManager.Turrets.Allies.OrderByDescending(a => a.Health)
-                            .FirstOrDefault(
-                                a =>
-                                    a.IsAlly && a.IsValidTarget(range) && a.Distance(Champion) <= range &&
-                                    !a.IsInvulnerable && !Champion.IsRecalling());
-            }
-            return null;
-        }
-
-        public static Obj_AI_Base GetEnemyObjective(float range, GameObjectType gametype)
-        {
-            switch (gametype)
-            {
-                case GameObjectType.obj_AI_Turret:
-                    return
-                        EntityManager.Turrets.Enemies.OrderByDescending(a => a.Health)
-                            .FirstOrDefault(
-                                a =>
-                                    a.IsEnemy && a.IsValidTarget(range) && a.Distance(Champion) <= range &&
-                                    !a.IsInvulnerable && !Champion.IsRecalling());
-            }
-            return null;
-        }
-        
         public static void Main(string[] args)
         {
             Loading.OnLoadingComplete += Loading_OnLoadingComplete;
@@ -120,11 +26,8 @@ namespace ArsenalActivator
 
         public static void Loading_OnLoadingComplete(EventArgs args)
         {
-            ArsenalActivatorMenu = MainMenu.AddMenu("Arsenal Activator", "ArsenalActivator");
-            ArsenalActivatorMenu.AddGroupLabel("Arsenal Activator");
-            Items.MenuDraw();
-            SummonerSpells.LoadingSummonerSpells();
-            SummonerSpells.MenuDraw();
+            SummonerSpells.Initialize();
+            MenuManager.Initialize();
 
             // Activate
             Game.OnTick += Game_OnTick;

@@ -1,115 +1,67 @@
 ﻿using EloBuddy;
 using EloBuddy.SDK;
-using EloBuddy.SDK.Menu;
 using EloBuddy.SDK.Menu.Values;
 
 namespace ArsenalActivator
 {
     internal class Items
     {
-        // Menu
-        public static Menu OffensiveItemMenu, DefensiveItemMenu, ConsumableItemMenu, TrinketItemMenu;
-
-        // Grab Objects
+        // Clone Character Object
         public static AIHeroClient Champion = Program.Champion;
 
         // Grab Item[]
         public static InventorySlot[] Itemlist = Champion.InventoryItems;
 
-        // Sliders
+        // Slider Variables
         public static float Seraphs;
         public static float HealthPot;
         public static float Biscuit;
         public static float Flask;
         public static float FlaskJungle;
         public static float FlaskDark;
-        // Create
-        public static void MenuDraw()
+
+        public static void Initialize()
         {
-            OffensiveItemMenu = Program.ArsenalActivatorMenu.AddSubMenu("Offensive Items", "OffensiveItems");
-            OffensiveItemMenu.AddGroupLabel("Offensive Items");
-            OffensiveItemMenu.AddLabel("Damaging Weapons");
-            OffensiveItemMenu.Add("Botrkcall", new CheckBox("Use Blade of the Ruined King"));
-            OffensiveItemMenu.Add("Cutlasscall", new CheckBox("Use Bilgewater Cutlass"));
-            OffensiveItemMenu.AddLabel("Boosting Weapons");
-            OffensiveItemMenu.Add("Muracall", new CheckBox("Use Muramana"));
-            OffensiveItemMenu.Add("Youmuucall", new CheckBox("Use Youmouu's Ghostblade"));
-            //OffensiveItemMenu.AddLabel("Revealer Weapons");
-            //OffensiveItemMenu.Add("Lightbringercall", new CheckBox("Use The Lightbringer"));
-
-            DefensiveItemMenu = Program.ArsenalActivatorMenu.AddSubMenu("Defensive Items", "DefensiveItems");
-            DefensiveItemMenu.AddGroupLabel("Defensive Items");
-            DefensiveItemMenu.AddLabel("Assisting Boosts");
-            DefensiveItemMenu.Add("Bannercall", new CheckBox("Use Banner of Command"));
-            DefensiveItemMenu.AddLabel("Protective Shields");
-            DefensiveItemMenu.Add("Seraphscall", new Slider("Use Seraph's Embrace at Health % - 0 is off", 10));
-            //DefensiveItemMenu.AddLabel("Revealer Shields");
-            //DefensiveItemMenu.Add("Hextechcall", new CheckBox("Use Hextech Sweeper"));
-
-            ConsumableItemMenu = Program.ArsenalActivatorMenu.AddSubMenu("Consumable Items", "ConsumableItems");
-            ConsumableItemMenu.AddGroupLabel("Consumable Items");
-            ConsumableItemMenu.AddLabel("Consumable Potions");
-            ConsumableItemMenu.Add("Healthcall", new Slider("Use Health Potion at Health % - 0 is off", 25));
-            ConsumableItemMenu.Add("Biscuitcall",
-                new Slider("Use Total Biscuit of Rejuvenation at Health % - 0 is off", 25));
-            ConsumableItemMenu.Add("Flaskcall", new Slider("Use Regeneration Potion at Health % - 0 is off", 25));
-            ConsumableItemMenu.Add("JungleFlaskcall",
-                new Slider("Use Hunter's Potion at Health % - 0 is off", 25));
-            ConsumableItemMenu.Add("DarkFlaskcall",
-                new Slider("Use Corruption Potion at Health % - 0 is off", 25));
-            ConsumableItemMenu.AddSeparator(1);
-            ConsumableItemMenu.AddLabel("Consumable Elixirs");
-            ConsumableItemMenu.Add("Ironcall", new CheckBox("Use Elixir of Iron in Combo"));
-            ConsumableItemMenu.Add("Sorcerycall", new CheckBox("Use Elixir of Sorcery in Combo"));
-            ConsumableItemMenu.Add("Wrathcall", new CheckBox("Use Elixir of Wrath in Combo"));
-            //ConsumableItemMenu.AddSeparator(1);
-            //ConsumableItemMenu.AddLabel("Consumable Revealer");
-            //ConsumableItemMenu.Add("Oraclecall", new CheckBox("Use Oracle's Extract on Stealthed Enemies"));
-
-            TrinketItemMenu = Program.ArsenalActivatorMenu.AddSubMenu("Trinket Items", "TrinketItems");
-            TrinketItemMenu.AddGroupLabel("Trinket Items");
-            //TrinketItemMenu.AddLabel("Revealer Trinket");
-            //TrinketItemMenu.Add("HextechTTcall", new CheckBox("Use Hextech Sweeper Trinket"));
-            TrinketItemMenu.AddLabel("Trinket Food");
-            TrinketItemMenu.Add("Porosnaxcall", new CheckBox("Feed Poro-snax"));
         }
-
-        // Calculate
+        
         public static void CastItems()
         {
             CastSliders();
-            var turret = Program.GetAlliedObjective(2500, GameObjectType.obj_AI_Turret);
-            var target = Program.GetEnemy(2500, GameObjectType.AIHeroClient);
-            var allyminion = Program.GetAlly(2500, GameObjectType.obj_AI_Minion);
+
             foreach (var item in Itemlist)
             {
                 // Banner of Command
                 if (item.Id == ItemId.Banner_of_Command
-                    && DefensiveItemMenu["Bannercall"].Cast<CheckBox>().CurrentValue
-                    && allyminion != null && allyminion.IsAlly
-                    && BoCCheck(allyminion.BaseSkinName)
-                    && allyminion.Distance(Champion) <= 1200
-                    && allyminion.Health >= allyminion.MaxHealth*0.5f
+                    && MenuManager.DefensiveItemMenu["Bannercall"].Cast<CheckBox>().CurrentValue
                     && item.CanUseItem())
-                    item.Cast(allyminion);
+                {
+                    var minion = TargetManager.GetMinionTarget(1200, DamageType.Magical, true);
+                    if (minion != null && BoCCheck(minion.BaseSkinName)
+                        && minion.Health >= minion.MaxHealth * 0.5f)
+                    item.Cast(minion);
+                }
                 // Bilgewater Cutlass
                 if (item.Id == ItemId.Bilgewater_Cutlass
-                    && OffensiveItemMenu["Cutlasscall"].Cast<CheckBox>().CurrentValue
-                    && target != null
-                    && (target.Health <= Champion.CalculateDamageOnUnit(target, DamageType.Magical, 100)
-                        || (!target.IsFacing(Champion) && target.HealthPercent <= 50))
-                    && target.Distance(Champion) <= 550
+                    && MenuManager.OffensiveItemMenu["Cutlasscall"].Cast<CheckBox>().CurrentValue
                     && item.CanUseItem())
+                {
+                    var target = TargetManager.GetChampionTarget(550, DamageType.Magical);
+                    if (target != null 
+                        && (target.Health <= Champion.CalculateDamageOnUnit(target, DamageType.Magical, 100)
+                        || (!target.IsFacing(Champion) && target.HealthPercent <= 50)))
                     item.Cast(target);
+                }
                 // Blade of the Ruined King -- needs test
                 if (item.Id == ItemId.Blade_of_the_Ruined_King
-                    && OffensiveItemMenu["Botrkcall"].Cast<CheckBox>().CurrentValue
-                    && target != null
-                    && (target.Health <= Champion.CalculateDamageOnUnit(target, DamageType.Physical, BotrkCheck(target))
-                        || (!target.IsFacing(Champion) && target.HealthPercent <= 50))
-                    && target.Distance(Champion) <= 550
+                    && MenuManager.OffensiveItemMenu["Botrkcall"].Cast<CheckBox>().CurrentValue
                     && item.CanUseItem())
+                {
+                    var target = TargetManager.GetChampionTarget(550, DamageType.Physical);
+                    if (target != null 
+                        && (target.Health <= Champion.CalculateDamageOnUnit(target, DamageType.Physical, BotrkCheck(target))
+                        || (!target.IsFacing(Champion) && target.HealthPercent <= 50)))
                     item.Cast(target);
+                }
                 // Corruption Potion
                 if (item.Id == (ItemId) 2033
                     && Champion.HealthPercent <= FlaskDark
@@ -118,13 +70,13 @@ namespace ArsenalActivator
                     item.Cast();
                 // Diet Poro-Snax
                 if (item.Id == (ItemId) 2054
-                    && TrinketItemMenu["Porosnaxcall"].Cast<CheckBox>().CurrentValue
+                    && MenuManager.TrinketItemMenu["Porosnaxcall"].Cast<CheckBox>().CurrentValue
                     && item.CanUseItem())
                     item.Cast();
                 // Elixir of Iron
                 if (item.Id == ItemId.Elixir_of_Iron
                     && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo)
-                    && ConsumableItemMenu["Ironcall"].Cast<CheckBox>().CurrentValue
+                    && MenuManager.ConsumableItemMenu["Ironcall"].Cast<CheckBox>().CurrentValue
                     && !Champion.HasBuff("ElixirOfWrath") && !Champion.HasBuff("ElixirOfSorcery")
                     && Champion.CountAlliesInRange(Champion.GetAutoAttackRange()) >= 1
                     && item.CanUseItem())
@@ -132,16 +84,19 @@ namespace ArsenalActivator
                 // Elixir of Sorcery
                 if (item.Id == ItemId.Elixir_of_Sorcery
                     && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo)
-                    && ConsumableItemMenu["Sorcerycall"].Cast<CheckBox>().CurrentValue
+                    && MenuManager.ConsumableItemMenu["Sorcerycall"].Cast<CheckBox>().CurrentValue
                     && !Champion.HasBuff("ElixirOfIron") && !Champion.HasBuff("ElixirOfWrath")
-                    && (Champion.CountEnemiesInRange(Champion.GetAutoAttackRange()) >= 1
-                        || (turret != null && turret.IsEnemy))
+                    && Champion.CountEnemiesInRange(Champion.GetAutoAttackRange()) >= 1
                     && item.CanUseItem())
-                    item.Cast();
+                {
+                    var turret = TargetManager.GetTurretTarget(Champion.GetAutoAttackRange());
+                    if (turret != null)
+                        item.Cast();
+                }
                 // Elixir of Wrath
                 if (item.Id == ItemId.Elixir_of_Wrath
                     && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo)
-                    && ConsumableItemMenu["Wrathcall"].Cast<CheckBox>().CurrentValue
+                    && MenuManager.ConsumableItemMenu["Wrathcall"].Cast<CheckBox>().CurrentValue
                     && !Champion.HasBuff("ElixirOfIron") && !Champion.HasBuff("ElixirOfSorcery")
                     && Champion.CountEnemiesInRange(Champion.GetAutoAttackRange()) >= 1
                     && item.CanUseItem())
@@ -149,11 +104,14 @@ namespace ArsenalActivator
                 // Frost Queen's Claim -- needs test
                 if (item.Id == ItemId.Frost_Queens_Claim
                     && Champion.CountEnemiesInRange(5000) >= 2
-                    && target != null
-                    && target.Distance(Champion) <= 5000
-                    && ((!target.IsFacing(Champion) && target.HealthPercent <= 50)
-                    || (Champion.CountEnemiesInRange(5000) >= 4 && target.IsFacing(Champion)))
                     && item.CanUseItem())
+                {
+                    var target = TargetManager.GetChampionTarget(5000, DamageType.Magical);
+                    if (target != null && ((!target.IsFacing(Champion) && target.HealthPercent <= 50)
+                                           || (Champion.CountEnemiesInRange(5000) >= 4 && target.IsFacing(Champion))))
+                        item.Cast();
+
+                }
                     item.Cast();
                 // Health Potion
                 if (item.Id == ItemId.Health_Potion
@@ -192,7 +150,7 @@ namespace ArsenalActivator
                 // Muramana
                 if (item.Id == (ItemId) 3042
                     && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo)
-                    && OffensiveItemMenu["Muracall"].Cast<CheckBox>().CurrentValue
+                    && MenuManager.OffensiveItemMenu["Muracall"].Cast<CheckBox>().CurrentValue
                     && Champion.ManaPercent >= 3 && Champion.CountEnemiesInRange(Champion.GetAutoAttackRange()) > 0
                     && item.CanUseItem())
                     item.Cast();
@@ -205,7 +163,7 @@ namespace ArsenalActivator
                     item.Cast(player);*/
                 // Poro-Snax
                 if (item.Id == (ItemId) 2052
-                    && TrinketItemMenu["Porosnaxcall"].Cast<CheckBox>().CurrentValue
+                    && MenuManager.TrinketItemMenu["Porosnaxcall"].Cast<CheckBox>().CurrentValue
                     && item.CanUseItem())
                     item.Cast();
                 // Regeneration Potion
@@ -228,7 +186,7 @@ namespace ArsenalActivator
                 // Youmuu's Ghostblade
                 if (item.Id == ItemId.Youmuus_Ghostblade
                     && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo)
-                    && OffensiveItemMenu["Youmuucall"].Cast<CheckBox>().CurrentValue
+                    && MenuManager.OffensiveItemMenu["Youmuucall"].Cast<CheckBox>().CurrentValue
                     && Champion.CountEnemiesInRange(Champion.GetAutoAttackRange()) >= 1
                     && item.CanUseItem())
                     item.Cast();
@@ -237,12 +195,12 @@ namespace ArsenalActivator
 
         public static void CastSliders()
         {
-            Seraphs = DefensiveItemMenu["Seraphscall"].Cast<Slider>().CurrentValue;
-            HealthPot = ConsumableItemMenu["Healthcall"].Cast<Slider>().CurrentValue;
-            Biscuit = ConsumableItemMenu["Biscuitcall"].Cast<Slider>().CurrentValue;
-            Flask = ConsumableItemMenu["Flaskcall"].Cast<Slider>().CurrentValue;
-            FlaskJungle = ConsumableItemMenu["JungleFlaskcall"].Cast<Slider>().CurrentValue;
-            FlaskDark = ConsumableItemMenu["DarkFlaskcall"].Cast<Slider>().CurrentValue;
+            Seraphs = MenuManager.DefensiveItemMenu["Seraphscall"].Cast<Slider>().CurrentValue;
+            HealthPot = MenuManager.ConsumableItemMenu["Healthcall"].Cast<Slider>().CurrentValue;
+            Biscuit = MenuManager.ConsumableItemMenu["Biscuitcall"].Cast<Slider>().CurrentValue;
+            Flask = MenuManager.ConsumableItemMenu["Flaskcall"].Cast<Slider>().CurrentValue;
+            FlaskJungle = MenuManager.ConsumableItemMenu["JungleFlaskcall"].Cast<Slider>().CurrentValue;
+            FlaskDark = MenuManager.ConsumableItemMenu["DarkFlaskcall"].Cast<Slider>().CurrentValue;
         }
         public static bool BoCCheck(string sender)
         {
