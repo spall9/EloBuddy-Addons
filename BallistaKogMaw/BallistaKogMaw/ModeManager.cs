@@ -18,26 +18,26 @@ namespace BallistaKogMaw
         {
             if (MenuManager.ComboMenu["Qcombo"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.Q, DamageType.Magical);
+                var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Magical);
                 if (target != null)
                     SpellManager.CastQ(target);
             }
             if (MenuManager.ComboMenu["Wcombo"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.W, DamageType.Mixed);
+                var target = TargetManager.GetChampionTarget(SpellManager.W.Range, DamageType.Mixed);
                 if (target != null)
                     SpellManager.CastW(target);
             }
             if (MenuManager.ComboMenu["Ecombo"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.E, DamageType.Magical);
+                var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Magical);
                 if (target != null)
                     SpellManager.CastE(target);
             }
             if (MenuManager.ComboMenu["Rcombo"].Cast<CheckBox>().CurrentValue
                 && Champion.GetBuffCount("kogmawlivingartillerycost") <= MenuManager.ComboMenu["Ultcombo"].Cast<Slider>().CurrentValue)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.R, DamageType.Mixed);
+                var target = TargetManager.GetChampionTarget(SpellManager.R.Range, DamageType.Mixed);
                 if (target != null)
                     SpellManager.CastR(target);
             }
@@ -48,26 +48,26 @@ namespace BallistaKogMaw
             if (Program.Champion.ManaPercent < MenuManager.HarassMenu["Harassmana"].Cast<Slider>().CurrentValue) return;
             if (MenuManager.HarassMenu["Qharass"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.Q, DamageType.Magical);
+                var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Magical);
                 if (target != null)
                     SpellManager.CastQ(target);
             }
             if (MenuManager.HarassMenu["Wharass"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.W, DamageType.Mixed);
+                var target = TargetManager.GetChampionTarget(SpellManager.W.Range, DamageType.Mixed);
                 if (target != null)
                     SpellManager.CastW(target);
             }
             if (MenuManager.HarassMenu["Eharass"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.E, DamageType.Magical);
+                var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Magical);
                 if (target != null)
                     SpellManager.CastE(target);
             }
             if (MenuManager.HarassMenu["Rharass"].Cast<CheckBox>().CurrentValue
                 && Champion.GetBuffCount("kogmawlivingartillerycost") <= MenuManager.HarassMenu["Ultharass"].Cast<Slider>().CurrentValue)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.R, DamageType.Mixed);
+                var target = TargetManager.GetChampionTarget(SpellManager.R.Range, DamageType.Mixed);
                 if (target != null)
                     SpellManager.CastR(target);
             }
@@ -78,26 +78,26 @@ namespace BallistaKogMaw
             if (Program.Champion.ManaPercent < MenuManager.JungleMenu["Junglemana"].Cast<Slider>().CurrentValue) return;
             if (MenuManager.JungleMenu["Qjungle"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.Q, DamageType.Magical, false, true);
+                var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Magical, false, true);
                 if (target != null)
                     SpellManager.CastQ(target);
             }
             if (MenuManager.JungleMenu["Wjungle"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.W, DamageType.Magical, false, true);
+                var target = TargetManager.GetMinionTarget(SpellManager.W.Range, DamageType.Magical, false, true);
                 if (target != null)
                     SpellManager.CastW(target);
             }
             if (MenuManager.JungleMenu["Ejungle"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.E, DamageType.Magical, false, true);
+                var target = TargetManager.GetMinionTarget(SpellManager.E.Range, DamageType.Magical, false, true);
                 if (target != null)
                     SpellManager.CastE(target);
             }
             if (MenuManager.JungleMenu["Rjungle"].Cast<CheckBox>().CurrentValue
                 && Champion.GetBuffCount("kogmawlivingartillerycost") <= MenuManager.JungleMenu["Ultjungle"].Cast<Slider>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.R, DamageType.Mixed, false, true);
+                var target = TargetManager.GetMinionTarget(SpellManager.R.Range, DamageType.Mixed, false, true);
                 if (target != null)
                     SpellManager.CastR(target);
             }
@@ -108,26 +108,26 @@ namespace BallistaKogMaw
             if (Program.Champion.ManaPercent < MenuManager.LaneClearMenu["Lanecmana"].Cast<Slider>().CurrentValue) return;
             if (MenuManager.LaneClearMenu["Qlanec"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.Q, DamageType.Magical);
+                var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Magical);
                 if (target != null)
                     SpellManager.CastQ(target);
             }
             if (MenuManager.LaneClearMenu["Wlanec"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.W, DamageType.Magical);
+                var target = TargetManager.GetMinionTarget(SpellManager.W.Range, DamageType.Magical);
                 if (target != null)
                     SpellManager.CastW(target);
             }
             if (MenuManager.LaneClearMenu["Elanec"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.E, DamageType.Magical);
+                var target = TargetManager.GetMinionTarget(SpellManager.E.Range, DamageType.Magical);
                 if (target != null)
                     SpellManager.CastE(target);
             }
             if (MenuManager.LaneClearMenu["Rlanec"].Cast<CheckBox>().CurrentValue
                 && Champion.GetBuffCount("kogmawlivingartillerycost") <= MenuManager.LaneClearMenu["Ultlanec"].Cast<Slider>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.R, DamageType.Mixed);
+                var target = TargetManager.GetMinionTarget(SpellManager.R.Range, DamageType.Mixed);
                 if (target != null)
                     SpellManager.CastR(target);
             }
@@ -138,20 +138,20 @@ namespace BallistaKogMaw
             if (Program.Champion.ManaPercent < MenuManager.LastHitMenu["Lasthitmana"].Cast<Slider>().CurrentValue) return;
             if (MenuManager.LastHitMenu["Qlasthit"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.Q, DamageType.Magical, false, false, SpellManager.QDamage());
+                var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Magical, false, false, SpellManager.QDamage());
                 if (target != null)
                     SpellManager.CastQ(target);
             }
             if (MenuManager.LastHitMenu["Wlasthit"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.W, DamageType.Magical, false, false, SpellManager.WDamage());
+                var target = TargetManager.GetMinionTarget(SpellManager.W.Range, DamageType.Magical, false, false, SpellManager.WDamage());
                 if (target != null)
                     SpellManager.CastW(target);
             }
             if (MenuManager.LastHitMenu["Rlasthit"].Cast<CheckBox>().CurrentValue
                 && Champion.GetBuffCount("kogmawlivingartillerycost") <= MenuManager.LastHitMenu["Ultlasthit"].Cast<Slider>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.R, DamageType.Mixed, false, false, SpellManager.RDamage());
+                var target = TargetManager.GetMinionTarget(SpellManager.R.Range, DamageType.Mixed, false, false, SpellManager.RDamage());
                 if (target != null)
                     SpellManager.CastR(target);
             }
@@ -161,25 +161,25 @@ namespace BallistaKogMaw
         {
             if (MenuManager.KillStealMenu["Qks"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.Q, DamageType.Magical, false, SpellManager.QDamage());
+                var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Magical, false, SpellManager.QDamage());
                 if (target != null)
                     SpellManager.CastQ(target);
             }
             if (MenuManager.KillStealMenu["Wks"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.W, DamageType.Mixed, false, SpellManager.WDamage());
+                var target = TargetManager.GetChampionTarget(SpellManager.W.Range, DamageType.Mixed, false, SpellManager.WDamage());
                 if (target != null)
                     SpellManager.CastW(target);
             }
             if (MenuManager.KillStealMenu["Eks"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.E, DamageType.Magical, false, SpellManager.EDamage());
+                var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Magical, false, SpellManager.EDamage());
                 if (target != null)
                     SpellManager.CastE(target);
             }
             if (MenuManager.KillStealMenu["Rks"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.R, DamageType.Mixed, false, SpellManager.RDamage());
+                var target = TargetManager.GetChampionTarget(SpellManager.R.Range, DamageType.Mixed, false, SpellManager.RDamage());
                 if (target != null)
                     SpellManager.CastR(target);
             }
@@ -193,23 +193,23 @@ namespace BallistaKogMaw
             }
             else
             {
-                var kstarget = TargetManager.GetChampionTarget(SpellManager.P, DamageType.True, false, SpellManager.PDamage());
+                var kstarget = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.True, false, SpellManager.PDamage());
 
                 if (kstarget != null)
                     Program.Ptarget = kstarget;
                 else
                 {
-                    var ksminion = TargetManager.GetMinionTarget(SpellManager.P, DamageType.True, false, false, SpellManager.PDamage());
+                    var ksminion = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.True, false, false, SpellManager.PDamage());
                     if (ksminion != null)
                         Program.Ptarget = ksminion;
                     else
                     {
-                        var minion = TargetManager.GetMinionTarget(SpellManager.P, DamageType.True);
+                        var minion = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.True);
                         if (minion != null)
                             Program.Ptarget = minion;
                         else
                         {
-                            var target = TargetManager.GetChampionTarget(SpellManager.P, DamageType.True);
+                            var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.True);
                             if (target != null)
                                 Program.Ptarget = target;
                         }
@@ -235,7 +235,7 @@ namespace BallistaKogMaw
             if (MenuManager.SettingMenu["Gapcmode"].Cast<CheckBox>().CurrentValue) return;
             if (sender != null && MenuManager.SettingMenu["Egapc"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.E, DamageType.Magical);
+                var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Magical);
                 if (target != null)
                     SpellManager.CastE(target);
             }

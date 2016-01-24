@@ -55,7 +55,7 @@ namespace ArsenalActivator
             var turrettype = EntityManager.Turrets.AllTurrets;
             var target = turrettype.OrderByDescending(a => a.HealthPercent)
                 .FirstOrDefault(a => a.IsValidTarget(range) && ((isAlly && a.IsAlly) || (!isAlly && a.IsEnemy))
-                                     && !a.IsDead && !isAlly
+                                     && !a.IsDead
                                      && !Champion.IsRecalling()
                                      && a.Distance(Champion) <= range);
             return target;

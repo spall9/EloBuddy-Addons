@@ -13,61 +13,61 @@ namespace BallistaKogMaw
         {
         }
 
-        public static AIHeroClient GetChampionTarget(Spell.SpellBase spell, DamageType damagetype, bool isAlly = false, float ksdamage = -1f)
+        public static AIHeroClient GetChampionTarget(float range, DamageType damagetype, bool isAlly = false, float ksdamage = -1f)
         {
             var herotype = EntityManager.Heroes.AllHeroes;
             var targets = herotype.OrderBy(a => a.HealthPercent)
-                .Where(a => a.IsValidTarget(spell.Range) && ((isAlly && a.IsAlly) || (!isAlly && a.IsEnemy))
+                .Where(a => a.IsValidTarget(range) && ((isAlly && a.IsAlly) || (!isAlly && a.IsEnemy))
                             && !a.IsDead && !a.IsZombie
                             && TargetStatus(a)
-                            && ((spell.Slot == SpellSlot.W
+                            && ((range == SpellManager.W.Range
                             && ksdamage > -1f && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, SpellManager.WBonus(a))) || ksdamage == -1)
-                            && ((spell.Slot == SpellSlot.R
+                            && ((range == SpellManager.R.Range
                             && ksdamage > -1f && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, SpellManager.RDamage() * SpellManager.RMultiplier(a))) || ksdamage == -1)
-                            && ((spell.Slot != SpellSlot.W && spell.Slot != SpellSlot.R
+                            && ((range != SpellManager.W.Range && range != SpellManager.R.Range
                             && ksdamage > -1f && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, ksdamage)) || ksdamage == -1)
                             && !Champion.IsRecalling()
-                            && a.Distance(Champion) <= spell.Range);
+                            && a.Distance(Champion) <= range);
             return TargetSelector.GetTarget(targets, damagetype);
         }
 
-        public static Obj_AI_Minion GetMinionTarget(Spell.SpellBase spell, DamageType damagetype, bool isAlly = false, bool isMonster = false, float ksdamage = -1)
+        public static Obj_AI_Minion GetMinionTarget(float range, DamageType damagetype, bool isAlly = false, bool isMonster = false, float ksdamage = -1)
         {
             var teamtype = EntityManager.UnitTeam.Enemy;
             if (isAlly)
                 teamtype = EntityManager.UnitTeam.Ally;
-            var miniontype = EntityManager.MinionsAndMonsters.GetLaneMinions(teamtype, Champion.ServerPosition, spell.Range).ToArray();
+            var miniontype = EntityManager.MinionsAndMonsters.GetLaneMinions(teamtype, Champion.ServerPosition, range).ToArray();
             if (isMonster)
-                miniontype = EntityManager.MinionsAndMonsters.GetJungleMonsters(Champion.ServerPosition, spell.Range).ToArray();
+                miniontype = EntityManager.MinionsAndMonsters.GetJungleMonsters(Champion.ServerPosition, range).ToArray();
 
             // Check list objects
             if (miniontype.Length == 0) return null;
 
             var target = miniontype
                 .OrderBy(a => a.HealthPercent)
-                .FirstOrDefault(a => a.IsValidTarget(spell.Range) && ((isAlly && a.IsAlly) || (!isAlly && a.IsEnemy))
+                .FirstOrDefault(a => a.IsValidTarget(range) && ((isAlly && a.IsAlly) || (!isAlly && a.IsEnemy))
                                      && ((isMonster && a.IsMonster) || (!isMonster && !a.IsMonster))
                                      && !a.IsDead && !a.IsZombie
                                      && TargetStatus(a)
-                                     && ((spell.Slot == SpellSlot.W
+                                     && ((range == SpellManager.W.Range
                                      && ksdamage > -1f && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, SpellManager.WBonus(a))) || ksdamage == -1)
-                                     && ((spell.Slot == SpellSlot.R
+                                     && ((range == SpellManager.R.Range
                                      && ksdamage > -1f && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, SpellManager.RDamage() * SpellManager.RMultiplier(a))) || ksdamage == -1)
-                                     && ((spell.Slot != SpellSlot.W && spell.Slot != SpellSlot.R
+                                     && ((range != SpellManager.W.Range && range != SpellManager.R.Range
                                      && ksdamage > -1f && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, ksdamage)) || ksdamage == -1)
                                      && !Champion.IsRecalling()
-                                     && a.Distance(Champion) <= spell.Range);
+                                     && a.Distance(Champion) <= range);
             return target;
         }
 
-        public static Obj_AI_Turret GetTurretTarget(Spell.SpellBase spell, bool isAlly = false)
+        public static Obj_AI_Turret GetTurretTarget(float range, bool isAlly = false)
         {
             var turrettype = EntityManager.Turrets.AllTurrets;
             var target = turrettype.OrderByDescending(a => a.HealthPercent)
-                .FirstOrDefault(a => a.IsValidTarget(spell.Range) && ((isAlly && a.IsAlly) || (!isAlly && a.IsEnemy))
-                                     && !a.IsDead && !isAlly
+                .FirstOrDefault(a => a.IsValidTarget(range) && ((isAlly && a.IsAlly) || (!isAlly && a.IsEnemy))
+                                     && !a.IsDead
                                      && !Champion.IsRecalling()
-                                     && a.Distance(Champion) <= spell.Range);
+                                     && a.Distance(Champion) <= range);
             return target;
         }
 
