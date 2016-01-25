@@ -53,8 +53,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LevelerManager.cs" />
+    <Compile Include="MenuManager.cs" />
+    <Compile Include="ModeManager.cs" />
     <Compile Include="QSplit.cs" />
-    <Compile Include="VelKoz.cs" />
+    <Compile Include="SpellManager.cs" />
+    <Compile Include="TargetManager.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

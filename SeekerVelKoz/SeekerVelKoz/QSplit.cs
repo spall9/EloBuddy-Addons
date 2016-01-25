@@ -50,7 +50,7 @@ namespace SeekerVelKoz
         private static void OnTick(EventArgs args)
         {
             // Check if the missile is active
-            if (Handle != null && VelKoz.Q.IsReady() && VelKoz.Q.Name == "velkozqsplitactivate")
+            if (Handle != null && SpellManager.Q.IsReady() && SpellManager.Q.Name == "velkozqsplitactivate")
             {
                 foreach (var perpendicular in Perpendiculars)
                 {
@@ -76,7 +76,7 @@ namespace SeekerVelKoz
 
                         if (colliding != null)
                         {
-                            VelKoz.Q.Cast(colliding);
+                            Player.CastSpell(SpellSlot.Q);
                             Handle = null;
                         }
                     }
