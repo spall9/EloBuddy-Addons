@@ -130,7 +130,6 @@ namespace ExecutionerUrgot
                 var turret = TargetManager.GetTurretTarget(Champion.GetAutoAttackRange(target), true);
                 if (turret != null)
                 {
-                    Chat.Print("Found turret");
                     SpellManager.CastR(target);
                 }
             }
