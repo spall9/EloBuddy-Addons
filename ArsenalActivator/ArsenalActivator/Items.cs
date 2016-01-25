@@ -110,7 +110,6 @@ namespace ArsenalActivator
                     if (target != null && ((!target.IsFacing(Champion) && target.HealthPercent <= 50)
                                            || (Champion.CountEnemiesInRange(5000) >= 4 && target.IsFacing(Champion))))
                         item.Cast();
-
                 }
                     item.Cast();
                 // Health Potion

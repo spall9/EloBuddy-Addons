@@ -287,11 +287,7 @@ namespace ArsenalActivator
                 {
                     case SmiteName.Default:
                         Smitedamage =
-                            new float[]
-                            {
-                                0, 390, 410, 430, 450, 480, 510, 540, 570, 600, 640, 680, 720, 760, 800, 850, 900, 950,
-                                1000
-                            }[Champion.Level];
+                            new float[] { 0, 390, 410, 430, 450, 480, 510, 540, 570, 600, 640, 680, 720, 760, 800, 850, 900, 950,  1000 }[Champion.Level];
                         break;
                     case SmiteName.Challenging:
                         Smitedamage = 54 + 6*Champion.Level;
@@ -330,31 +326,23 @@ namespace ArsenalActivator
                     Clarity.Cast();
             }
             // CLEANSE
-            if (Cleanse != null && !Cleanse.IsOnCooldown &&
+            if (Cleanse != null && !Cleanse.IsOnCooldown 
+                &&
                 ((Champion.HasBuffOfType(BuffType.Blind) && MenuManager.SummonerSpellMenu["Cblind"].Cast<CheckBox>().CurrentValue)
-                 ||
-                 (Champion.HasBuffOfType(BuffType.Charm) && MenuManager.SummonerSpellMenu["Ccharm"].Cast<CheckBox>().CurrentValue)
+                 || (Champion.HasBuffOfType(BuffType.Charm) && MenuManager.SummonerSpellMenu["Ccharm"].Cast<CheckBox>().CurrentValue)
                  || (Champion.HasBuffOfType(BuffType.Fear) && MenuManager.SummonerSpellMenu["Cfear"].Cast<CheckBox>().CurrentValue)
                  || (Champion.HasBuffOfType(BuffType.Flee) && MenuManager.SummonerSpellMenu["Cflee"].Cast<CheckBox>().CurrentValue)
-                 ||
-                 (Champion.HasBuffOfType(BuffType.Polymorph) &&
-                  MenuManager.SummonerSpellMenu["Cpolymorph"].Cast<CheckBox>().CurrentValue)
-                 ||
-                 (Champion.HasBuffOfType(BuffType.Silence) &&
-                  MenuManager.SummonerSpellMenu["Csilence"].Cast<CheckBox>().CurrentValue)
-                 ||
-                 (Champion.HasBuffOfType(BuffType.Sleep) && MenuManager.SummonerSpellMenu["Csleep"].Cast<CheckBox>().CurrentValue)
+                 || (Champion.HasBuffOfType(BuffType.Polymorph) && MenuManager.SummonerSpellMenu["Cpolymorph"].Cast<CheckBox>().CurrentValue)
+                 || (Champion.HasBuffOfType(BuffType.Silence) && MenuManager.SummonerSpellMenu["Csilence"].Cast<CheckBox>().CurrentValue)
+                 || (Champion.HasBuffOfType(BuffType.Sleep) && MenuManager.SummonerSpellMenu["Csleep"].Cast<CheckBox>().CurrentValue)
                  || (Champion.HasBuffOfType(BuffType.Slow) && MenuManager.SummonerSpellMenu["Cslow"].Cast<CheckBox>().CurrentValue)
-                 ||
-                 (Champion.HasBuffOfType(BuffType.Snare) && MenuManager.SummonerSpellMenu["Csnare"].Cast<CheckBox>().CurrentValue)
+                 || (Champion.HasBuffOfType(BuffType.Snare) && MenuManager.SummonerSpellMenu["Csnare"].Cast<CheckBox>().CurrentValue)
                  || (Champion.HasBuffOfType(BuffType.Stun) && MenuManager.SummonerSpellMenu["Cstun"].Cast<CheckBox>().CurrentValue)
-                 ||
-                 (Champion.HasBuffOfType(BuffType.Taunt) && MenuManager.SummonerSpellMenu["Ctaunt"].Cast<CheckBox>().CurrentValue)
-                 ||
-                 (Champion.HasBuff("summonerexhaust") && MenuManager.SummonerSpellMenu["Cexhaust"].Cast<CheckBox>().CurrentValue)
-                 ||
-                 (Champion.HasBuff("summonerdot") && Champion.Health <= 50 + 20*Champion.Level &&
-                  MenuManager.SummonerSpellMenu["Cignite"].Cast<CheckBox>().CurrentValue))) Cleanse.Cast();
+                 || (Champion.HasBuffOfType(BuffType.Taunt) && MenuManager.SummonerSpellMenu["Ctaunt"].Cast<CheckBox>().CurrentValue)
+                 | (Champion.HasBuff("summonerexhaust") && MenuManager.SummonerSpellMenu["Cexhaust"].Cast<CheckBox>().CurrentValue)
+                 || (Champion.HasBuff("summonerdot") && Champion.Health <= 50 + 20*Champion.Level &&
+                  MenuManager.SummonerSpellMenu["Cignite"].Cast<CheckBox>().CurrentValue)))
+                Cleanse.Cast();
             // EXHAUST
             if (Exhaust != null && !Exhaust.IsOnCooldown)
             {
