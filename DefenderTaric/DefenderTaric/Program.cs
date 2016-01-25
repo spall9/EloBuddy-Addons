@@ -87,7 +87,8 @@ namespace DefenderTaric
             // No Responce While Dead
             if (Champion.IsDead) return;
 
-            if (MenuManager.DefenderTaricMenu["Easter Egg"].Cast<CheckBox>().CurrentValue && Champion.HasBuff("recall"))
+            if (MenuManager.DefenderTaricMenu["Easter Egg"].Cast<CheckBox>().CurrentValue
+                && Champion.HasBuff("recall") && !Champion.IsInShopRange())
                 Player.DoEmote(Emote.Joke);
 
             // Mode Activation
