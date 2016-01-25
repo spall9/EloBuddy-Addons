@@ -20,10 +20,7 @@ namespace ProtectorLeona
                 .Where(a => a.IsValidTarget(range) && ((isAlly && a.IsAlly) || (!isAlly && a.IsEnemy))
                             && !a.IsDead && !a.IsZombie
                             && TargetStatus(a)
-                            && ((range == SpellManager.Q.Range
-                            && ksdamage > -1f && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, SpellManager.QBonus(a))) || ksdamage == -1)
-                            && ((range != SpellManager.Q.Range
-                            && ksdamage > -1f && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, ksdamage)) || ksdamage == -1)
+                            && ((ksdamage > -1f && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, ksdamage)) || ksdamage == -1)
                             && !Champion.IsRecalling()
                             && a.Distance(Champion) <= range);
             return TargetSelector.GetTarget(targets, damagetype);
@@ -31,6 +28,7 @@ namespace ProtectorLeona
 
         public static Obj_AI_Minion GetMinionTarget(float range, DamageType damagetype, bool isAlly = false, bool isMonster = false, float ksdamage = -1)
         {
+
             var teamtype = EntityManager.UnitTeam.Enemy;
             if (isAlly)
                 teamtype = EntityManager.UnitTeam.Ally;
@@ -47,10 +45,7 @@ namespace ProtectorLeona
                                      && ((isMonster && a.IsMonster) || (!isMonster && !a.IsMonster))
                                      && !a.IsDead && !a.IsZombie
                                      && TargetStatus(a)
-                                     && ((range == SpellManager.Q.Range
-                                     && ksdamage > -1f && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, SpellManager.QBonus(a))) || ksdamage == -1)
-                                     && ((range != SpellManager.Q.Range
-                                     && ksdamage > -1f && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, ksdamage)) || ksdamage == -1)
+                                     && ((ksdamage > -1 && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, ksdamage)) || ksdamage == -1)
                                      && !Champion.IsRecalling()
                                      && a.Distance(Champion) <= range);
             return target;
@@ -59,7 +54,8 @@ namespace ProtectorLeona
         public static Obj_AI_Turret GetTurretTarget(float range, bool isAlly = false)
         {
             var turrettype = EntityManager.Turrets.AllTurrets;
-            var target = turrettype.OrderByDescending(a => a.HealthPercent)
+            var target = turrettype
+                .OrderBy(a => a.HealthPercent)
                 .FirstOrDefault(a => a.IsValidTarget(range) && ((isAlly && a.IsAlly) || (!isAlly && a.IsEnemy))
                                      && !a.IsDead
                                      && !Champion.IsRecalling()
