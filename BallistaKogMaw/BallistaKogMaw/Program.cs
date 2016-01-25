@@ -17,7 +17,6 @@ namespace BallistaKogMaw
         // Global Passive Target
         public static Obj_AI_Base Ptarget;
 
-
         public static void Main()
         {
             Loading.OnLoadingComplete += Loading_OnLoadingComplete;

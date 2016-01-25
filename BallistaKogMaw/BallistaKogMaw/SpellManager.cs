@@ -7,14 +7,6 @@ namespace BallistaKogMaw
 {
     internal class SpellManager
     {
-        public enum AttackSpell
-        {
-            Q,
-            W,
-            E,
-            R,
-            P
-        }
         public static Spell.Active P { get; set; }
         public static Spell.Skillshot Q { get; set; }
         public static Spell.Active W { get; set; }
