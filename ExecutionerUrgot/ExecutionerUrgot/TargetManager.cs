@@ -20,7 +20,8 @@ namespace ExecutionerUrgot
                 range = SpellManager.Q2.Range;
             }
             var herotype = EntityManager.Heroes.AllHeroes;
-            var targets = herotype.OrderBy(a => a.HealthPercent)
+            var targets = herotype
+                .OrderByDescending(a => a.HealthPercent).ThenBy(a => a.HasBuff("UrgotPlasmaGernade"))
                 .Where(a => a.IsValidTarget(range) && ((isAlly && a.IsAlly) || (!isAlly && a.IsEnemy))
                             && !a.IsDead && !a.IsZombie
                             && TargetStatus(a)
@@ -32,11 +33,6 @@ namespace ExecutionerUrgot
 
         public static Obj_AI_Minion GetMinionTarget(float range, DamageType damagetype, bool isAlly = false, bool isMonster = false, float ksdamage = -1)
         {
-            if (Champion.HasBuff("UrgotPlasmaGernade"))
-            {
-                range = SpellManager.Q2.Range;
-            }
-
             var teamtype = EntityManager.UnitTeam.Enemy;
             if (isAlly)
                 teamtype = EntityManager.UnitTeam.Ally;
@@ -48,7 +44,7 @@ namespace ExecutionerUrgot
             if (miniontype.Length == 0) return null;
 
             var target = miniontype
-                .OrderBy(a => a.HealthPercent)
+                .OrderByDescending(a => a.HealthPercent).ThenBy(a => a.HasBuff("UrgotPlasmaGernade"))
                 .FirstOrDefault(a => a.IsValidTarget(range) && ((isAlly && a.IsAlly) || (!isAlly && a.IsEnemy))
                                      && ((isMonster && a.IsMonster) || (!isMonster && !a.IsMonster))
                                      && !a.IsDead && !a.IsZombie
@@ -63,7 +59,7 @@ namespace ExecutionerUrgot
         {
             var turrettype = EntityManager.Turrets.AllTurrets;
             var target = turrettype
-                .OrderBy(a => a.HealthPercent)
+                .OrderByDescending(a => a.HealthPercent)
                 .FirstOrDefault(a => a.IsValidTarget(range) && ((isAlly && a.IsAlly) || (!isAlly && a.IsEnemy))
                                      && !a.IsDead
                                      && !Champion.IsRecalling()

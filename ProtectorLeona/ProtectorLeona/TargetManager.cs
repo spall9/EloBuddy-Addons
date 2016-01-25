@@ -16,7 +16,8 @@ namespace ProtectorLeona
         public static AIHeroClient GetChampionTarget(float range, DamageType damagetype, bool isAlly = false, float ksdamage = -1f)
         {
             var herotype = EntityManager.Heroes.AllHeroes;
-            var targets = herotype.OrderBy(a => a.HealthPercent)
+            var targets = herotype
+                .OrderByDescending(a => a.HealthPercent)
                 .Where(a => a.IsValidTarget(range) && ((isAlly && a.IsAlly) || (!isAlly && a.IsEnemy))
                             && !a.IsDead && !a.IsZombie
                             && TargetStatus(a)
@@ -40,7 +41,7 @@ namespace ProtectorLeona
             if (miniontype.Length == 0) return null;
 
             var target = miniontype
-                .OrderBy(a => a.HealthPercent)
+                .OrderByDescending(a => a.HealthPercent)
                 .FirstOrDefault(a => a.IsValidTarget(range) && ((isAlly && a.IsAlly) || (!isAlly && a.IsEnemy))
                                      && ((isMonster && a.IsMonster) || (!isMonster && !a.IsMonster))
                                      && !a.IsDead && !a.IsZombie
@@ -55,7 +56,7 @@ namespace ProtectorLeona
         {
             var turrettype = EntityManager.Turrets.AllTurrets;
             var target = turrettype
-                .OrderBy(a => a.HealthPercent)
+                .OrderByDescending(a => a.HealthPercent)
                 .FirstOrDefault(a => a.IsValidTarget(range) && ((isAlly && a.IsAlly) || (!isAlly && a.IsEnemy))
                                      && !a.IsDead
                                      && !Champion.IsRecalling()

@@ -58,10 +58,12 @@ namespace ExecutionerUrgot
             {
                 if (Q2.IsReady())
                     Q2.Cast(target);
-                return;
             }
-            if (Q.IsReady())
-                Q.Cast(target);
+            else
+            {
+                if (Q.IsReady())
+                    Q.Cast(target);
+            }
         }
 
         public static void CastW(Obj_AI_Base target)
