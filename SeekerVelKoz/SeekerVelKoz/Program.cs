@@ -21,7 +21,7 @@ namespace SeekerVelKoz
         public static void Loading_OnLoadingComplete(EventArgs args)
         {
             // Validate Player.Instace is Addon Champion
-            if (Champion.ChampionName != "KogMaw") return;
+            if (Champion.ChampionName != "Velkoz") return;
             ChampionSkin = Champion.SkinId;
 
             // Initialize classes
