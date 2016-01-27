@@ -10,6 +10,10 @@ namespace AlchemistSinged
         // Clone Character Object
         public static AIHeroClient Champion = Program.Champion;
 
+        public static void Initialize()
+        {
+        }
+
         public static void ComboMode()
         {
             if (MenuManager.ComboMenu["Qcombo"].Cast<CheckBox>().CurrentValue
@@ -27,8 +31,8 @@ namespace AlchemistSinged
                     if (MenuManager.ComboMenu["Wcombo"].Cast<CheckBox>().CurrentValue)
                     {
                         var pos = Prediction.Position.PredictUnitPosition(target, SpellManager.W.CastDelay/2)
-                                .Extend(Champion, SpellManager.E.Range + Champion.Distance(target.Position)).To3D();
-                        if (SpellManager.W.IsReady() && SpellManager.E.IsReady())
+                                .Extend(Champion, 515 + Champion.Distance(target.Position)).To3D();
+                        if (SpellManager.W.IsReady())
                             SpellManager.W.Cast(pos);
                     }
                     SpellManager.CastE(target);
@@ -75,7 +79,16 @@ namespace AlchemistSinged
                 if (target != null)
                     SpellManager.CastE(target);
                 if (target != null)
+                {
+                    if (MenuManager.JungleMenu["Wjungle"].Cast<CheckBox>().CurrentValue)
+                    {
+                        var pos = Prediction.Position.PredictUnitPosition(target, SpellManager.W.CastDelay / 2)
+                                .Extend(Champion, 515 + Champion.Distance(target.Position)).To3D();
+                        if (SpellManager.W.IsReady())
+                            SpellManager.W.Cast(pos);
+                    }
                     SpellManager.CastE(target);
+                }
             }
         }
 
@@ -101,7 +114,7 @@ namespace AlchemistSinged
         {
             if (MenuManager.LaneClearMenu["Elanec"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.E.Range, DamageType.Magical, false, false, false, SpellManager.EDamage());
+                var target = TargetManager.GetMinionTarget(SpellManager.E.Range, DamageType.Magical, false, false, SpellManager.EDamage());
                 if (target != null)
                     SpellManager.CastE(target);
             }
@@ -110,10 +123,8 @@ namespace AlchemistSinged
         public static void KiteMode()
         {
             var target = TargetManager.GetChampionTarget(1000, DamageType.Magical);
-            if (target != null
-                && Player.GetSpell(SpellSlot.Q).ToggleState == 1
-                && !Champion.IsFacing(target) && target.IsFacing(Champion)
-                && target.Distance(Champion) <= 500)
+            if (target != null && !Champion.IsFacing(target) && target.IsFacing(Champion)
+                && Player.GetSpell(SpellSlot.Q).ToggleState == 1)
                 SpellManager.CastQ(target);
         }
 
@@ -122,14 +133,11 @@ namespace AlchemistSinged
             foreach (var item in Champion.InventoryItems)
             {
                 if ((item.Id == ItemId.Tear_of_the_Goddess || item.Id == ItemId.Tear_of_the_Goddess_Crystal_Scar
-                     || item.Id == ItemId.Archangels_Staff || item.Id == ItemId.Archangels_Staff_Crystal_Scar
-                     || item.Id == ItemId.Manamune || item.Id == ItemId.Manamune_Crystal_Scar)
+                    || item.Id == ItemId.Archangels_Staff || item.Id == ItemId.Archangels_Staff_Crystal_Scar
+                    || item.Id == ItemId.Manamune || item.Id == ItemId.Manamune_Crystal_Scar)
                     && item.Stacks < 750 && Champion.IsInShopRange()
                     && Player.GetSpell(SpellSlot.Q).ToggleState == 1)
-                {
-                    SpellManager.IsStackingTear = true;
                     SpellManager.CastQ(Champion);
-                }
             }
         }
 

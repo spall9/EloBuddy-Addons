@@ -12,9 +12,6 @@ namespace AlchemistSinged
         public static Spell.Targeted E { get; set; }
         public static Spell.Active R { get; set; }
 
-        // Poison Control
-        public static bool IsStackingTear;
-
         // Clone Character Object
         public static AIHeroClient Champion = Program.Champion;
 
@@ -34,15 +31,9 @@ namespace AlchemistSinged
         // Poison Controller
         public static void QDisable()
         {
-            // Disable Bools
-            if (IsStackingTear && Champion.IsInShopRange()) return;
-            else if (IsStackingTear)
-                IsStackingTear = false;
-
-            // Disable Conditions
-            if (Player.GetSpell(SpellSlot.Q).ToggleState == 2
+            if (Player.GetSpell(SpellSlot.Q).ToggleState == 2 
                 && Champion.CountEnemiesInRange(1000) < 1
-                && !(EntityManager.MinionsAndMonsters.EnemyMinions.Any(a => a.IsInRange(Champion, 1000))))
+                && !EntityManager.MinionsAndMonsters.EnemyMinions.Any(a => a.IsInRange(Champion, 1000)))
                 CastQ(Champion);
         }
 
