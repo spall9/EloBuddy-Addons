@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using SharpDX;
 using EloBuddy;
 using EloBuddy.SDK;
 
@@ -13,7 +14,7 @@ namespace MagicianRyze
         {
         }
 
-        public static AIHeroClient GetChampionTarget(float range, DamageType damagetype, bool isAlly = false, float ksdamage = -1f)
+        public static AIHeroClient GetChampionTarget(float range, DamageType damagetype, bool isSkillShot = false,bool isAlly = false, float ksdamage = -1f)
         {
             var herotype = EntityManager.Heroes.AllHeroes;
             var targets = herotype
@@ -21,13 +22,14 @@ namespace MagicianRyze
                 .Where(a => a.IsValidTarget(range) && ((isAlly && a.IsAlly) || (!isAlly && a.IsEnemy))
                             && !a.IsDead && !a.IsZombie
                             && TargetStatus(a)
+                            && (!isSkillShot || WillQHitEnemy(a))
                             && ((ksdamage > -1f && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, ksdamage)) || ksdamage == -1)
                             && !Champion.IsRecalling()
                             && a.Distance(Champion) <= range);
             return TargetSelector.GetTarget(targets, damagetype);
         }
 
-        public static Obj_AI_Minion GetMinionTarget(float range, DamageType damagetype, bool isAlly = false, bool isMonster = false, float ksdamage = -1)
+        public static Obj_AI_Minion GetMinionTarget(float range, DamageType damagetype, bool isSkillShot = false, bool isAlly = false, bool isMonster = false, float ksdamage = -1)
         {
 
             var teamtype = EntityManager.UnitTeam.Enemy;
@@ -46,10 +48,23 @@ namespace MagicianRyze
                                      && ((isMonster && a.IsMonster) || (!isMonster && !a.IsMonster))
                                      && !a.IsDead && !a.IsZombie
                                      && TargetStatus(a)
+                                     && (!isSkillShot || WillQHitEnemy(a))
                                      && ((ksdamage > -1 && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, ksdamage)) || ksdamage == -1)
                                      && !Champion.IsRecalling()
                                      && a.Distance(Champion) <= range);
             return target;
+        }
+
+        public static bool WillQHitEnemy(Obj_AI_Base enemy)
+        {
+            if (enemy != null)
+            {
+                PredictionResult result = Prediction.Position.PredictLinearMissile(enemy, SpellManager.Q.Range, 50, 250, 1700, 1, Program.Champion.Position);
+
+                if (result != null && result.CollisionObjects != null && result.CollisionObjects.Length >= 1 && result.CollisionObjects[0] == enemy)
+                    return true;
+            }
+            return false;
         }
 
         public static Obj_AI_Turret GetTurretTarget(float range, bool isAlly = false)
