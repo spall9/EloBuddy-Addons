@@ -55,7 +55,7 @@ namespace MagicianRyze
 
         public bool WillQHitEnemy(Obj_AI_Base enemy)
         {
-            PredictionResult result = Prediction.Position.PredictCircularMissile(enemy, SpellManager.Q.Range, 50, 250, 1700, Champion.Position);
+            PredictionResult result = Prediction.Position.PredictLinearMissile(enemy, SpellManager.Q.Range, 50, 250, 1700, 1, Champion.Position);
 
             if (result.CollisionObjects[0] == enemy)
                 return true;
