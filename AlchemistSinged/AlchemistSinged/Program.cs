@@ -28,8 +28,6 @@ namespace AlchemistSinged
             // Initialize classes
             SpellManager.Initialize();
             MenuManager.Initialize();
-            TargetManager.Initialize();
-            ModeManager.Initialize();
 
             // Listen to Events
             Drawing.OnDraw += Drawing_OnDraw;
@@ -97,8 +95,10 @@ namespace AlchemistSinged
         public static void Game_OnTick(EventArgs args)
         {
             // Initialize Leveler
-            if (MenuManager.SettingMenu["Autolvl"].Cast<CheckBox>().CurrentValue && Champion.SpellTrainingPoints >= 1)
+            if (MenuManager.SettingMenu["Autolvl"].Cast<CheckBox>().CurrentValue
+                && Champion.SpellTrainingPoints >= 1)
                 LevelerManager.Initialize();
+
             // No Responce While Dead
             if (Champion.IsDead) return;
 
@@ -106,7 +106,6 @@ namespace AlchemistSinged
             SpellManager.QDisable();
 
             // Mode Activation
-            if (Orbwalker.IsAutoAttacking) return;
             switch (Orbwalker.ActiveModesFlags)
             {
                 case Orbwalker.ActiveModes.Combo:
@@ -124,6 +123,10 @@ namespace AlchemistSinged
                 case Orbwalker.ActiveModes.LaneClear:
                     Orbwalker.DisableAttacking = false;
                     ModeManager.LaneClearMode();
+                    break;
+                case Orbwalker.ActiveModes.LastHit:
+                    Orbwalker.DisableAttacking = false;
+                    ModeManager.LastHitMode();
                     break;
             }
             if (MenuManager.SettingMenu["StackM"].Cast<CheckBox>().CurrentValue)
