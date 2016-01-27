@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using SharpDX;
 using EloBuddy;
 using EloBuddy.SDK;
 
@@ -50,6 +51,15 @@ namespace MagicianRyze
                                      && !Champion.IsRecalling()
                                      && a.Distance(Champion) <= range);
             return target;
+        }
+
+        public bool WillQHitEnemy(Obj_AI_Base enemy)
+        {
+            PredictionResult result = Prediction.Position.PredictCircularMissile(enemy, SpellManager.Q.Range, 50, 250, 1700, Champion.Position);
+
+            if (result.CollisionObjects[0] == enemy)
+                return true;
+            return false;
         }
 
         public static Obj_AI_Turret GetTurretTarget(float range, bool isAlly = false)
