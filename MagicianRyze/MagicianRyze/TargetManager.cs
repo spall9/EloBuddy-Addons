@@ -14,7 +14,7 @@ namespace MagicianRyze
         {
         }
 
-        public static AIHeroClient GetChampionTarget(float range, DamageType damagetype, bool isAlly = false, float ksdamage = -1f, bool isSkillShot = false)
+        public static AIHeroClient GetChampionTarget(float range, DamageType damagetype, bool isSkillShot = false,bool isAlly = false, float ksdamage = -1f)
         {
             var herotype = EntityManager.Heroes.AllHeroes;
             var targets = herotype
@@ -29,7 +29,7 @@ namespace MagicianRyze
             return TargetSelector.GetTarget(targets, damagetype);
         }
 
-        public static Obj_AI_Minion GetMinionTarget(float range, DamageType damagetype, bool isAlly = false, bool isMonster = false, float ksdamage = -1)
+        public static Obj_AI_Minion GetMinionTarget(float range, DamageType damagetype, bool isSkillShot = false, bool isAlly = false, bool isMonster = false, float ksdamage = -1)
         {
 
             var teamtype = EntityManager.UnitTeam.Enemy;
@@ -48,6 +48,7 @@ namespace MagicianRyze
                                      && ((isMonster && a.IsMonster) || (!isMonster && !a.IsMonster))
                                      && !a.IsDead && !a.IsZombie
                                      && TargetStatus(a)
+                                     && (!isSkillShot || WillQHitEnemy(a))
                                      && ((ksdamage > -1 && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, ksdamage)) || ksdamage == -1)
                                      && !Champion.IsRecalling()
                                      && a.Distance(Champion) <= range);
@@ -56,10 +57,13 @@ namespace MagicianRyze
 
         public static bool WillQHitEnemy(Obj_AI_Base enemy)
         {
-            PredictionResult result = Prediction.Position.PredictLinearMissile(enemy, SpellManager.Q.Range, 50, 250, 1700, 1, Champion.Position);
+            if (enemy != null)
+            {
+                PredictionResult result = Prediction.Position.PredictLinearMissile(enemy, SpellManager.Q.Range, 50, 250, 1700, 1, Program.Champion.Position);
 
-            if (result.CollisionObjects[0] == enemy)
-                return true;
+                if (result != null && result.CollisionObjects != null && result.CollisionObjects.Length >= 1 && result.CollisionObjects[0] == enemy)
+                    return true;
+            }
             return false;
         }
 
