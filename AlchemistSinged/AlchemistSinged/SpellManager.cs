@@ -31,6 +31,12 @@ namespace AlchemistSinged
         // Poison Controller
         public static void QDisable()
         {
+            if (Champion.IsInShopRange() && ModeManager.isStackingTear)
+                return;
+            else if (ModeManager.isStackingTear)
+                ModeManager.isStackingTear = false;
+                
+
             if (Player.GetSpell(SpellSlot.Q).ToggleState == 2 
                 && Champion.CountEnemiesInRange(1000) < 1
                 && !EntityManager.MinionsAndMonsters.EnemyMinions.Any(a => a.IsInRange(Champion, 1000)))

@@ -9,6 +9,7 @@ namespace AlchemistSinged
     {
         // Clone Character Object
         public static AIHeroClient Champion = Program.Champion;
+        public static bool isStackingTear = false;
 
         public static void Initialize()
         {
@@ -137,7 +138,10 @@ namespace AlchemistSinged
                     || item.Id == ItemId.Manamune || item.Id == ItemId.Manamune_Crystal_Scar)
                     && item.Stacks < 750 && Champion.IsInShopRange()
                     && Player.GetSpell(SpellSlot.Q).ToggleState == 1)
+                {
+                    isStackingTear = true;
                     SpellManager.CastQ(Champion);
+                }
             }
         }
 
