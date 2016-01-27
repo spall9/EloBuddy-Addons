@@ -14,7 +14,7 @@ namespace MagicianRyze
         {
         }
 
-        public static AIHeroClient GetChampionTarget(float range, DamageType damagetype, bool isAlly = false, float ksdamage = -1f)
+        public static AIHeroClient GetChampionTarget(float range, DamageType damagetype, bool isAlly = false, float ksdamage = -1f, bool isSkillShot = false)
         {
             var herotype = EntityManager.Heroes.AllHeroes;
             var targets = herotype
@@ -22,6 +22,7 @@ namespace MagicianRyze
                 .Where(a => a.IsValidTarget(range) && ((isAlly && a.IsAlly) || (!isAlly && a.IsEnemy))
                             && !a.IsDead && !a.IsZombie
                             && TargetStatus(a)
+                            && (!isSkillShot || WillQHitEnemy(a))
                             && ((ksdamage > -1f && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, ksdamage)) || ksdamage == -1)
                             && !Champion.IsRecalling()
                             && a.Distance(Champion) <= range);
@@ -53,7 +54,7 @@ namespace MagicianRyze
             return target;
         }
 
-        public bool WillQHitEnemy(Obj_AI_Base enemy)
+        public static bool WillQHitEnemy(Obj_AI_Base enemy)
         {
             PredictionResult result = Prediction.Position.PredictLinearMissile(enemy, SpellManager.Q.Range, 50, 250, 1700, 1, Champion.Position);
 
