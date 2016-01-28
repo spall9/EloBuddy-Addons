@@ -12,7 +12,7 @@ namespace AlchemistSinged
         public static Spell.Targeted E { get; set; }
         public static Spell.Active R { get; set; }
 
-        // Poison Control
+        // Global Poison Control
         public static bool IsStackingTear;
 
         // Clone Character Object
@@ -36,7 +36,7 @@ namespace AlchemistSinged
         {
             // Disable Bools
             if (IsStackingTear && Champion.IsInShopRange()) return;
-            else if (IsStackingTear)
+            if (IsStackingTear)
                 IsStackingTear = false;
 
             // Disable Conditions
@@ -50,20 +50,21 @@ namespace AlchemistSinged
         public static float QDamage()
         {
             return new float[] { 0, 44, 68, 92, 116, 140 }[Q.Level]
-                + 0.6f * Champion.FlatMagicDamageMod;
+                + (0.6f * Champion.FlatMagicDamageMod);
         }
 
         public static float EDamage()
         {
             return new float[] { 0, 50, 65, 80, 95, 110 }[E.Level]
-                   + 0.75f*Champion.FlatMagicDamageMod;
+                   + (0.75f * Champion.FlatMagicDamageMod);
         }
 
         // Cast Methods
         public static void CastQ(Obj_AI_Base target)
         {
             if (target == null) return;
-            Q.Cast();
+            if (Q.IsReady())
+                Q.Cast();
         }
 
         public static void CastW(Obj_AI_Base target)

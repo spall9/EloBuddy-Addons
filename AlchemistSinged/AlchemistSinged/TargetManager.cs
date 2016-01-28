@@ -24,7 +24,7 @@ namespace AlchemistSinged
             return TargetSelector.GetTarget(targets, damagetype);
         }
 
-        public static Obj_AI_Minion GetMinionTarget(float range, DamageType damagetype, bool isAlly = false, bool isMonster = false, bool collision = false, float ksdamage = -1)
+        public static Obj_AI_Minion GetMinionTarget(float range, DamageType damagetype, bool isAlly = false, bool collision = false, bool isMonster = false, float ksdamage = -1)
         {
 
             var teamtype = EntityManager.UnitTeam.Enemy;
@@ -66,7 +66,7 @@ namespace AlchemistSinged
         {
             if (target != null)
             {
-                var result = Prediction.Position.PredictLinearMissile(target, range, 50, 250, 1700, 0, Champion.Position);
+                var result = Prediction.Position.PredictLinearMissile(target, range, 0, 0, 0, 0, Champion.Position);
                 if (result != null && result.CollisionObjects != null && result.CollisionObjects.Length >= 1 && result.CollisionObjects[0] == target)
                     return true;
             }

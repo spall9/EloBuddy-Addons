@@ -128,11 +128,13 @@ namespace AlchemistSinged
                     Orbwalker.DisableAttacking = false;
                     ModeManager.LastHitMode();
                     break;
+                case Orbwalker.ActiveModes.Flee:
+                    Orbwalker.DisableAttacking = false;
+                    ModeManager.KiteMode();
+                    break;
             }
             if (MenuManager.SettingMenu["StackM"].Cast<CheckBox>().CurrentValue)
                 ModeManager.StackMode();
-            if (MenuManager.SettingMenu["Kite"].Cast<CheckBox>().CurrentValue)
-                ModeManager.KiteMode();
         }
     }
 }
