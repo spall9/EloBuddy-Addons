@@ -16,6 +16,9 @@ namespace BallistaKogMaw
         // Clone Character Object
         public static AIHeroClient Champion = Program.Champion;
 
+        // Tear Timestamp
+        public static float StackerStamp = 0;
+
         public static void Initialize()
         {
             // Initialize spells
@@ -25,8 +28,7 @@ namespace BallistaKogMaw
                 MinimumHitChance = HitChance.High,
                 AllowedCollisionCount = 0
             };
-            W = new Spell.Active(SpellSlot.W,
-            (uint)(560 + 30 * Champion.Spellbook.GetSpell(SpellSlot.W).Level + Champion.GetAutoAttackRange()));
+            W = new Spell.Active(SpellSlot.W, (uint)Champion.GetAutoAttackRange());
             E = new Spell.Skillshot(SpellSlot.E, 1280, SkillShotType.Linear, 250, 1400, 120)
             {
                 MinimumHitChance = HitChance.High,
@@ -56,45 +58,20 @@ namespace BallistaKogMaw
         // Champion Specified Abilities
         public static float PDamage()
         {
-            return 100 + 25*Champion.Level;
+            return 100 + (25 * Champion.Level);
         }
 
         public static float QDamage()
         {
             return new float[] { 0, 80, 130, 180, 230, 280 }[Q.Level] 
-                + 0.5f * Champion.FlatMagicDamageMod;
-        }
-
-        public static float WDamage()
-        {
-            return 0;
-        }
-
-        public static float WBonus(Obj_AI_Base target)
-        {
-            var bonusmg = (target.MaxHealth * 0.02f) + (0.0075f * (Champion.FlatMagicDamageMod / 100));
-            if (target.Type == GameObjectType.AIHeroClient)
-            {
-                var bonusad = 0.55f * Champion.FlatPhysicalDamageMod;
-                return Champion.GetAutoAttackDamage(target) + bonusmg + bonusad;
-            }
-            if (target.Type == GameObjectType.obj_AI_Minion && bonusmg > 100)
-                bonusmg = 100;
-
-            return Champion.GetAutoAttackDamage(target) + bonusmg;
-        }
-
-        public static float EDamage()
-        {
-            return new float[] { 0, 60, 110, 160, 210, 260 }[E.Level] 
-                + 0.7f * Champion.FlatMagicDamageMod;
+                + (0.5f * Champion.FlatMagicDamageMod);
         }
 
         public static float RDamage()
         {
             return new float[] { 0, 70, 110, 150 }[R.Level] 
-                + 0.25f * Champion.FlatMagicDamageMod 
-                + 0.65f * Champion.FlatPhysicalDamageMod;
+                + (0.25f * Champion.FlatMagicDamageMod)
+                + (0.65f * Champion.FlatPhysicalDamageMod);
         }
        
         public static float RMultiplier(Obj_AI_Base target)

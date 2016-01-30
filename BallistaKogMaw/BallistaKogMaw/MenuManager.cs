@@ -17,15 +17,12 @@ namespace BallistaKogMaw
             // Combo Menu
             ComboMenu = BallistaKogMawMenu.AddSubMenu("Combo Features", "ComboFeatures");
             ComboMenu.AddGroupLabel("Combo Features");
-            ComboMenu.AddLabel("Combo Modes:");
-            ComboMenu.Add("ComboM", new CheckBox("ComboMode"));
-            ComboMenu.AddSeparator(1);
             ComboMenu.AddLabel("Independent boxes for Spells:");
             ComboMenu.Add("Qcombo", new CheckBox("Use Q"));
             ComboMenu.Add("Wcombo", new CheckBox("Use W"));
             ComboMenu.Add("Ecombo", new CheckBox("Use E"));
             ComboMenu.Add("Rcombo", new CheckBox("Use R"));
-            ComboMenu.Add("Ultcombo", new Slider("Max R Stacks", 2, 1, 10));
+            ComboMenu.Add("Scombo", new Slider("Max R Stacks", 2, 1, 10));
 
             // Harass Menu
             HarassMenu = BallistaKogMawMenu.AddSubMenu("Harass Features", "HarassFeatures");
@@ -35,9 +32,9 @@ namespace BallistaKogMaw
             HarassMenu.Add("Wharass", new CheckBox("Use W", false));
             HarassMenu.Add("Eharass", new CheckBox("Use E", false));
             HarassMenu.Add("Rharass", new CheckBox("Use R", false));
-            HarassMenu.Add("Ultharass", new Slider("Max R Stacks", 1, 1, 10));
+            HarassMenu.Add("Sharass", new Slider("Max R Stacks", 1, 1, 10));
             HarassMenu.AddSeparator(1);
-            HarassMenu.Add("Harassmana", new Slider("Mana Limiter at Mana %", 25));
+            HarassMenu.Add("Mharass", new Slider("Mana Limiter at Mana %", 25));
 
             // Jungle Menu
             JungleMenu = BallistaKogMawMenu.AddSubMenu("Jungle Features", "JungleFeatures");
@@ -45,11 +42,10 @@ namespace BallistaKogMaw
             JungleMenu.AddLabel("Independent boxes for Spells:");
             JungleMenu.Add("Qjungle", new CheckBox("Use Q"));
             JungleMenu.Add("Wjungle", new CheckBox("Use W"));
-            JungleMenu.Add("Ejungle", new CheckBox("Use E", false));
             JungleMenu.Add("Rjungle", new CheckBox("Use R", false));
-            JungleMenu.Add("Ultjungle", new Slider("Max R Stacks", 1, 1, 10));
+            JungleMenu.Add("Sjungle", new Slider("Max R Stacks", 1, 1, 10));
             JungleMenu.AddSeparator(1);
-            JungleMenu.Add("Junglemana", new Slider("Mana Limiter at Mana %", 25));
+            JungleMenu.Add("Mjungle", new Slider("Mana Limiter at Mana %", 25));
 
             // LaneClear Menu
             LaneClearMenu = BallistaKogMawMenu.AddSubMenu("Lane Clear Features", "LaneClearFeatures");
@@ -57,38 +53,34 @@ namespace BallistaKogMaw
             LaneClearMenu.AddLabel("Independent boxes for Spells:");
             LaneClearMenu.Add("Qlanec", new CheckBox("Use Q", false));
             LaneClearMenu.Add("Wlanec", new CheckBox("Use W", false));
-            LaneClearMenu.Add("Elanec", new CheckBox("Use E", false));
             LaneClearMenu.Add("Rlanec", new CheckBox("Use R", false));
-            LaneClearMenu.Add("Ultlanec", new Slider("Max R Stacks", 1, 1, 10));
+            LaneClearMenu.Add("Slanec", new Slider("Max R Stacks", 1, 1, 10));
             LaneClearMenu.AddSeparator(1);
-            LaneClearMenu.Add("Lanecmana", new Slider("Mana Limiter at Mana %", 25));
+            LaneClearMenu.Add("Mlanec", new Slider("Mana Limiter at Mana %", 25));
 
             // LastHit Menu
             LastHitMenu = BallistaKogMawMenu.AddSubMenu("Last Hit Features", "LastHitFeatures");
             LastHitMenu.AddGroupLabel("Last Hit Features");
             LastHitMenu.AddLabel("Independent boxes for Spells:");
             LastHitMenu.Add("Qlasthit", new CheckBox("Use Q"));
-            LastHitMenu.Add("Wlasthit", new CheckBox("Use W"));
             LastHitMenu.Add("Rlasthit", new CheckBox("Use R", false));
-            LastHitMenu.Add("Ultlasthit", new Slider("Max R Stacks", 1, 1, 10));
+            LastHitMenu.Add("Slasthit", new Slider("Max R Stacks", 1, 1, 10));
             LastHitMenu.AddSeparator(1);
-            LastHitMenu.Add("Lasthitmana", new Slider("Mana Limiter at Mana %", 25));
+            LastHitMenu.Add("Mlasthit", new Slider("Mana Limiter at Mana %", 25));
 
             // Kill Steal Menu
             KillStealMenu = BallistaKogMawMenu.AddSubMenu("KS Features", "KSFeatures");
             KillStealMenu.AddGroupLabel("Kill Steal Features");
-            KillStealMenu.Add("KSmode", new CheckBox("KS Mode"));
+            KillStealMenu.Add("Uks", new CheckBox("KS Mode"));
             KillStealMenu.AddSeparator(1);
             KillStealMenu.AddLabel("Independent boxes for Spells:");
             KillStealMenu.Add("Qks", new CheckBox("Use Q in KS"));
-            KillStealMenu.Add("Wks", new CheckBox("Use W in KS"));
-            KillStealMenu.Add("Eks", new CheckBox("Use E in KS", false));
             KillStealMenu.Add("Rks", new CheckBox("Use R in KS"));
 
             // Drawing Menu
             DrawingMenu = BallistaKogMawMenu.AddSubMenu("Drawing Features", "DrawingFeatures");
             DrawingMenu.AddGroupLabel("Drawing Features");
-            DrawingMenu.Add("DrawM", new CheckBox("Draw Mode"));
+            DrawingMenu.Add("Udrawer", new CheckBox("Use Drawer"));
             DrawingMenu.AddSeparator(1);
             DrawingMenu.AddLabel("Independent boxes for Spells:");
             DrawingMenu.Add("Qdraw", new CheckBox("Draw Q"));
@@ -97,23 +89,76 @@ namespace BallistaKogMaw
             DrawingMenu.Add("Rdraw", new CheckBox("Draw R"));
             DrawingMenu.AddSeparator(1);
             DrawingMenu.AddLabel("Skin Designer");
-            DrawingMenu.Add("DrawS", new CheckBox("Draw Skin Design"));
-            DrawingMenu.Add("Skins", new Slider("Skin Designer: ", 7, 0, 8));
+            DrawingMenu.Add("Udesigner", new CheckBox("Use Designer"));
+            DrawingMenu.Add("Sdesign", new Slider("Skin Designer: ", 7, 0, 8));
 
             // Setting Menu
             SettingMenu = BallistaKogMawMenu.AddSubMenu("Settings", "Settings");
             SettingMenu.AddGroupLabel("Settings");
             SettingMenu.AddLabel("Automatic Leveler");
-            SettingMenu.Add("Autolvl", new CheckBox("Auto Leveler"));
+            SettingMenu.Add("Uleveler", new CheckBox("Use Leveler"));
             SettingMenu.AddSeparator(1);
             SettingMenu.AddLabel("Automatic Tear Stacker");
-            SettingMenu.Add("StackM", new CheckBox("Stack Mode"));
+            SettingMenu.Add("Ustacker", new CheckBox("Use Stacker"));
             SettingMenu.AddSeparator(1);
-            SettingMenu.Add("DeathFmode", new CheckBox("Use Passive DeathFollower"));
+            SettingMenu.AddLabel("Automatic Passive - Death Follower");
+            SettingMenu.Add("Ufollower", new CheckBox("Use Follower"));
             SettingMenu.AddSeparator(1);
             SettingMenu.AddLabel("Gap Closer");
-            SettingMenu.Add("Gapcmode", new CheckBox("Gap Closer Mode"));
+            SettingMenu.Add("Ugapc", new CheckBox("Use Gapcloser"));
             SettingMenu.Add("Egapc", new CheckBox("Use E to gapclose"));
         }
+
+        // Assign Global Checks+
+        public static bool ComboUseQ { get { return ComboMenu["Qcombo"].Cast<CheckBox>().CurrentValue; } }
+        public static bool ComboUseW { get { return ComboMenu["Wcombo"].Cast<CheckBox>().CurrentValue; } }
+        public static bool ComboUseE { get { return ComboMenu["Ecombo"].Cast<CheckBox>().CurrentValue; } }
+        public static bool ComboUseR { get { return ComboMenu["Rcombo"].Cast<CheckBox>().CurrentValue; } }
+        public static int ComboStacks { get { return ComboMenu["Scombo"].Cast<Slider>().CurrentValue; } }
+
+        public static bool HarassUseQ { get { return HarassMenu["Qharass"].Cast<CheckBox>().CurrentValue; } }
+        public static bool HarassUseW { get { return HarassMenu["Wharass"].Cast<CheckBox>().CurrentValue; } }
+        public static bool HarassUseE { get { return HarassMenu["Eharass"].Cast<CheckBox>().CurrentValue; } }
+        public static bool HarassUseR { get { return HarassMenu["Rharass"].Cast<CheckBox>().CurrentValue; } }
+        public static int HarassStacks { get { return HarassMenu["Sharass"].Cast<Slider>().CurrentValue; } }
+        public static int HarassMana { get { return HarassMenu["Mharass"].Cast<Slider>().CurrentValue; } }
+
+        public static bool JungleUseQ { get { return JungleMenu["Qjungle"].Cast<CheckBox>().CurrentValue; } }
+        public static bool JungleUseW { get { return JungleMenu["Wjungle"].Cast<CheckBox>().CurrentValue; } }
+        public static bool JungleUseE { get { return JungleMenu["Ejungle"].Cast<CheckBox>().CurrentValue; } }
+        public static bool JungleUseR { get { return JungleMenu["Rjungle"].Cast<CheckBox>().CurrentValue; } }
+        public static int JungleStacks { get { return JungleMenu["Sjungle"].Cast<Slider>().CurrentValue; } }
+        public static int JungleMana { get { return JungleMenu["Mjungle"].Cast<Slider>().CurrentValue; } }
+
+        public static bool LaneClearUseQ { get { return LaneClearMenu["Qlanec"].Cast<CheckBox>().CurrentValue; } }
+        public static bool LaneClearUseW { get { return LaneClearMenu["Wlanec"].Cast<CheckBox>().CurrentValue; } }
+        public static bool LaneClearUseE { get { return LaneClearMenu["Elanec"].Cast<CheckBox>().CurrentValue; } }
+        public static bool LaneClearUseR { get { return LaneClearMenu["Rlanec"].Cast<CheckBox>().CurrentValue; } }
+        public static int LaneClearStacks { get { return LaneClearMenu["Slanec"].Cast<Slider>().CurrentValue; } }
+        public static int LaneClearMana { get { return LaneClearMenu["Mlanec"].Cast<Slider>().CurrentValue; } }
+
+        public static bool LastHitUseQ { get { return LastHitMenu["Qlasthit"].Cast<CheckBox>().CurrentValue; } }
+        public static bool LastHitUseR { get { return LastHitMenu["Rlasthit"].Cast<CheckBox>().CurrentValue; } }
+        public static int LastHitStacks { get { return LastHitMenu["Slasthit"].Cast<Slider>().CurrentValue; } }
+        public static int LastHitMana { get { return LastHitMenu["Mlasthit"].Cast<Slider>().CurrentValue; } }
+
+        public static bool KsMode { get { return KillStealMenu["Uks"].Cast<CheckBox>().CurrentValue; } }
+        public static bool KsUseQ { get { return KillStealMenu["Qks"].Cast<CheckBox>().CurrentValue; } }
+        public static bool KsUseR { get { return KillStealMenu["Rks"].Cast<CheckBox>().CurrentValue; } }
+
+        public static bool DrawMode { get { return DrawingMenu["Udrawer"].Cast<CheckBox>().CurrentValue; } }
+        public static bool DrawQ { get { return DrawingMenu["Qdraw"].Cast<CheckBox>().CurrentValue; } }
+        public static bool DrawW { get { return DrawingMenu["Wdraw"].Cast<CheckBox>().CurrentValue; } }
+        public static bool DrawE { get { return DrawingMenu["Edraw"].Cast<CheckBox>().CurrentValue; } }
+        public static bool DrawR { get { return DrawingMenu["Rdraw"].Cast<CheckBox>().CurrentValue; } }
+        public static bool DesignerMode { get { return DrawingMenu["Udesigner"].Cast<CheckBox>().CurrentValue; } }
+        public static int DesignerSkin { get { return DrawingMenu["Sdesign"].Cast<Slider>().CurrentValue; } }
+
+        public static bool LevelerMode { get { return SettingMenu["Uleveler"].Cast<CheckBox>().CurrentValue; } }
+        public static bool StackerMode { get { return SettingMenu["Ustacker"].Cast<CheckBox>().CurrentValue; } }
+        public static bool FollowerMode { get { return SettingMenu["Ufollower"].Cast<CheckBox>().CurrentValue; } }
+
+        public static bool GapCloserMode { get { return SettingMenu["Ugapc"].Cast<CheckBox>().CurrentValue; } }
+        public static bool GapCloserUseE { get { return SettingMenu["Egapc"].Cast<CheckBox>().CurrentValue; } }
     }
 }

@@ -3,7 +3,6 @@ using System.Drawing;
 using EloBuddy;
 using EloBuddy.SDK;
 using EloBuddy.SDK.Events;
-using EloBuddy.SDK.Menu.Values;
 
 namespace BallistaKogMaw
 {
@@ -31,8 +30,6 @@ namespace BallistaKogMaw
             // Initialize classes
             SpellManager.Initialize();
             MenuManager.Initialize();
-            TargetManager.Initialize();
-            ModeManager.Initialize();
 
             // Listen to Events
             Drawing.OnDraw += Drawing_OnDraw;
@@ -45,13 +42,16 @@ namespace BallistaKogMaw
         public static void Game_OnUpdate(EventArgs args)
         {
             // Initialize Skin Designer
-            Champion.SetSkinId(MenuManager.DrawingMenu["DrawS"].Cast<CheckBox>().CurrentValue
-                ? MenuManager.DrawingMenu["Skins"].Cast<Slider>().CurrentValue
+            Champion.SetSkinId(MenuManager.DesignerMode
+                ? MenuManager.DesignerSkin
                 : ChampionSkin);
         }
 
         public static void Drawing_OnDraw(EventArgs args)
         {
+            // No Responce While Dead
+            if (Champion.IsDead) return;
+
             Color color;
             Color color2;
 
@@ -101,17 +101,17 @@ namespace BallistaKogMaw
             }
 
             // Apply Designer Color into Circle
-            if (!MenuManager.DrawingMenu["DrawM"].Cast<CheckBox>().CurrentValue) return;
+            if (!MenuManager.DrawMode) return;
             if (!Champion.HasBuff("kogmawicathiansurprise"))
             {
-                if (MenuManager.DrawingMenu["Qdraw"].Cast<CheckBox>().CurrentValue && SpellManager.Q.IsLearned)
+                if (MenuManager.DrawQ && SpellManager.Q.IsLearned)
                     Drawing.DrawCircle(Champion.Position, SpellManager.Q.Range, color);
-                if (MenuManager.DrawingMenu["Wdraw"].Cast<CheckBox>().CurrentValue && SpellManager.W.IsLearned
+                if (MenuManager.DrawW && SpellManager.W.IsLearned
                     && Champion.HasBuff("KogMawBioArcaneBarrage"))
                     Drawing.DrawCircle(Champion.Position, SpellManager.W.Range, color2);
-                if (MenuManager.DrawingMenu["Edraw"].Cast<CheckBox>().CurrentValue && SpellManager.E.IsLearned)
+                if (MenuManager.DrawE && SpellManager.E.IsLearned)
                     Drawing.DrawCircle(Champion.Position, SpellManager.E.Range, color);
-                if (MenuManager.DrawingMenu["Rdraw"].Cast<CheckBox>().CurrentValue && SpellManager.R.IsLearned)
+                if (MenuManager.DrawR && SpellManager.R.IsLearned)
                     Drawing.DrawCircle(Champion.Position, SpellManager.R.Range, color);
             }
             else
@@ -123,20 +123,20 @@ namespace BallistaKogMaw
         public static void Game_OnTick(EventArgs args)
         {
             // Initialize Leveler
-            if (MenuManager.SettingMenu["Autolvl"].Cast<CheckBox>().CurrentValue && Champion.SpellTrainingPoints >= 1)
+            if (MenuManager.LevelerMode && Champion.SpellTrainingPoints >= 1)
                 LevelerManager.Initialize();
+
             // No Responce While Dead
             if (Champion.IsDead) return;
 
             // Mode Activation
-            if (MenuManager.SettingMenu["DeathFmode"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.FollowerMode)
             {
                 if (!Champion.HasBuff("kogmawicathiansurprise"))
                     Ptarget = null;
                 else
                     ModeManager.DeathFollowMode();
             }
-            if (Orbwalker.IsAutoAttacking) return;
             switch (Orbwalker.ActiveModesFlags)
             {
                 case Orbwalker.ActiveModes.Combo:
@@ -155,9 +155,9 @@ namespace BallistaKogMaw
                     ModeManager.LastHitMode();
                     break;
             }
-            if (MenuManager.KillStealMenu["KSmode"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.KsMode)
                 ModeManager.KsMode();
-            if (MenuManager.SettingMenu["StackM"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.StackerMode)
                 ModeManager.StackMode();
         }
     }

@@ -9,11 +9,7 @@ namespace BallistaKogMaw
         // Clone Character Object
         public static AIHeroClient Champion = Program.Champion;
 
-        public static void Initialize()
-        {
-        }
-
-        public static AIHeroClient GetChampionTarget(float range, DamageType damagetype, bool isAlly = false, float ksdamage = -1f)
+        public static AIHeroClient GetChampionTarget(float range, DamageType damagetype, bool isAlly = false, bool collision = false, float ksdamage = -1f)
         {
             var herotype = EntityManager.Heroes.AllHeroes;
             var targets = herotype
@@ -21,18 +17,17 @@ namespace BallistaKogMaw
                 .Where(a => a.IsValidTarget(range) && ((isAlly && a.IsAlly) || (!isAlly && a.IsEnemy))
                             && !a.IsDead && !a.IsZombie
                             && TargetStatus(a)
-                            && ((range == SpellManager.W.Range
-                            && ksdamage > -1f && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, SpellManager.WBonus(a))) || ksdamage == -1)
+                            && ((collision && CollisionCheck(a, range)) || !collision)
                             && ((range == SpellManager.R.Range
-                            && ksdamage > -1f && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, SpellManager.RDamage() * SpellManager.RMultiplier(a))) || ksdamage == -1)
+                            && ksdamage > -1f && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, SpellManager.RDamage() * SpellManager.RMultiplier(a))) || ksdamage == -1f)
                             && ((range != SpellManager.W.Range && range != SpellManager.R.Range
-                            && ksdamage > -1f && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, ksdamage)) || ksdamage == -1)
+                            && ksdamage > -1f && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, ksdamage)) || ksdamage == -1f)
                             && !Champion.IsRecalling()
                             && a.Distance(Champion) <= range);
             return TargetSelector.GetTarget(targets, damagetype);
         }
 
-        public static Obj_AI_Minion GetMinionTarget(float range, DamageType damagetype, bool isAlly = false, bool isMonster = false, float ksdamage = -1)
+        public static Obj_AI_Minion GetMinionTarget(float range, DamageType damagetype, bool isAlly = false, bool collision = false, bool isMonster = false, float ksdamage = -1)
         {
             var teamtype = EntityManager.UnitTeam.Enemy;
             if (isAlly)
@@ -50,8 +45,7 @@ namespace BallistaKogMaw
                                      && ((isMonster && a.IsMonster) || (!isMonster && !a.IsMonster))
                                      && !a.IsDead && !a.IsZombie
                                      && TargetStatus(a)
-                                     && ((range == SpellManager.W.Range
-                                     && ksdamage > -1f && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, SpellManager.WBonus(a))) || ksdamage == -1)
+                                     && ((collision && CollisionCheck(a, range)) || !collision)
                                      && ((range == SpellManager.R.Range
                                      && ksdamage > -1f && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, SpellManager.RDamage() * SpellManager.RMultiplier(a))) || ksdamage == -1)
                                      && ((range != SpellManager.W.Range && range != SpellManager.R.Range
@@ -71,6 +65,13 @@ namespace BallistaKogMaw
                                      && !Champion.IsRecalling()
                                      && a.Distance(Champion) <= range);
             return target;
+        }
+
+        public static bool CollisionCheck(Obj_AI_Base target, float range)
+        {
+            if (target != null)
+                return Prediction.Position.Collision.LinearMissileCollision(target, Champion.Position.To2D(), target.Position.To2D().Extend(target, range), 1650, 70, 250);
+            return false;
         }
 
         public static bool TargetStatus(Obj_AI_Base target)
