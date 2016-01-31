@@ -40,13 +40,19 @@ namespace MagicianRyze
         public static void Game_OnUpdate(EventArgs args)
         {
             // Initialize Skin Designer
-            Champion.SetSkinId(MenuManager.DrawingMenu["DrawS"].Cast<CheckBox>().CurrentValue
-                ? MenuManager.DrawingMenu["Skins"].Cast<Slider>().CurrentValue
+            Champion.SetSkinId(MenuManager.DesignerMode
+                ? MenuManager.DesignerSkin
                 : ChampionSkin);
         }
 
         public static void Drawing_OnDraw(EventArgs args)
         {
+            // Wait for Game Load
+            if (Game.Time < 5) return;
+
+            // No Responce While Dead
+            if (Champion.IsDead) return;
+
             Color color;
 
             // Setup Designer Coloration
@@ -88,32 +94,34 @@ namespace MagicianRyze
             }
 
             // Apply Designer Color into Circle
-            if (!MenuManager.DrawingMenu["DrawM"].Cast<CheckBox>().CurrentValue) return;
-            if (MenuManager.DrawingMenu["Qdraw"].Cast<CheckBox>().CurrentValue && SpellManager.Q.IsLearned)
+            if (!MenuManager.DrawMode) return;
+            if (MenuManager.DrawQ && SpellManager.Q.IsLearned)
                 Drawing.DrawCircle(Champion.Position, SpellManager.Q.Range, color);
-            if (MenuManager.DrawingMenu["WEdraw"].Cast<CheckBox>().CurrentValue && (SpellManager.W.IsLearned || SpellManager.E.IsLearned))
+            if (MenuManager.DrawWe && (SpellManager.W.IsLearned || SpellManager.E.IsLearned))
                 Drawing.DrawCircle(Champion.Position, SpellManager.W.Range, color);
         }
 
         public static void Game_OnTick(EventArgs args)
         {
             // Initialize Leveler
-            if (MenuManager.SettingMenu["Autolvl"].Cast<CheckBox>().CurrentValue && Champion.SpellTrainingPoints >= 1)
+            if (MenuManager.LevelerMode && Champion.SpellTrainingPoints >= 1)
                 LevelerManager.Initialize();
-            MenuManager.ComboMenu["ComboF"].DisplayName = MenuManager.ComboMenu["ComboF"].Cast<Slider>().CurrentValue == 1
+
+            // Design Menu Options
+            MenuManager.ComboMenu["Ucombo"].DisplayName = MenuManager.ComboMode == 1
                 ? "Counter Combo - My Personal Settings"
                 : "Slutty Combo - Fastest Ryze Combo";
+
             // No Responce While Dead
             if (Champion.IsDead) return;
 
             // Mode Activation
-            if (Orbwalker.IsAutoAttacking) return;
             switch (Orbwalker.ActiveModesFlags)
             {
                 case Orbwalker.ActiveModes.Combo:
-                    if (MenuManager.ComboMenu["ComboF"].Cast<Slider>().DisplayName == "Counter Combo - My Personal Settings")
+                    if (MenuManager.ComboMenu["Ucombo"].Cast<Slider>().DisplayName == "Counter Combo - My Personal Settings")
                         ModeManager.CounterCombo();
-                    if (MenuManager.ComboMenu["ComboF"].Cast<Slider>().DisplayName == "Slutty Combo - Fastest Ryze Combo")
+                    if (MenuManager.ComboMenu["Ucombo"].Cast<Slider>().DisplayName == "Slutty Combo - Fastest Ryze Combo")
                         ModeManager.SluttyCombo();
                     break;
                 case Orbwalker.ActiveModes.Harass:
@@ -129,9 +137,9 @@ namespace MagicianRyze
                     ModeManager.LastHitMode();
                     break;
             }
-            if (MenuManager.KillStealMenu["KSmode"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.KsMode)
                 ModeManager.KsMode();
-            if (MenuManager.SettingMenu["StackM"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.StackMode)
                 ModeManager.StackMode();
         }
     }

@@ -1,7 +1,6 @@
 ﻿using EloBuddy;
 using EloBuddy.SDK;
 using EloBuddy.SDK.Events;
-using EloBuddy.SDK.Menu.Values;
 
 namespace MagicianRyze
 {
@@ -13,33 +12,33 @@ namespace MagicianRyze
         public static void CounterCombo()
         {
             if (Champion.HasBuff("RyzeR")
-                && MenuManager.SettingMenu["UltM"].Cast<CheckBox>().CurrentValue)
+                && MenuManager.UltimateMode)
             {
                 UltimateMode(GameObjectType.AIHeroClient);
                 return;
             }
-            if (MenuManager.ComboMenu["Wcombo"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.ComboUseW)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.W.Range, DamageType.Magical, false, true);
+                var target = TargetManager.GetChampionTarget(SpellManager.W.Range, DamageType.Magical);
                 if (target != null)
                     SpellManager.CastW(target);
             }
-            if (MenuManager.ComboMenu["Qcombo"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.ComboUseQ)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Magical);
+                var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Magical, false, true);
                 if (target != null)
                     SpellManager.CastQ(target);
             }
-            if (MenuManager.ComboMenu["Ecombo"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.ComboUseE)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Magical);
                 if (target != null)
                     SpellManager.CastE(target);
             }
-            if (MenuManager.ComboMenu["Rcombo"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.ComboUseR)
             {
                 if (Champion.HasBuff("ryzepassivecharged")
-                    || Champion.GetBuffCount("ryzepassivestack") >= MenuManager.ComboMenu["Pult"].Cast<Slider>().CurrentValue)
+                    || Champion.GetBuffCount("ryzepassivestack") >= MenuManager.ComboStacks)
                 {
                     var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Magical);
                     if (target != null)
@@ -51,7 +50,7 @@ namespace MagicianRyze
         public static void SluttyCombo()
         {
             if (Champion.HasBuff("RyzeR")
-                && MenuManager.SettingMenu["UltM"].Cast<CheckBox>().CurrentValue)
+                && MenuManager.UltimateMode)
             {
                 UltimateMode(GameObjectType.AIHeroClient);
                 return;
@@ -62,69 +61,81 @@ namespace MagicianRyze
             if (target != null && qtarget != null)
             {
                 var bcount = Champion.GetBuffCount("ryzepassivestack");
-
                 if (!Champion.HasBuff("ryzepassivecharged") && bcount > 0)
                 {
                     switch (bcount)
                     {
                         case 1:
-                            SpellManager.CastQ(qtarget);
-                            SpellManager.CastE(target);
-                            SpellManager.CastW(target);
-                            SpellManager.CastR(target);
+                            if (MenuManager.ComboUseQ)
+                                SpellManager.CastQ(qtarget);
+                            if (MenuManager.ComboUseE)
+                                SpellManager.CastE(target);
+                            if (MenuManager.ComboUseW)
+                                SpellManager.CastW(target);
+                            if (MenuManager.ComboUseR)
+                                SpellManager.CastR(target);
                             break;
                         case 2:
-                            SpellManager.CastQ(qtarget);
-                            SpellManager.CastW(target);
-                            SpellManager.CastE(target);
-                            SpellManager.CastR(target);
+                            if (MenuManager.ComboUseQ)
+                                SpellManager.CastQ(qtarget);
+                            if (MenuManager.ComboUseW)
+                                SpellManager.CastW(target);
+                            if (MenuManager.ComboUseE)
+                                SpellManager.CastE(target);
+                            if (MenuManager.ComboUseR)
+                                SpellManager.CastR(target);
                             break;
                         case 3:
-                            SpellManager.CastQ(qtarget);
-                            SpellManager.CastE(target);
-                            SpellManager.CastW(target);
-                            SpellManager.CastR(target);
+                            if (MenuManager.ComboUseQ)
+                                SpellManager.CastQ(qtarget);
+                            if (MenuManager.ComboUseE)
+                                SpellManager.CastE(target);
+                            if (MenuManager.ComboUseW)
+                                SpellManager.CastW(target);
+                            if (MenuManager.ComboUseR)
+                                SpellManager.CastR(target);
                             break;
                         case 4:
-                            SpellManager.CastW(target);
-                            SpellManager.CastQ(qtarget);
-                            SpellManager.CastE(target);
-                            SpellManager.CastR(target);
+                            if (MenuManager.ComboUseW)
+                                SpellManager.CastW(target);
+                            if (MenuManager.ComboUseQ)
+                                SpellManager.CastQ(qtarget);
+                            if (MenuManager.ComboUseE)
+                                SpellManager.CastE(target);
+                            if (MenuManager.ComboUseR)
+                                SpellManager.CastR(target);
                             break;
                     }
                 }
                 else
                 {
-                    SpellManager.CastW(target);
-                    SpellManager.CastQ(qtarget);
-                    SpellManager.CastE(target);
-                    SpellManager.CastR(target);
+                    if (MenuManager.ComboUseW)
+                        SpellManager.CastW(target);
+                    if (MenuManager.ComboUseQ)
+                        SpellManager.CastQ(qtarget);
+                    if (MenuManager.ComboUseE)
+                        SpellManager.CastE(target);
+                    if (MenuManager.ComboUseR)
+                        SpellManager.CastR(target);
                 }
-            }
 
-            if (target != null && qtarget != null
-                && (Champion.GetBuffCount("ryzepassivestack") == 4
-                    || Champion.HasBuff("ryzepassivecharged")))
-            {
-                if (!SpellManager.Q.IsReady()
-                    && !SpellManager.W.IsReady()
-                    && !SpellManager.E.IsReady())
-                {
+                if (MenuManager.ComboUseR
+                    && (Champion.GetBuffCount("ryzepassivestack") == 4 || Champion.HasBuff("ryzepassivecharged"))
+                    && !SpellManager.Q.IsReady() && !SpellManager.W.IsReady() && !SpellManager.E.IsReady())
                     SpellManager.CastR(target);
-                }
             }
         }
 
         public static void HarassMode()
         {
             if (Champion.HasBuff("RyzeR")
-                && MenuManager.SettingMenu["UltM"].Cast<CheckBox>().CurrentValue)
+                && MenuManager.UltimateMode)
             {
                 UltimateMode(GameObjectType.AIHeroClient);
                 return;
             }
-            if (Champion.ManaPercent < MenuManager.HarassMenu["Harassmana"].Cast<Slider>().CurrentValue) return;
-            if (MenuManager.HarassMenu["Qharass"].Cast<CheckBox>().CurrentValue)
+            if (Champion.ManaPercent < MenuManager.HarassMana) return;
+            if (MenuManager.HarassUseQ)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Magical, false, true);
                 if (target != null)
@@ -135,25 +146,25 @@ namespace MagicianRyze
         public static void JungleMode()
         {
             if (Champion.HasBuff("RyzeR")
-                && MenuManager.SettingMenu["UltM"].Cast<CheckBox>().CurrentValue)
+                && MenuManager.UltimateMode)
             {
                 UltimateMode(GameObjectType.obj_AI_Minion, true);
                 return;
             }
-            if (Champion.ManaPercent < MenuManager.JungleMenu["Junglemana"].Cast<Slider>().CurrentValue) return;
-            if (MenuManager.JungleMenu["Qjungle"].Cast<CheckBox>().CurrentValue)
+            if (Champion.ManaPercent < MenuManager.JungleMana) return;
+            if (MenuManager.JungleUseQ)
             {
                 var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Magical, false, true, true);
                 if (target != null)
                     SpellManager.CastQ(target);
             }
-            if (MenuManager.JungleMenu["Wjungle"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.JungleUseW)
             {
                 var target = TargetManager.GetMinionTarget(SpellManager.W.Range, DamageType.Magical, false, true);
                 if (target != null)
                     SpellManager.CastW(target);
             }
-            if (MenuManager.JungleMenu["Ejungle"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.JungleUseE)
             {
                 var target = TargetManager.GetMinionTarget(SpellManager.E.Range, DamageType.Magical, false, true);
                 if (target != null)
@@ -164,25 +175,25 @@ namespace MagicianRyze
         public static void LaneClearMode()
         {
             if (Champion.HasBuff("RyzeR")
-                && MenuManager.SettingMenu["UltM"].Cast<CheckBox>().CurrentValue)
+                && MenuManager.UltimateMode)
             {
                 UltimateMode(GameObjectType.obj_AI_Minion);
                 return;
             }
-            if (Champion.ManaPercent < MenuManager.LaneClearMenu["Lanecmana"].Cast<Slider>().CurrentValue) return;
-            if (MenuManager.LaneClearMenu["Qlanec"].Cast<CheckBox>().CurrentValue)
+            if (Champion.ManaPercent < MenuManager.LaneClearMana) return;
+            if (MenuManager.LaneClearUseQ)
             {
                 var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Magical, false, false, true);
                 if (target != null)
                     SpellManager.CastQ(target);
             }
-            if (MenuManager.LaneClearMenu["Wlanec"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.LaneClearUseW)
             {
                 var target = TargetManager.GetMinionTarget(SpellManager.W.Range, DamageType.Magical);
                 if (target != null)
                     SpellManager.CastW(target);
             }
-            if (MenuManager.LaneClearMenu["Elanec"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.LaneClearUseE)
             {
                 var target = TargetManager.GetMinionTarget(SpellManager.E.Range, DamageType.Magical);
                 if (target != null)
@@ -193,25 +204,26 @@ namespace MagicianRyze
         public static void LastHitMode()
         {
             if (Champion.HasBuff("RyzeR")
-                && MenuManager.SettingMenu["UltM"].Cast<CheckBox>().CurrentValue)
+                && MenuManager.UltimateMode)
             {
                 UltimateMode(GameObjectType.obj_AI_Minion);
                 return;
             }
-            if (Champion.ManaPercent < MenuManager.LastHitMenu["Lasthitmana"].Cast<Slider>().CurrentValue) return;
-            if (MenuManager.LastHitMenu["Qlasthit"].Cast<CheckBox>().CurrentValue)
+            if (Champion.ManaPercent < MenuManager.LastHitMana) return;
+            if (Orbwalker.CanAutoAttack) return;
+            if (MenuManager.LastHitUseQ)
             {
                 var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Magical, false, false, true, SpellManager.QDamage());
                 if (target != null)
                     SpellManager.CastQ(target);
             }
-            if (MenuManager.LastHitMenu["Wlasthit"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.LastHitUseW)
             {
                 var target = TargetManager.GetMinionTarget(SpellManager.W.Range, DamageType.Magical, false, false, false, SpellManager.WDamage());
                 if (target != null)
                     SpellManager.CastW(target);
             }
-            if (MenuManager.LastHitMenu["Elasthit"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.LastHitUseE)
             {
                 var target = TargetManager.GetMinionTarget(SpellManager.E.Range, DamageType.Magical, false, false, false, SpellManager.EDamage());
                 if (target != null)
@@ -272,7 +284,7 @@ namespace MagicianRyze
                     {
                         if (SpellManager.Q.IsReady())
                         {
-                            var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Magical, false, false, true );
+                            var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Magical, false, false, true);
                             if (target != null)
                                 SpellManager.CastQ(target);
                         }
@@ -296,19 +308,19 @@ namespace MagicianRyze
 
         public static void KsMode()
         {
-            if (MenuManager.KillStealMenu["Qks"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.KsUseQ)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Magical, false, true, SpellManager.QDamage());
                 if (target != null)
                     SpellManager.CastQ(target);
             }
-            if (MenuManager.KillStealMenu["Wks"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.KsUseW)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.W.Range, DamageType.Magical, false, false, SpellManager.WDamage());
                 if (target != null)
                     SpellManager.CastW(target);
             }
-            if (MenuManager.KillStealMenu["Eks"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.KsUseE)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Magical, false, false, SpellManager.EDamage());
                 if (target != null)
@@ -320,18 +332,24 @@ namespace MagicianRyze
         {
             foreach (var item in Champion.InventoryItems)
             {
-                if ((item.Id == ItemId.Tear_of_the_Goddess || item.Id == ItemId.Tear_of_the_Goddess_Crystal_Scar
-                    || item.Id == ItemId.Archangels_Staff || item.Id == ItemId.Archangels_Staff_Crystal_Scar
-                    || item.Id == ItemId.Manamune || item.Id == ItemId.Manamune_Crystal_Scar)
-                    && item.Stacks < 750 && Champion.IsInShopRange())
-                    SpellManager.CastQ(Champion);
+                if ((item.Id == ItemId.Tear_of_the_Goddess || item.Id == ItemId.Tear_of_the_Goddess_Crystal_Scar ||
+                     item.Id == ItemId.Archangels_Staff || item.Id == ItemId.Archangels_Staff_Crystal_Scar ||
+                     item.Id == ItemId.Manamune || item.Id == ItemId.Manamune_Crystal_Scar)
+                    && Champion.IsInShopRange())
+                {
+                    if ((int)(Game.Time - SpellManager.StackerStamp) >= 2)
+                    {
+                        SpellManager.CastQ(Champion);
+                        SpellManager.StackerStamp = Game.Time;
+                    }
+                }
             }
         }
 
         public static void InterruptMode(Obj_AI_Base sender, Interrupter.InterruptableSpellEventArgs args)
         {
-            if (!MenuManager.SettingMenu["Interruptmode"].Cast<CheckBox>().CurrentValue) return;
-            if (sender != null && MenuManager.SettingMenu["Winterrupt"].Cast<CheckBox>().CurrentValue)
+            if (!MenuManager.InterrupterMode) return;
+            if (sender != null && MenuManager.InterrupterUseW)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.W.Range, DamageType.Magical);
                 if (target != null)
@@ -341,8 +359,8 @@ namespace MagicianRyze
 
         public static void GapCloserMode(Obj_AI_Base sender, Gapcloser.GapcloserEventArgs args)
         {
-            if (!MenuManager.SettingMenu["Gapcmode"].Cast<CheckBox>().CurrentValue) return;
-            if (sender != null && MenuManager.SettingMenu["Wgapc"].Cast<CheckBox>().CurrentValue)
+            if (!MenuManager.GapCloserMode) return;
+            if (sender != null && MenuManager.GapCloserUseW)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.W.Range, DamageType.Magical);
                 if (target != null)
