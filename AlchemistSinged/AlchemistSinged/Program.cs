@@ -3,7 +3,6 @@ using System.Drawing;
 using EloBuddy;
 using EloBuddy.SDK;
 using EloBuddy.SDK.Events;
-using EloBuddy.SDK.Menu.Values;
 
 namespace AlchemistSinged
 {
@@ -40,13 +39,16 @@ namespace AlchemistSinged
         public static void Game_OnUpdate(EventArgs args)
         {
             // Initialize Skin Designer
-            Champion.SetSkinId(MenuManager.DrawingMenu["DrawS"].Cast<CheckBox>().CurrentValue
-                ? MenuManager.DrawingMenu["Skins"].Cast<Slider>().CurrentValue
+            Champion.SetSkinId(MenuManager.DesignerMode
+                ? MenuManager.DesignerSkin
                 : ChampionSkin);
         }
 
         public static void Drawing_OnDraw(EventArgs args)
         {
+            // Wait for Game Load
+            if (Game.Time < 10) return;
+
             // No Responce While Dead
             if (Champion.IsDead) return;
 
@@ -85,17 +87,17 @@ namespace AlchemistSinged
             }
 
             // Apply Designer Color into Circle
-            if (!MenuManager.DrawingMenu["DrawM"].Cast<CheckBox>().CurrentValue) return;
-            if (MenuManager.DrawingMenu["Wdraw"].Cast<CheckBox>().CurrentValue && SpellManager.W.IsLearned)
+            if (!MenuManager.DrawMode) return;
+            if (MenuManager.DrawW && SpellManager.W.IsLearned)
                 Drawing.DrawCircle(Champion.Position, SpellManager.W.Range, color);
-            if (MenuManager.DrawingMenu["Edraw"].Cast<CheckBox>().CurrentValue && SpellManager.E.IsLearned)
+            if (MenuManager.DrawE && SpellManager.E.IsLearned)
                 Drawing.DrawCircle(Champion.Position, SpellManager.E.Range, color);
         }
 
         public static void Game_OnTick(EventArgs args)
         {
             // Initialize Leveler
-            if (MenuManager.SettingMenu["Autolvl"].Cast<CheckBox>().CurrentValue
+            if (MenuManager.LevelerMode
                 && Champion.SpellTrainingPoints >= 1)
                 LevelerManager.Initialize();
 
@@ -133,7 +135,7 @@ namespace AlchemistSinged
                     ModeManager.KiteMode();
                     break;
             }
-            if (MenuManager.SettingMenu["StackM"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.StackMode)
                 ModeManager.StackMode();
         }
     }

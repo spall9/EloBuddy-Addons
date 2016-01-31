@@ -67,7 +67,7 @@ namespace AlchemistSinged
 
         public static bool IsFriendOrFoe(Obj_AI_Base target, bool check)
         {
-            return (check && target.IsAlly) || (!check && target.IsEnemy);
+            return (check && target.IsAlly && !target.IsMe) || (!check && target.IsEnemy);
         }
 
         public static bool IsMonsterOrMinion(Obj_AI_Base target, bool check)
@@ -82,7 +82,7 @@ namespace AlchemistSinged
 
         public static bool CollisionCheck(Obj_AI_Base target, float range)
         {
-            return target != null && Prediction.Position.Collision.LinearMissileCollision(target, Champion.Position.To2D(), target.Position.To2D().Extend(target, range), 1600, 60, 125);
+            return target != null && Prediction.Position.Collision.LinearMissileCollision(target, Champion.Position.To2D(), target.Position.To2D().Extend(target, range), 1700, 50, 250);
         }
 
         public static bool IsColliding(Obj_AI_Base target, bool check, float range)

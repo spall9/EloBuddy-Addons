@@ -1,7 +1,6 @@
 ﻿using EloBuddy;
 using EloBuddy.SDK;
 using EloBuddy.SDK.Events;
-using EloBuddy.SDK.Menu.Values;
 
 namespace AlchemistSinged
 {
@@ -12,30 +11,26 @@ namespace AlchemistSinged
 
         public static void ComboMode()
         {
-            if (MenuManager.ComboMenu["Qcombo"].Cast<CheckBox>().CurrentValue && Champion.IsMoving
-                && Player.GetSpell(SpellSlot.Q).ToggleState == 1)
+            if (MenuManager.ComboUseQ && Champion.IsMoving && Player.GetSpell(SpellSlot.Q).ToggleState == 1)
             {
                 var target = TargetManager.GetChampionTarget(250, DamageType.Magical);
                 if (target != null)
                     SpellManager.CastQ(target);
             }
-            if (MenuManager.ComboMenu["Ecombo"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.ComboUseE)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Magical);
                 if (target != null && SpellManager.E.IsReady())
                 {
-                    if (MenuManager.ComboMenu["Wcombo"].Cast<CheckBox>().CurrentValue
-                        && SpellManager.W.IsReady())
+                    if (MenuManager.ComboUseW && SpellManager.W.IsReady())
                     {
-                        var pos = Prediction.Position.PredictUnitPosition(target, SpellManager.W.CastDelay/2)
-                                .Extend(Champion, 550).To3D();
+                        var pos = Prediction.Position.PredictUnitPosition(target, SpellManager.W.CastDelay/2).Extend(Champion, 550).To3D();
                             SpellManager.W.Cast(pos);
                     }
                     SpellManager.CastE(target);
                 }
             }
-            if ((MenuManager.ComboMenu["Rcombo"].Cast<CheckBox>().CurrentValue && Champion.IsMoving
-                && Champion.CountEnemiesInRange(SpellManager.W.Range) >= MenuManager.ComboMenu["Rlimiter"].Cast<Slider>().CurrentValue))
+            if (MenuManager.ComboUseR && Champion.IsMoving && Champion.CountEnemiesInRange(SpellManager.W.Range) >= MenuManager.ComboRLimiter)
             {
                 var target = TargetManager.GetChampionTarget(1000, DamageType.Magical);
                 if (target != null && target.HasBuff("poisontrailtarget"))
@@ -45,33 +40,25 @@ namespace AlchemistSinged
 
         public static void HarassMode()
         {
-            if (MenuManager.HarassMenu["Qharass"].Cast<CheckBox>().CurrentValue && Champion.IsMoving
-                && Player.GetSpell(SpellSlot.Q).ToggleState == 1)
+            if (MenuManager.HarassUseQ && Champion.IsMoving && Player.GetSpell(SpellSlot.Q).ToggleState == 1)
             {
                 var target = TargetManager.GetChampionTarget(250, DamageType.Magical);
                 if (target != null)
                     SpellManager.CastQ(target);
             }
-            if (MenuManager.HarassMenu["Eharass"].Cast<CheckBox>().CurrentValue)
-            {
-                var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Magical);
-                if (target != null)
-                    SpellManager.CastE(target);
-            }
         }
 
         public static void JungleMode()
         {
-            if (MenuManager.JungleMenu["Qjungle"].Cast<CheckBox>().CurrentValue && Champion.IsMoving
-                && Player.GetSpell(SpellSlot.Q).ToggleState == 1)
+            if (MenuManager.JungleUseQ && Champion.IsMoving && Player.GetSpell(SpellSlot.Q).ToggleState == 1)
             {
-                var target = TargetManager.GetMinionTarget(250, DamageType.Magical, false, false, true);
+                var target = TargetManager.GetMinionTarget(250, DamageType.Magical, false, true);
                 if (target != null)
                     SpellManager.CastQ(target);
             }
-            if (MenuManager.JungleMenu["Ejungle"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.JungleUseE)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.E.Range, DamageType.Magical, false, false, true);
+                var target = TargetManager.GetMinionTarget(SpellManager.E.Range, DamageType.Magical, false, true);
                 if (target != null)
                     SpellManager.CastE(target);
             }
@@ -79,15 +66,14 @@ namespace AlchemistSinged
 
         public static void LaneClearMode()
         {
-            Orbwalker.DisableAttacking = MenuManager.LaneClearMenu["AAdisable"].Cast<CheckBox>().CurrentValue;
-            if (MenuManager.LaneClearMenu["Qlanec"].Cast<CheckBox>().CurrentValue && Champion.IsMoving
-                && Player.GetSpell(SpellSlot.Q).ToggleState == 1)
+            Orbwalker.DisableAttacking = MenuManager.LaneClearAaDisable;
+            if (MenuManager.LaneClearUseQ && Champion.IsMoving && Player.GetSpell(SpellSlot.Q).ToggleState == 1)
             {
                 var target = TargetManager.GetMinionTarget(250, DamageType.Magical);
                 if (target != null)
                     SpellManager.CastQ(target);
             }
-            if (MenuManager.LaneClearMenu["Elanec"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.LaneClearUseE)
             {
                 var target = TargetManager.GetMinionTarget(SpellManager.E.Range, DamageType.Magical);
                 if (target != null)
@@ -97,7 +83,7 @@ namespace AlchemistSinged
 
         public static void LastHitMode()
         {
-            if (MenuManager.LastHitMenu["Elasthit"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.LastHitUseE)
             {
                 var target = TargetManager.GetMinionTarget(SpellManager.E.Range, DamageType.Magical, false, false, false, SpellManager.EDamage());
                 if (target != null)
@@ -107,7 +93,7 @@ namespace AlchemistSinged
 
         public static void KiteMode()
         {
-            if (MenuManager.SettingMenu["Kite"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.KiteMode)
             {
                 var target = TargetManager.GetChampionTarget(1000, DamageType.Magical);
                 if (target != null
@@ -137,8 +123,8 @@ namespace AlchemistSinged
 
         public static void InterruptMode(Obj_AI_Base sender, Interrupter.InterruptableSpellEventArgs args)
         {
-            if (!MenuManager.SettingMenu["Interruptmode"].Cast<CheckBox>().CurrentValue) return;
-            if (sender != null && MenuManager.SettingMenu["Einterrupt"].Cast<CheckBox>().CurrentValue)
+            if (!MenuManager.InterrupterMode) return;
+            if (sender != null && MenuManager.InterrupterUseE)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Magical);
                 if (target != null)
@@ -148,8 +134,15 @@ namespace AlchemistSinged
 
         public static void GapCloserMode(Obj_AI_Base sender, Gapcloser.GapcloserEventArgs args)
         {
-            if (!MenuManager.SettingMenu["Gapcmode"].Cast<CheckBox>().CurrentValue) return;
-            if (sender != null && MenuManager.SettingMenu["Egapc"].Cast<CheckBox>().CurrentValue)
+            if (!MenuManager.GapCloserMode) return;
+            if (sender != null && args != null)
+            {
+                var spell = args.SpellName;
+                if (spell == "TristanaR" || spell == "BlindMonkRKick" || spell == "AlZaharNetherGrasp" || spell == "GalioIdolOfDurand" || spell == "VayneCondemn" || spell == "JayceThunderingBlow" || spell == "Headbutt")
+                    if (args.Target.IsMe)
+                        SpellManager.CastE(sender);
+            }
+            if (sender != null && MenuManager.GapCloserUseE)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Magical);
                 if (target != null)
