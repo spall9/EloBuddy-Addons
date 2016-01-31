@@ -3,7 +3,6 @@ using System.Drawing;
 using EloBuddy;
 using EloBuddy.SDK;
 using EloBuddy.SDK.Events;
-using EloBuddy.SDK.Menu.Values;
 
 namespace ExecutionerUrgot
 {
@@ -28,8 +27,6 @@ namespace ExecutionerUrgot
             // Initialize classes
             SpellManager.Initialize();
             MenuManager.Initialize();
-            TargetManager.Initialize();
-            ModeManager.Initialize();
 
             // Listen to Events
             Drawing.OnDraw += Drawing_OnDraw;
@@ -42,13 +39,20 @@ namespace ExecutionerUrgot
 
         private static void Game_OnUpdate(EventArgs args)
         {
-            Champion.SetSkinId(MenuManager.DrawingMenu["DrawS"].Cast<CheckBox>().CurrentValue
-                ? MenuManager.DrawingMenu["Skins"].Cast<Slider>().CurrentValue
+            // Initialize Skin Designer
+            Champion.SetSkinId(MenuManager.DesignerMode
+                ? MenuManager.DesignerSkin
                 : ChampionSkin);
         }
 
         private static void Drawing_OnDraw(EventArgs args)
         {
+            // Wait for Game Load
+            if (Game.Time < 5) return;
+
+            // No Responce While Dead
+            if (Champion.IsDead) return;
+
             Color color;
             Color color2;
 
@@ -61,11 +65,11 @@ namespace ExecutionerUrgot
                     break;
                 case 0:
                     color = Color.SpringGreen;
-                    color2 = Color.PaleVioletRed;
+                    color2 = Color.Firebrick;
                     break;
                 case 1:
                     color = Color.DarkOrange;
-                    color2 = Color.IndianRed;
+                    color2 = Color.Tomato;
                     break;
                 case 2:
                     color = Color.ForestGreen;
@@ -78,28 +82,28 @@ namespace ExecutionerUrgot
             }
 
             // Apply Designer Color into Circle
-            if (!MenuManager.DrawingMenu["DrawM"].Cast<CheckBox>().CurrentValue) return;
-            if (MenuManager.DrawingMenu["Qdraw"].Cast<CheckBox>().CurrentValue && SpellManager.Q.IsLearned)
+            if (!MenuManager.DrawerMode) return;
+            if (MenuManager.DrawQ && SpellManager.Q.IsLearned)
             {
                 Drawing.DrawCircle(Champion.Position, SpellManager.Q.Range, color);
                 Drawing.DrawCircle(Champion.Position, SpellManager.Q2.Range, color2);
             }
-            if (MenuManager.DrawingMenu["Edraw"].Cast<CheckBox>().CurrentValue && SpellManager.E.IsLearned)
+            if (MenuManager.DrawE && SpellManager.E.IsLearned)
                 Drawing.DrawCircle(Champion.Position, SpellManager.E.Range, color);
-            if (MenuManager.DrawingMenu["Rdraw"].Cast<CheckBox>().CurrentValue && SpellManager.R.IsLearned)
+            if (MenuManager.DrawR && SpellManager.R.IsLearned)
                 Drawing.DrawCircle(Champion.Position, SpellManager.R.Range, color);
         }
 
         private static void Game_OnTick(EventArgs args)
         {
             // Initialize Leveler
-            if (MenuManager.SettingMenu["Autolvl"].Cast<CheckBox>().CurrentValue && Champion.SpellTrainingPoints >= 1)
+            if (MenuManager.LevelerMode && Champion.SpellTrainingPoints >= 1)
                 LevelerManager.Initialize();
+
             // No Responce While Dead
             if (Champion.IsDead) return;
 
             // Mode Activation
-            if (Orbwalker.IsAutoAttacking) return;
             switch (Orbwalker.ActiveModesFlags)
             {
                 case Orbwalker.ActiveModes.Combo:
@@ -118,11 +122,11 @@ namespace ExecutionerUrgot
                     ModeManager.LastHitMode();
                     break;
             }
-            if (MenuManager.KillStealMenu["KSmode"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.KsMode)
                 ModeManager.KsMode();
-            if (MenuManager.SettingMenu["StackM"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.StackerMode)
                 ModeManager.StackMode();
-            if (MenuManager.SettingMenu["Grabmode"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.GrabberMode)
                 ModeManager.GrabMode();
         }
     }

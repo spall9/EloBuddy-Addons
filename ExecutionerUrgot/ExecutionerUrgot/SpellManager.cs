@@ -54,16 +54,12 @@ namespace ExecutionerUrgot
         public static void CastQ(Obj_AI_Base target)
         {
             if (target == null) return;
-            if (target.HasBuff("UrgotPlasmaGernade"))
-            {
-                if (Q2.IsReady())
-                    Q2.Cast(target);
-            }
-            else
-            {
+            if (!target.HasBuff("urgotcorrosivedebuff"))
                 if (Q.IsReady())
                     Q.Cast(target);
-            }
+            else
+                if (Q.IsReady())
+                    Q2.Cast(target);
         }
 
         public static void CastW(Obj_AI_Base target)

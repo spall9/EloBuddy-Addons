@@ -1,7 +1,6 @@
 ﻿using EloBuddy;
 using EloBuddy.SDK;
 using EloBuddy.SDK.Events;
-using EloBuddy.SDK.Menu.Values;
 
 namespace ExecutionerUrgot
 {
@@ -10,32 +9,28 @@ namespace ExecutionerUrgot
         // Clone Character Object
         public static AIHeroClient Champion = Program.Champion;
 
-        public static void Initialize()
-        {
-        }
-
         public static void ComboMode()
         {
-            if (MenuManager.ComboMenu["Qcombo"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.ComboUseQ)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Physical);
+                var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Physical, false, true);
                 if (target != null)
                     SpellManager.CastQ(target);
             }
-            if (MenuManager.ComboMenu["Wcombo"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.ComboUseW)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Magical);
-                if (target != null && !target.IsFacing(Champion))
+                var target = TargetManager.GetChampionTarget(750, DamageType.Magical);
+                if (target != null && !target.IsFacing(Champion) && target.Health <= target.MaxHealth / 2)
                     SpellManager.CastW(target);
             }
-            if (MenuManager.ComboMenu["Ecombo"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.ComboUseE)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Physical);
                 if (target != null)
                     SpellManager.CastE(target);
             }
-            if (MenuManager.ComboMenu["Rcombo"].Cast<Slider>().CurrentValue != 0 &&
-                Champion.CountEnemiesInRange(SpellManager.R.Range) == MenuManager.ComboMenu["Rcombo"].Cast<Slider>().CurrentValue)
+            if (MenuManager.ComboUseR != 0 &&
+                Champion.CountEnemiesInRange(SpellManager.R.Range) == MenuManager.ComboUseR)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.R.Range, DamageType.Magical);
                 if (target != null)
@@ -45,14 +40,14 @@ namespace ExecutionerUrgot
 
         public static void HarassMode()
         {
-            if (Champion.ManaPercent < MenuManager.LastHitMenu["Lasthitmana"].Cast<Slider>().CurrentValue) return;
-            if (MenuManager.HarassMenu["Qharass"].Cast<CheckBox>().CurrentValue)
+            if (Champion.ManaPercent < MenuManager.HarassMana) return;
+            if (MenuManager.HarassUseQ)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Physical);
+                var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Physical, false, true);
                 if (target != null)
                     SpellManager.CastQ(target);
             }
-            if (MenuManager.HarassMenu["Eharass"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.HarassUseE)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Physical);
                 if (target != null)
@@ -62,16 +57,16 @@ namespace ExecutionerUrgot
 
         public static void JungleMode()
         {
-            if (Champion.ManaPercent < MenuManager.JungleMenu["Junglemana"].Cast<Slider>().CurrentValue) return;
-            if (MenuManager.JungleMenu["Qjungle"].Cast<CheckBox>().CurrentValue)
+            if (Champion.ManaPercent < MenuManager.JungleMana) return;
+            if (MenuManager.JungleUseQ)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Physical, false, true);
+                var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Physical, false, true, true);
                 if (target != null)
                     SpellManager.CastQ(target);
             }
-            if (MenuManager.JungleMenu["Ejungle"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.JungleUseE)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.E.Range, DamageType.Physical, false, true);
+                var target = TargetManager.GetMinionTarget(SpellManager.E.Range, DamageType.Physical, false, false, true);
                 if (target != null)
                     SpellManager.CastE(target);
             }
@@ -79,14 +74,14 @@ namespace ExecutionerUrgot
 
         public static void LaneClearMode()
         {
-            if (Champion.ManaPercent < MenuManager.LaneClearMenu["Lanecmana"].Cast<Slider>().CurrentValue) return;
-            if (MenuManager.LaneClearMenu["Qlanec"].Cast<CheckBox>().CurrentValue)
+            if (Champion.ManaPercent < MenuManager.LaneClearMana) return;
+            if (MenuManager.LaneClearUseQ)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Physical);
+                var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Physical, false, true);
                 if (target != null)
                     SpellManager.CastQ(target);
             }
-            if (MenuManager.LaneClearMenu["Elanec"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.LaneClearUseE)
             {
                 var target = TargetManager.GetMinionTarget(SpellManager.E.Range, DamageType.Physical);
                 if (target != null)
@@ -96,26 +91,30 @@ namespace ExecutionerUrgot
 
         public static void LastHitMode()
         {
-            if (Champion.ManaPercent < MenuManager.LastHitMenu["Lasthitmana"].Cast<Slider>().CurrentValue) return;
-            if (MenuManager.LastHitMenu["Qlasthit"].Cast<CheckBox>().CurrentValue)
+            if (Champion.ManaPercent < MenuManager.LastHitMana) return;
+            if (Orbwalker.CanAutoAttack && Orbwalker.IsAutoAttacking) return;
+            if (MenuManager.LastHitUseQ)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Physical, false, false, SpellManager.QDamage());
+                var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Physical, false, true, false, SpellManager.QDamage());
                 if (target != null)
                     SpellManager.CastQ(target);
+                var jtarget = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Physical, false, true, true, SpellManager.QDamage());
+                if (jtarget != null)
+                    SpellManager.CastQ(jtarget);
             }
         }
 
         public static void KsMode()
         {
-            if (MenuManager.KillStealMenu["Qks"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.KsUseQ)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Physical, false, SpellManager.QDamage());
+                var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Physical, false, true, SpellManager.QDamage());
                 if (target != null)
                     SpellManager.CastQ(target);
             }
-            if (MenuManager.KillStealMenu["Eks"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.KsUseE)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Physical, false, SpellManager.QDamage());
+                var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Physical, false, false, SpellManager.QDamage());
                 if (target != null)
                     SpellManager.CastE(target);
             }
@@ -127,11 +126,9 @@ namespace ExecutionerUrgot
             var target = TargetManager.GetChampionTarget(SpellManager.R.Range, DamageType.Magical);
             if (target != null)
             {
-                var turret = TargetManager.GetTurretTarget(Champion.GetAutoAttackRange(target), true);
-                if (turret != null)
-                {
+                var turret = TargetManager.GetTurretTarget(1000, true);
+                if (turret != null && !turret.Spellbook.IsAutoAttacking)
                     SpellManager.CastR(target);
-                }
             }
         }
 
@@ -140,17 +137,17 @@ namespace ExecutionerUrgot
             foreach (var item in Champion.InventoryItems)
             {
                 if ((item.Id == ItemId.Tear_of_the_Goddess || item.Id == ItemId.Tear_of_the_Goddess_Crystal_Scar ||
-                     item.Id == ItemId.Archangels_Staff || item.Id == ItemId.Archangels_Staff_Crystal_Scar ||
-                     item.Id == ItemId.Manamune || item.Id == ItemId.Manamune_Crystal_Scar) && item.Stacks < 750 &&
-                    Champion.IsInShopRange())
+                    item.Id == ItemId.Archangels_Staff || item.Id == ItemId.Archangels_Staff_Crystal_Scar ||
+                    item.Id == ItemId.Manamune || item.Id == ItemId.Manamune_Crystal_Scar)
+                    && Champion.IsInShopRange())
                     SpellManager.CastQ(Champion);
             }
         }
 
         public static void InterruptMode(Obj_AI_Base sender, Interrupter.InterruptableSpellEventArgs args)
         {
-            if (!MenuManager.SettingMenu["Interruptmode"].Cast<CheckBox>().CurrentValue) return;
-            if (sender != null && MenuManager.SettingMenu["Rinterrupt"].Cast<CheckBox>().CurrentValue)
+            if (!MenuManager.InterrupterMode) return;
+            if (sender != null && MenuManager.InterrupterUseR)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.R.Range, DamageType.Magical);
                 if (target != null)
@@ -160,8 +157,8 @@ namespace ExecutionerUrgot
 
         public static void GapCloserMode(Obj_AI_Base sender, Gapcloser.GapcloserEventArgs args)
         {
-            if (!MenuManager.SettingMenu["Gapcmode"].Cast<CheckBox>().CurrentValue) return;
-            if (sender != null && MenuManager.SettingMenu["Rgapc"].Cast<CheckBox>().CurrentValue)
+            if (!MenuManager.GapCloserMode) return;
+            if (sender != null && MenuManager.GapCloserUseR)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.R.Range, DamageType.Magical);
                 if (target != null)
