@@ -9,27 +9,20 @@ namespace ProtectorLeona
         // Clone Character Object
         public static AIHeroClient Champion = Program.Champion;
 
-        public static void Initialize()
-        {
-        }
-
-        public static AIHeroClient GetChampionTarget(float range, DamageType damagetype, bool isAlly = false, float ksdamage = -1f)
+        // Target Selectors
+        public static AIHeroClient GetChampionTarget(float range, DamageType damagetype, bool isAlly = false, bool collision = false, float ksdamage = -1f)
         {
             var herotype = EntityManager.Heroes.AllHeroes;
-            var targets = herotype
+            var target = herotype
                 .OrderByDescending(a => a.HealthPercent)
-                .Where(a => a.IsValidTarget(range) && ((isAlly && a.IsAlly) || (!isAlly && a.IsEnemy))
-                            && !a.IsDead && !a.IsZombie
-                            && TargetStatus(a)
-                            && ((ksdamage > -1f && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, ksdamage)) || ksdamage == -1)
-                            && !Champion.IsRecalling()
-                            && a.Distance(Champion) <= range);
-            return TargetSelector.GetTarget(targets, damagetype);
+                .FirstOrDefault(a => WithinRange(a, range) && IsTargetValid(a)
+                                && IsFriendOrFoe(a, isAlly)
+                                && IsColliding(a, collision, range) && CalculateKs(a, damagetype, ksdamage));
+            return target;
         }
 
-        public static Obj_AI_Minion GetMinionTarget(float range, DamageType damagetype, bool isAlly = false, bool isMonster = false, float ksdamage = -1)
+        public static Obj_AI_Minion GetMinionTarget(float range, DamageType damagetype, bool isAlly = false, bool isMonster = false, bool collision = false, float ksdamage = -1)
         {
-
             var teamtype = EntityManager.UnitTeam.Enemy;
             if (isAlly)
                 teamtype = EntityManager.UnitTeam.Ally;
@@ -42,13 +35,9 @@ namespace ProtectorLeona
 
             var target = miniontype
                 .OrderByDescending(a => a.HealthPercent)
-                .FirstOrDefault(a => a.IsValidTarget(range) && ((isAlly && a.IsAlly) || (!isAlly && a.IsEnemy))
-                                     && ((isMonster && a.IsMonster) || (!isMonster && !a.IsMonster))
-                                     && !a.IsDead && !a.IsZombie
-                                     && TargetStatus(a)
-                                     && ((ksdamage > -1 && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, ksdamage)) || ksdamage == -1)
-                                     && !Champion.IsRecalling()
-                                     && a.Distance(Champion) <= range);
+                .FirstOrDefault(a => WithinRange(a, range) && IsTargetValid(a)
+                                && IsFriendOrFoe(a, isAlly) && IsMonsterOrMinion(a, isMonster)
+                                && IsColliding(a, collision, range) && CalculateKs(a, damagetype, ksdamage));
             return target;
         }
 
@@ -57,19 +46,53 @@ namespace ProtectorLeona
             var turrettype = EntityManager.Turrets.AllTurrets;
             var target = turrettype
                 .OrderByDescending(a => a.HealthPercent)
-                .FirstOrDefault(a => a.IsValidTarget(range) && ((isAlly && a.IsAlly) || (!isAlly && a.IsEnemy))
-                                     && !a.IsDead
-                                     && !Champion.IsRecalling()
-                                     && a.Distance(Champion) <= range);
+                .FirstOrDefault(a => WithinRange(a, range) && IsTargetValid(a) && IsFriendOrFoe(a, isAlly));
             return target;
         }
 
-        public static bool TargetStatus(Obj_AI_Base target)
+
+        // Secondary Checks
+        public static bool BuffStatus(Obj_AI_Base target)
         {
             return !target.Buffs.Any(a => a.IsValid()
                                           && a.DisplayName == "Chrono Shift"
                                           && a.DisplayName == "FioraW"
                                           && a.Type == BuffType.SpellShield);
+        }
+
+        public static bool IsTargetValid(Obj_AI_Base target)
+        {
+            return !target.IsDead && !target.IsZombie && !Champion.IsRecalling() && BuffStatus(target);
+        }
+
+        public static bool IsFriendOrFoe(Obj_AI_Base target, bool check)
+        {
+            return (check && target.IsAlly && !target.IsMe) || (!check && target.IsEnemy);
+        }
+
+        public static bool IsMonsterOrMinion(Obj_AI_Base target, bool check)
+        {
+            return ((check && target.IsMonster) || (!check && !target.IsMonster));
+        }
+
+        public static bool WithinRange(Obj_AI_Base target, float range)
+        {
+            return target.IsValidTarget(range) && target.Distance(Champion) <= range;
+        }
+
+        public static bool CollisionCheck(Obj_AI_Base target, float range)
+        {
+            return target != null && Prediction.Position.Collision.LinearMissileCollision(target, Champion.Position.To2D(), target.Position.To2D().Extend(target, range), 0, 0, 0);
+        }
+
+        public static bool IsColliding(Obj_AI_Base target, bool check, float range)
+        {
+            return ((check && CollisionCheck(target, range)) || !check);
+        }
+
+        public static bool CalculateKs(Obj_AI_Base target, DamageType damagetype, float damage)
+        {
+            return (damage > -1f && target.Health <= Champion.CalculateDamageOnUnit(target, damagetype, damage)) || damage == -1;
         }
     }
 }

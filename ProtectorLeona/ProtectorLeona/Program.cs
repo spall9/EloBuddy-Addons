@@ -3,7 +3,6 @@ using System.Drawing;
 using EloBuddy;
 using EloBuddy.SDK;
 using EloBuddy.SDK.Events;
-using EloBuddy.SDK.Menu.Values;
 
 namespace ProtectorLeona
 {
@@ -30,8 +29,6 @@ namespace ProtectorLeona
             // Initialize classes
             SpellManager.Initialize();
             MenuManager.Initialize();
-            TargetManager.Initialize();
-            ModeManager.Initialize();
 
             // Listen to Events
             Drawing.OnDraw += Drawing_OnDraw;
@@ -44,13 +41,17 @@ namespace ProtectorLeona
 
         public static void Game_OnUpdate(EventArgs args)
         {
-            Champion.SetSkinId(MenuManager.DrawingMenu["DrawS"].Cast<CheckBox>().CurrentValue
-                ? MenuManager.DrawingMenu["Skins"].Cast<Slider>().CurrentValue
-                : ChampionSkin);
+            Champion.SetSkinId(MenuManager.DesignerMode ? MenuManager.DesignerSkin : ChampionSkin);
         }
 
         public static void Drawing_OnDraw(EventArgs args)
         {
+            // Wait for Game Load
+            if (Game.Time < 10) return;
+
+            // No Responce While Dead
+            if (Champion.IsDead) return;
+
             Color color;
 
             switch (Champion.SkinId)
@@ -86,21 +87,21 @@ namespace ProtectorLeona
                     color = Color.Yellow;
                     break;
             }
-            if (!MenuManager.DrawingMenu["DrawM"].Cast<CheckBox>().CurrentValue) return;
-            if (MenuManager.DrawingMenu["Qdraw"].Cast<CheckBox>().CurrentValue && SpellManager.Q.IsLearned)
+            if (!MenuManager.DrawerMode) return;
+            if (MenuManager.DrawQ && SpellManager.Q.IsLearned)
                 Drawing.DrawCircle(Champion.Position, SpellManager.Q.Range, color);
-            if (MenuManager.DrawingMenu["Wdraw"].Cast<CheckBox>().CurrentValue && SpellManager.W.IsLearned)
+            if (MenuManager.DrawW && SpellManager.W.IsLearned)
                 Drawing.DrawCircle(Champion.Position, SpellManager.W.Range, color);
-            if (MenuManager.DrawingMenu["Edraw"].Cast<CheckBox>().CurrentValue && SpellManager.E.IsLearned)
+            if (MenuManager.DrawE && SpellManager.E.IsLearned)
                 Drawing.DrawCircle(Champion.Position, SpellManager.E.Range, color);
-            if (MenuManager.DrawingMenu["Rdraw"].Cast<CheckBox>().CurrentValue && SpellManager.R.IsLearned)
+            if (MenuManager.DrawR && SpellManager.R.IsLearned)
                 Drawing.DrawCircle(Champion.Position, SpellManager.R.Range, color);
         }
 
         public static void Game_OnTick(EventArgs args)
         {
             // Initialize Leveler
-            if (MenuManager.SettingMenu["Autolvl"].Cast<CheckBox>().CurrentValue && Champion.SpellTrainingPoints >= 1)
+            if (MenuManager.LevelerMode && Champion.SpellTrainingPoints >= 1)
                 LevelerManager.Initialize();
             // No Responce While Dead
             if (Champion.IsDead) return;
