@@ -49,6 +49,9 @@ namespace BallistaKogMaw
 
         public static void Drawing_OnDraw(EventArgs args)
         {
+            // Wait for Game Load
+            if (Game.Time < 10) return;
+
             // No Responce While Dead
             if (Champion.IsDead) return;
 

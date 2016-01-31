@@ -67,7 +67,7 @@ namespace BallistaKogMaw
 
         public static bool IsFriendOrFoe(Obj_AI_Base target, bool check)
         {
-            return (check && target.IsAlly) || (!check && target.IsEnemy);
+            return (check && target.IsAlly && !target.IsMe) || (!check && target.IsEnemy);
         }
 
         public static bool IsMonsterOrMinion(Obj_AI_Base target, bool check)
