@@ -80,14 +80,14 @@ namespace BallistaKogMaw
             }
             if (MenuManager.JungleUseW)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.W.Range, DamageType.Magical, false, false, true);
+                var target = TargetManager.GetMinionTarget(SpellManager.W.Range, DamageType.Magical, false, true);
                 if (target != null)
                     SpellManager.CastW(target);
             }
             if (MenuManager.JungleUseR
                 && Champion.GetBuffCount("kogmawlivingartillerycost") <= MenuManager.JungleStacks)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.R.Range, DamageType.Mixed, false, false, true);
+                var target = TargetManager.GetMinionTarget(SpellManager.R.Range, DamageType.Mixed, false, true);
                 if (target != null)
                     SpellManager.CastR(target);
             }
@@ -98,7 +98,7 @@ namespace BallistaKogMaw
             if (Champion.ManaPercent < MenuManager.LaneClearMana) return;
             if (MenuManager.LaneClearUseQ)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Magical, false, true);
+                var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Magical, false, false, true);
                 if (target != null)
                     SpellManager.CastQ(target);
             }
@@ -120,10 +120,10 @@ namespace BallistaKogMaw
         public static void LastHitMode()
         {
             if (Champion.ManaPercent < MenuManager.LastHitMana) return;
-            if (Orbwalker.CanAutoAttack) return;
+            if (Orbwalker.CanAutoAttack && Orbwalker.IsAutoAttacking) return;
             if (MenuManager.LastHitUseQ)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Magical, false, true, false, SpellManager.QDamage());
+                var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Magical, false, false, true, SpellManager.QDamage());
                 if (target != null)
                     SpellManager.CastQ(target);
             }

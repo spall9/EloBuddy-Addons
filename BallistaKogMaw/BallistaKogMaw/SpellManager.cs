@@ -63,8 +63,7 @@ namespace BallistaKogMaw
 
         public static float QDamage()
         {
-            return new float[] { 0, 80, 130, 180, 230, 280 }[Q.Level] 
-                + (0.5f * Champion.FlatMagicDamageMod);
+            return new float[] { 0, 80, 130, 180, 230, 280 }[Q.Level] + (0.5f * Champion.FlatMagicDamageMod);
         }
 
         public static float RDamage()

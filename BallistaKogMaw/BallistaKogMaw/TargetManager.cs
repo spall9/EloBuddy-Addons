@@ -9,25 +9,19 @@ namespace BallistaKogMaw
         // Clone Character Object
         public static AIHeroClient Champion = Program.Champion;
 
+        // Target Selectors
         public static AIHeroClient GetChampionTarget(float range, DamageType damagetype, bool isAlly = false, bool collision = false, float ksdamage = -1f)
         {
             var herotype = EntityManager.Heroes.AllHeroes;
-            var targets = herotype
+            var target = herotype
                 .OrderByDescending(a => a.HealthPercent)
-                .Where(a => a.IsValidTarget(range) && ((isAlly && a.IsAlly) || (!isAlly && a.IsEnemy))
-                            && !a.IsDead && !a.IsZombie
-                            && TargetStatus(a)
-                            && ((collision && CollisionCheck(a, range)) || !collision)
-                            && ((range == SpellManager.R.Range
-                            && ksdamage > -1f && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, SpellManager.RDamage() * SpellManager.RMultiplier(a))) || ksdamage == -1f)
-                            && ((range != SpellManager.W.Range && range != SpellManager.R.Range
-                            && ksdamage > -1f && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, ksdamage)) || ksdamage == -1f)
-                            && !Champion.IsRecalling()
-                            && a.Distance(Champion) <= range);
-            return TargetSelector.GetTarget(targets, damagetype);
+                .FirstOrDefault(a => WithinRange(a, range) && IsTargetValid(a)
+                                && IsFriendOrFoe(a, isAlly)
+                                && IsColliding(a, collision, range) && CalculateKs(a, damagetype, ksdamage, range));
+            return target;
         }
 
-        public static Obj_AI_Minion GetMinionTarget(float range, DamageType damagetype, bool isAlly = false, bool collision = false, bool isMonster = false, float ksdamage = -1)
+        public static Obj_AI_Minion GetMinionTarget(float range, DamageType damagetype, bool isAlly = false, bool isMonster = false, bool collision = false, float ksdamage = -1)
         {
             var teamtype = EntityManager.UnitTeam.Enemy;
             if (isAlly)
@@ -41,17 +35,9 @@ namespace BallistaKogMaw
 
             var target = miniontype
                 .OrderByDescending(a => a.HealthPercent)
-                .FirstOrDefault(a => a.IsValidTarget(range) && ((isAlly && a.IsAlly) || (!isAlly && a.IsEnemy))
-                                     && ((isMonster && a.IsMonster) || (!isMonster && !a.IsMonster))
-                                     && !a.IsDead && !a.IsZombie
-                                     && TargetStatus(a)
-                                     && ((collision && CollisionCheck(a, range)) || !collision)
-                                     && ((range == SpellManager.R.Range
-                                     && ksdamage > -1f && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, SpellManager.RDamage() * SpellManager.RMultiplier(a))) || ksdamage == -1)
-                                     && ((range != SpellManager.W.Range && range != SpellManager.R.Range
-                                     && ksdamage > -1f && a.Health <= Champion.CalculateDamageOnUnit(a, damagetype, ksdamage)) || ksdamage == -1)
-                                     && !Champion.IsRecalling()
-                                     && a.Distance(Champion) <= range);
+                .FirstOrDefault(a => WithinRange(a, range) && IsTargetValid(a)
+                                && IsFriendOrFoe(a, isAlly) && IsMonsterOrMinion(a, isMonster)
+                                && IsColliding(a, collision, range) && CalculateKs(a, damagetype, ksdamage, range));
             return target;
         }
 
@@ -60,26 +46,54 @@ namespace BallistaKogMaw
             var turrettype = EntityManager.Turrets.AllTurrets;
             var target = turrettype
                 .OrderByDescending(a => a.HealthPercent)
-                .FirstOrDefault(a => a.IsValidTarget(range) && ((isAlly && a.IsAlly) || (!isAlly && a.IsEnemy))
-                                     && !a.IsDead
-                                     && !Champion.IsRecalling()
-                                     && a.Distance(Champion) <= range);
+                .FirstOrDefault(a => WithinRange(a, range) && IsTargetValid(a) && IsFriendOrFoe(a, isAlly));
             return target;
         }
 
-        public static bool CollisionCheck(Obj_AI_Base target, float range)
-        {
-            if (target != null)
-                return Prediction.Position.Collision.LinearMissileCollision(target, Champion.Position.To2D(), target.Position.To2D().Extend(target, range), 1650, 70, 250);
-            return false;
-        }
 
-        public static bool TargetStatus(Obj_AI_Base target)
+        // Secondary Checks
+        public static bool BuffStatus(Obj_AI_Base target)
         {
             return !target.Buffs.Any(a => a.IsValid()
                                           && a.DisplayName == "Chrono Shift"
                                           && a.DisplayName == "FioraW"
                                           && a.Type == BuffType.SpellShield);
+        }
+
+        public static bool IsTargetValid(Obj_AI_Base target)
+        {
+            return !target.IsDead && !target.IsZombie && !Champion.IsRecalling() && BuffStatus(target);
+        }
+
+        public static bool IsFriendOrFoe(Obj_AI_Base target, bool check)
+        {
+            return (check && target.IsAlly) || (!check && target.IsEnemy);
+        }
+
+        public static bool IsMonsterOrMinion(Obj_AI_Base target, bool check)
+        {
+            return ((check && target.IsMonster) || (!check && !target.IsMonster));
+        }
+
+        public static bool WithinRange(Obj_AI_Base target, float range)
+        {
+            return target.IsValidTarget(range) && target.Distance(Champion) <= range;
+        }
+
+        public static bool CollisionCheck(Obj_AI_Base target, float range)
+        {
+            return target != null && Prediction.Position.Collision.LinearMissileCollision(target, Champion.Position.To2D(), target.Position.To2D().Extend(target, range), 1650, 70, 250);
+        }
+
+        public static bool IsColliding(Obj_AI_Base target, bool check, float range)
+        {
+            return ((check && CollisionCheck(target, range)) || !check);
+        }
+
+        public static bool CalculateKs(Obj_AI_Base target, DamageType damagetype, float damage, float range)
+        {
+            return (((range == SpellManager.R.Range && damage > -1f && target.Health <= Champion.CalculateDamageOnUnit(target, damagetype, SpellManager.RDamage()*SpellManager.RMultiplier(target))) || damage == -1f)
+                    && ((range != SpellManager.R.Range && damage > -1f && target.Health <= Champion.CalculateDamageOnUnit(target, damagetype, damage)) || damage == -1f));
         }
     }
 }

@@ -16,6 +16,9 @@ namespace ExecutionerUrgot
         // Clone Character Object
         public static AIHeroClient Champion = Program.Champion;
 
+        // Tear Timestamp
+        public static float StackerStamp = 0;
+
         public static void Initialize()
         {
             // Initialize spells
