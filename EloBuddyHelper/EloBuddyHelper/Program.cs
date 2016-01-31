@@ -10,8 +10,7 @@ namespace EloBuddyHelper
     internal class Program
     {
         public static Menu EloBuddyHelperMenu;
-        public static AIHeroClient Player = ObjectManager.Player;
-        public static InventorySlot[] Itemlist = Player.InventoryItems;
+        public static AIHeroClient Player { get { return ObjectManager.Player; } }
 
 
         // Grab Ally
@@ -70,7 +69,7 @@ namespace EloBuddyHelper
                     Chat.Print(itemidnum);
                 }
             }*/
-            //Chat.Print(Player.GetSpell(SpellSlot.R).Name);
+            //Chat.Print(Player.Spellbook.GetSpell(SpellSlot.Q).ToggleState);
 
             //SpellDataInst item4 = Player.GetSpell(SpellSlot.Trinket);
             //Chat.Print(item4);
@@ -78,22 +77,22 @@ namespace EloBuddyHelper
 
         public static void OnBuffGain(Obj_AI_Base sender, Obj_AI_BaseBuffGainEventArgs buff)
         {
-            if(sender.IsMe)
-                Chat.Print("Buff Gained: " + buff.Buff.Name);
+            //if(sender.IsMe)
+                //Chat.Print("Buff Gained: " + buff.Buff.Name);
             //if (sender.IsAlly)
             //Chat.Print("Ally Buff Gained: " + buff.Buff.Name);
-            //if (sender.IsEnemy)
-                //Chat.Print("Enemy Buff Gained: " + buff.Buff.Name);
+            if (sender.IsEnemy)
+                Chat.Print("Enemy Buff Gained: " + buff.Buff.Name);
         }
 
         public static void OnBuffLose(Obj_AI_Base sender, Obj_AI_BaseBuffLoseEventArgs buff)
         {
-            if (sender.IsMe)
-                Chat.Print("Buff Lost: " + buff.Buff.Name);
+            //if (sender.IsMe)
+                //Chat.Print("Buff Lost: " + buff.Buff.Name);
             //if (sender.IsAlly)
             // Chat.Print("Ally Buff Lost: " + buff.Buff.Name);
-            //if (sender.IsEnemy)
-                //Chat.Print("Enemy Buff Lost: " + buff.Buff.Name);
+            if (sender.IsEnemy)
+                Chat.Print("Enemy Buff Lost: " + buff.Buff.Name);
         }
 
         public static void Drawing_OnDraw(EventArgs args)

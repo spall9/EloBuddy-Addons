@@ -28,8 +28,6 @@ namespace MagicianRyze
             // Initialize classes
             SpellManager.Initialize();
             MenuManager.Initialize();
-            TargetManager.Initialize();
-            ModeManager.Initialize();
             
             // Listen to Events
             Drawing.OnDraw += Drawing_OnDraw;

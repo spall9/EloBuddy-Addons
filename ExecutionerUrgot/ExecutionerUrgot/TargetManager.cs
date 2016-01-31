@@ -92,7 +92,9 @@ namespace ExecutionerUrgot
 
         public static bool IsColliding(Obj_AI_Base target, bool check, float range)
         {
-            return ((check && !target.HasBuff("urgotcorrosivedebuff") && CollisionCheck(target, range)) || !check);
+            return ((check && !target.HasBuff("urgotcorrosivedebuff") && CollisionCheck(target, range))
+                || (check && target.HasBuff("urgotcorrosivedebuff"))
+                || !check);
         }
 
         public static bool CalculateKs(Obj_AI_Base target, DamageType damagetype, float damage)

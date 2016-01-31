@@ -10,10 +10,6 @@ namespace MagicianRyze
         // Clone Character Object
         public static AIHeroClient Champion = Program.Champion;
 
-        public static void Initialize()
-        {
-        }
-
         public static void CounterCombo()
         {
             if (Champion.HasBuff("RyzeR")
@@ -24,13 +20,13 @@ namespace MagicianRyze
             }
             if (MenuManager.ComboMenu["Wcombo"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.W.Range, DamageType.Magical);
+                var target = TargetManager.GetChampionTarget(SpellManager.W.Range, DamageType.Magical, false, true);
                 if (target != null)
                     SpellManager.CastW(target);
             }
             if (MenuManager.ComboMenu["Qcombo"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Magical, true);
+                var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Magical);
                 if (target != null)
                     SpellManager.CastQ(target);
             }
@@ -61,8 +57,9 @@ namespace MagicianRyze
                 return;
             }
 
-            var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Magical);
-            if (target != null)
+            var qtarget = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Magical, false, true);
+            var target = TargetManager.GetChampionTarget(SpellManager.W.Range, DamageType.Magical);
+            if (target != null && qtarget != null)
             {
                 var bcount = Champion.GetBuffCount("ryzepassivestack");
 
@@ -71,26 +68,26 @@ namespace MagicianRyze
                     switch (bcount)
                     {
                         case 1:
-                            SpellManager.CastQ(target);
+                            SpellManager.CastQ(qtarget);
                             SpellManager.CastE(target);
                             SpellManager.CastW(target);
                             SpellManager.CastR(target);
                             break;
                         case 2:
-                            SpellManager.CastQ(target);
+                            SpellManager.CastQ(qtarget);
                             SpellManager.CastW(target);
                             SpellManager.CastE(target);
                             SpellManager.CastR(target);
                             break;
                         case 3:
-                            SpellManager.CastQ(target);
+                            SpellManager.CastQ(qtarget);
                             SpellManager.CastE(target);
                             SpellManager.CastW(target);
                             SpellManager.CastR(target);
                             break;
                         case 4:
                             SpellManager.CastW(target);
-                            SpellManager.CastQ(target);
+                            SpellManager.CastQ(qtarget);
                             SpellManager.CastE(target);
                             SpellManager.CastR(target);
                             break;
@@ -99,13 +96,13 @@ namespace MagicianRyze
                 else
                 {
                     SpellManager.CastW(target);
-                    SpellManager.CastQ(target);
+                    SpellManager.CastQ(qtarget);
                     SpellManager.CastE(target);
                     SpellManager.CastR(target);
                 }
             }
 
-            if (target != null
+            if (target != null && qtarget != null
                 && (Champion.GetBuffCount("ryzepassivestack") == 4
                     || Champion.HasBuff("ryzepassivecharged")))
             {
@@ -129,7 +126,7 @@ namespace MagicianRyze
             if (Champion.ManaPercent < MenuManager.HarassMenu["Harassmana"].Cast<Slider>().CurrentValue) return;
             if (MenuManager.HarassMenu["Qharass"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Magical, true);
+                var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Magical, false, true);
                 if (target != null)
                     SpellManager.CastQ(target);
             }
@@ -146,19 +143,19 @@ namespace MagicianRyze
             if (Champion.ManaPercent < MenuManager.JungleMenu["Junglemana"].Cast<Slider>().CurrentValue) return;
             if (MenuManager.JungleMenu["Qjungle"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Magical, true, false, true);
+                var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Magical, false, true, true);
                 if (target != null)
                     SpellManager.CastQ(target);
             }
             if (MenuManager.JungleMenu["Wjungle"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.W.Range, DamageType.Magical, false, false, true);
+                var target = TargetManager.GetMinionTarget(SpellManager.W.Range, DamageType.Magical, false, true);
                 if (target != null)
                     SpellManager.CastW(target);
             }
             if (MenuManager.JungleMenu["Ejungle"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.E.Range, DamageType.Magical, false, false, true);
+                var target = TargetManager.GetMinionTarget(SpellManager.E.Range, DamageType.Magical, false, true);
                 if (target != null)
                     SpellManager.CastE(target);
             }
@@ -175,7 +172,7 @@ namespace MagicianRyze
             if (Champion.ManaPercent < MenuManager.LaneClearMenu["Lanecmana"].Cast<Slider>().CurrentValue) return;
             if (MenuManager.LaneClearMenu["Qlanec"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Magical, true);
+                var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Magical, false, false, true);
                 if (target != null)
                     SpellManager.CastQ(target);
             }
@@ -204,7 +201,7 @@ namespace MagicianRyze
             if (Champion.ManaPercent < MenuManager.LastHitMenu["Lasthitmana"].Cast<Slider>().CurrentValue) return;
             if (MenuManager.LastHitMenu["Qlasthit"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Magical, true, false, false, SpellManager.QDamage());
+                var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Magical, false, false, true, SpellManager.QDamage());
                 if (target != null)
                     SpellManager.CastQ(target);
             }
@@ -230,7 +227,7 @@ namespace MagicianRyze
                 {
                     if (SpellManager.Q.IsReady())
                     {
-                        var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Magical, true);
+                        var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Magical, false, true);
                         if (target != null)
                             SpellManager.CastQ(target);
                     }
@@ -254,19 +251,19 @@ namespace MagicianRyze
                     {
                         if (SpellManager.Q.IsReady())
                         {
-                            var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Magical, true, false, true);
+                            var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Magical, false, true, true);
                             if (target != null)
                                 SpellManager.CastQ(target);
                         }
                         if (SpellManager.W.IsReady())
                         {
-                            var target = TargetManager.GetMinionTarget(SpellManager.W.Range, DamageType.Magical, false, false, true);
+                            var target = TargetManager.GetMinionTarget(SpellManager.W.Range, DamageType.Magical, false, true);
                             if (target != null)
                                 SpellManager.CastW(target);
                         }
                         if (SpellManager.E.IsReady())
                         {
-                            var target = TargetManager.GetMinionTarget(SpellManager.E.Range, DamageType.Magical, false, false, true);
+                            var target = TargetManager.GetMinionTarget(SpellManager.E.Range, DamageType.Magical, false, true);
                             if (target != null)
                                 SpellManager.CastE(target);
                         }
@@ -275,7 +272,7 @@ namespace MagicianRyze
                     {
                         if (SpellManager.Q.IsReady())
                         {
-                            var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Magical, true);
+                            var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Magical, false, false, true );
                             if (target != null)
                                 SpellManager.CastQ(target);
                         }
@@ -301,7 +298,7 @@ namespace MagicianRyze
         {
             if (MenuManager.KillStealMenu["Qks"].Cast<CheckBox>().CurrentValue)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Magical, true, false, SpellManager.QDamage());
+                var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Magical, false, true, SpellManager.QDamage());
                 if (target != null)
                     SpellManager.CastQ(target);
             }
@@ -323,10 +320,10 @@ namespace MagicianRyze
         {
             foreach (var item in Champion.InventoryItems)
             {
-                if ((item.Id == ItemId.Tear_of_the_Goddess || item.Id == ItemId.Tear_of_the_Goddess_Crystal_Scar ||
-                     item.Id == ItemId.Archangels_Staff || item.Id == ItemId.Archangels_Staff_Crystal_Scar ||
-                     item.Id == ItemId.Manamune || item.Id == ItemId.Manamune_Crystal_Scar) && item.Stacks < 750 &&
-                    Champion.IsInShopRange() && SpellManager.Q.IsReady())
+                if ((item.Id == ItemId.Tear_of_the_Goddess || item.Id == ItemId.Tear_of_the_Goddess_Crystal_Scar
+                    || item.Id == ItemId.Archangels_Staff || item.Id == ItemId.Archangels_Staff_Crystal_Scar
+                    || item.Id == ItemId.Manamune || item.Id == ItemId.Manamune_Crystal_Scar)
+                    && item.Stacks < 750 && Champion.IsInShopRange())
                     SpellManager.CastQ(Champion);
             }
         }

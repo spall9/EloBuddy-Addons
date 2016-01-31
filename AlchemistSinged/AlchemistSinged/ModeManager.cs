@@ -93,7 +93,6 @@ namespace AlchemistSinged
                 if (target != null)
                     SpellManager.CastE(target);
             }
-            Orbwalker.DisableAttacking = false;
         }
 
         public static void LastHitMode()

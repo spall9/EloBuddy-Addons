@@ -11,11 +11,11 @@ namespace ExecutionerUrgot
 
         public static void ComboMode()
         {
-            if (MenuManager.ComboUseQ)
+            if (MenuManager.ComboUseE)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Physical, false, true);
+                var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Physical);
                 if (target != null)
-                    SpellManager.CastQ(target);
+                    SpellManager.CastE(target);
             }
             if (MenuManager.ComboUseW)
             {
@@ -23,11 +23,11 @@ namespace ExecutionerUrgot
                 if (target != null && !target.IsFacing(Champion) && target.Health <= target.MaxHealth / 2)
                     SpellManager.CastW(target);
             }
-            if (MenuManager.ComboUseE)
+            if (MenuManager.ComboUseQ)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Physical);
+                var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Physical, false, true);
                 if (target != null)
-                    SpellManager.CastE(target);
+                    SpellManager.CastQ(target);
             }
             if (MenuManager.ComboUseR != 0 &&
                 Champion.CountEnemiesInRange(SpellManager.R.Range) == MenuManager.ComboUseR)
@@ -41,17 +41,17 @@ namespace ExecutionerUrgot
         public static void HarassMode()
         {
             if (Champion.ManaPercent < MenuManager.HarassMana) return;
-            if (MenuManager.HarassUseQ)
-            {
-                var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Physical, false, true);
-                if (target != null)
-                    SpellManager.CastQ(target);
-            }
             if (MenuManager.HarassUseE)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Physical);
                 if (target != null)
                     SpellManager.CastE(target);
+            }
+            if (MenuManager.HarassUseQ)
+            {
+                var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Physical, false, true);
+                if (target != null)
+                    SpellManager.CastQ(target);
             }
         }
 
@@ -66,7 +66,7 @@ namespace ExecutionerUrgot
             }
             if (MenuManager.JungleUseE)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.E.Range, DamageType.Physical, false, false, true);
+                var target = TargetManager.GetMinionTarget(SpellManager.E.Range, DamageType.Physical, false, true, false);
                 if (target != null)
                     SpellManager.CastE(target);
             }
@@ -77,7 +77,7 @@ namespace ExecutionerUrgot
             if (Champion.ManaPercent < MenuManager.LaneClearMana) return;
             if (MenuManager.LaneClearUseQ)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Physical, false, true);
+                var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Physical, false, false, true);
                 if (target != null)
                     SpellManager.CastQ(target);
             }
@@ -95,7 +95,7 @@ namespace ExecutionerUrgot
             if (Orbwalker.CanAutoAttack && Orbwalker.IsAutoAttacking) return;
             if (MenuManager.LastHitUseQ)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Physical, false, true, false, SpellManager.QDamage());
+                var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Physical, false, false, true, SpellManager.QDamage());
                 if (target != null)
                     SpellManager.CastQ(target);
                 var jtarget = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Physical, false, true, true, SpellManager.QDamage());
@@ -126,8 +126,8 @@ namespace ExecutionerUrgot
             var target = TargetManager.GetChampionTarget(SpellManager.R.Range, DamageType.Magical);
             if (target != null)
             {
-                var turret = TargetManager.GetTurretTarget(1000, true);
-                if (turret != null && !turret.Spellbook.IsAutoAttacking)
+                var turret = TargetManager.GetTurretTarget(600, true);
+                if (turret != null && !turret.Spellbook.IsAutoAttacking && !turret.Spellbook.IsCastingSpell)
                     SpellManager.CastR(target);
             }
         }

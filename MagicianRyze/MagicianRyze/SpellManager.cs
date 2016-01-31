@@ -7,12 +7,6 @@ namespace MagicianRyze
 {
     internal class SpellManager
     {
-        public enum AttackSpell
-        {
-            Q,
-            W,
-            E
-        }
         public static Spell.Skillshot Q { get; set; }
         public static Spell.Targeted W { get; set; }
         public static Spell.Targeted E { get; set; }

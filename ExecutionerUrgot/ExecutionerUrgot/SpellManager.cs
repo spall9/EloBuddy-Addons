@@ -42,12 +42,12 @@ namespace ExecutionerUrgot
         // Champion Specified Abilities
         public static float QDamage()
         {
-            return new float[] { 0, 10, 40, 70, 100, 130 }[Q.Level] + 0.85f * Champion.FlatPhysicalDamageMod;
+            return new float[] { 0, 10, 40, 70, 100, 130 }[Q.Level] + (0.85f * Champion.FlatPhysicalDamageMod);
         }
 
         public static float EDamage()
         {
-            return new float[] { 0, 75, 130, 185, 240, 295 }[E.Level] + 0.6f * Champion.FlatPhysicalDamageMod;
+            return new float[] { 0, 75, 130, 185, 240, 295 }[E.Level] + (0.6f * Champion.FlatPhysicalDamageMod);
         }
 
         // Cast Methods
@@ -57,9 +57,9 @@ namespace ExecutionerUrgot
             if (!target.HasBuff("urgotcorrosivedebuff"))
                 if (Q.IsReady())
                     Q.Cast(target);
-            else
-                if (Q.IsReady())
-                    Q2.Cast(target);
+            if (target.HasBuff("urgotcorrosivedebuff"))
+                if (Q2.IsReady())
+                    Q2.Cast(target.Position);
         }
 
         public static void CastW(Obj_AI_Base target)
