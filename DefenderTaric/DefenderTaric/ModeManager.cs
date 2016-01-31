@@ -1,7 +1,6 @@
 ﻿using EloBuddy;
 using EloBuddy.SDK;
 using EloBuddy.SDK.Events;
-using EloBuddy.SDK.Menu.Values;
 
 namespace DefenderTaric
 {
@@ -10,41 +9,35 @@ namespace DefenderTaric
         // Clone Character Object
         public static AIHeroClient Champion = Program.Champion;
 
-        public static void Initialize()
-        {
-        }
-
         public static void EwrComboMode()
         {
-            if (!MenuManager.ComboMenu["ComboM"].Cast<CheckBox>().CurrentValue) return;
-            if (MenuManager.ComboMenu["Pautos"].Cast<CheckBox>().CurrentValue && Champion.HasBuff("taricgemcraftbuff"))
+            if (MenuManager.SpellWeave && Champion.HasBuff("taricgemcraftbuff"))
             {
                 var target = TargetManager.GetChampionTarget(Champion.GetAutoAttackRange(), DamageType.Physical);
                 if (target != null && Orbwalker.CanAutoAttack)
                     Orbwalker.ForcedTarget = target;
             }
-            else if (MenuManager.ComboMenu["Pautos"].Cast<CheckBox>().CurrentValue && !Champion.HasBuff("taricgemcraftbuff"))
+            else if (MenuManager.SpellWeave && !Champion.HasBuff("taricgemcraftbuff"))
             {
-                if (MenuManager.ComboMenu["Ecombo"].Cast<CheckBox>().CurrentValue)
+                if (MenuManager.ComboUseE)
                 {
                     var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Magical);
                     if (target != null)
                         SpellManager.CastE(target);
                 }
-                if (MenuManager.ComboMenu["Wcombo"].Cast<CheckBox>().CurrentValue
-                    && Champion.HealthPercent >= MenuManager.ComboMenu["Wlimit"].Cast<Slider>().CurrentValue)
+                if (MenuManager.ComboUseW && Champion.HealthPercent >= MenuManager.ComboWLimit)
                 {
                     var target = TargetManager.GetChampionTarget(SpellManager.W.Range, DamageType.Magical);
                     if (target != null)
                         SpellManager.CastW(target);
                 }
-                if (MenuManager.ComboMenu["Rcombo"].Cast<CheckBox>().CurrentValue)
+                if (MenuManager.ComboUseR)
                 {
                     var target = TargetManager.GetChampionTarget(SpellManager.R.Range, DamageType.Magical);
                     if (target != null)
                         SpellManager.CastR(target);
                 }
-                if (MenuManager.ComboMenu["Qpassive"].Cast<CheckBox>().CurrentValue)
+                if (MenuManager.SpellWeaveUseQ)
                 {
                     var target = TargetManager.GetChampionTarget(Champion.GetAutoAttackRange(), DamageType.Physical);
                     if (target != null)
@@ -53,20 +46,19 @@ namespace DefenderTaric
             }
             else
             {
-                if (MenuManager.ComboMenu["Ecombo"].Cast<CheckBox>().CurrentValue)
+                if (MenuManager.ComboUseE)
                 {
                     var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Magical);
                     if (target != null)
                         SpellManager.CastE(target);
                 }
-                if (MenuManager.ComboMenu["Wcombo"].Cast<Slider>().CurrentValue > 0
-                    && Champion.HealthPercent >= MenuManager.ComboMenu["Wcombo"].Cast<Slider>().CurrentValue)
+                if (MenuManager.ComboUseW && Champion.HealthPercent >= MenuManager.ComboWLimit)
                 {
                     var target = TargetManager.GetChampionTarget(SpellManager.W.Range, DamageType.Magical);
                     if (target != null)
                         SpellManager.CastW(target);
                 }
-                if (MenuManager.ComboMenu["Rcombo"].Cast<CheckBox>().CurrentValue)
+                if (MenuManager.ComboUseR)
                 {
                     var target = TargetManager.GetChampionTarget(SpellManager.R.Range, DamageType.Magical);
                     if (target != null)
@@ -77,37 +69,33 @@ namespace DefenderTaric
 
         public static void ErwComboMode()
         {
-            if (!MenuManager.ComboMenu["ComboM"].Cast<CheckBox>().CurrentValue) return;
-            if (MenuManager.ComboMenu["ComboM"].Cast<CheckBox>().CurrentValue) return;
-            if (MenuManager.ComboMenu["Pautos"].Cast<CheckBox>().CurrentValue && Champion.HasBuff("taricgemcraftbuff"))
+            if (MenuManager.SpellWeave && Champion.HasBuff("taricgemcraftbuff"))
             {
                 var target = TargetManager.GetChampionTarget(Champion.GetAutoAttackRange(), DamageType.Physical);
-                if (target != null)
-                    if (Orbwalker.CanAutoAttack)
-                        Orbwalker.ForcedTarget = target;
+                if (target != null && Orbwalker.CanAutoAttack)
+                    Orbwalker.ForcedTarget = target;
             }
-            else if (MenuManager.ComboMenu["Pautos"].Cast<CheckBox>().CurrentValue && !Champion.HasBuff("taricgemcraftbuff"))
+            else if (MenuManager.SpellWeave && !Champion.HasBuff("taricgemcraftbuff"))
             {
-                if (MenuManager.ComboMenu["Ecombo"].Cast<CheckBox>().CurrentValue)
+                if (MenuManager.ComboUseE)
                 {
                     var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Magical);
                     if (target != null)
                         SpellManager.CastE(target);
                 }
-                if (MenuManager.ComboMenu["Rcombo"].Cast<CheckBox>().CurrentValue)
+                if (MenuManager.ComboUseR)
                 {
                     var target = TargetManager.GetChampionTarget(SpellManager.R.Range, DamageType.Magical);
                     if (target != null)
                         SpellManager.CastR(target);
                 }
-                if (MenuManager.ComboMenu["Wcombo"].Cast<Slider>().CurrentValue > 0
-                    && Champion.HealthPercent >= MenuManager.ComboMenu["Wcombo"].Cast<Slider>().CurrentValue)
+                if (MenuManager.ComboUseW && Champion.HealthPercent >= MenuManager.ComboWLimit)
                 {
                     var target = TargetManager.GetChampionTarget(SpellManager.W.Range, DamageType.Magical);
                     if (target != null)
                         SpellManager.CastW(target);
                 }
-                if (MenuManager.ComboMenu["Qpassive"].Cast<CheckBox>().CurrentValue)
+                if (MenuManager.SpellWeaveUseQ)
                 {
                     var target = TargetManager.GetChampionTarget(Champion.GetAutoAttackRange(), DamageType.Physical);
                     if (target != null)
@@ -116,20 +104,19 @@ namespace DefenderTaric
             }
             else
             {
-                if (MenuManager.ComboMenu["Ecombo"].Cast<CheckBox>().CurrentValue)
+                if (MenuManager.ComboUseE)
                 {
                     var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Magical);
                     if (target != null)
                         SpellManager.CastE(target);
                 }
-                if (MenuManager.ComboMenu["Rcombo"].Cast<CheckBox>().CurrentValue)
+                if (MenuManager.ComboUseR)
                 {
                     var target = TargetManager.GetChampionTarget(SpellManager.R.Range, DamageType.Magical);
                     if (target != null)
                         SpellManager.CastR(target);
                 }
-                if (MenuManager.ComboMenu["Wcombo"].Cast<Slider>().CurrentValue > 0
-                    && Champion.HealthPercent >= MenuManager.ComboMenu["Wcombo"].Cast<Slider>().CurrentValue)
+                if (MenuManager.ComboUseW && Champion.HealthPercent >= MenuManager.ComboWLimit)
                 {
                     var target = TargetManager.GetChampionTarget(SpellManager.W.Range, DamageType.Magical);
                     if (target != null)
@@ -140,14 +127,14 @@ namespace DefenderTaric
 
         public static void HarassMode()
         {
-            if (Champion.ManaPercent < MenuManager.HarassMenu["Harassmana"].Cast<Slider>().CurrentValue) return;
-            if (MenuManager.HarassMenu["Wharass"].Cast<CheckBox>().CurrentValue)
+            if (Champion.ManaPercent < MenuManager.HarassMana) return;
+            if (MenuManager.HarassUseW)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.W.Range, DamageType.Magical);
                 if (target != null)
                     SpellManager.CastW(target);
             }
-            if (MenuManager.HarassMenu["Eharass"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.HarassUseE)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Magical);
                 if (target != null)
@@ -157,9 +144,10 @@ namespace DefenderTaric
 
         public static void HealingMode()
         {
-            if (Champion.ManaPercent < MenuManager.HealingMenu["Healingmana"].Cast<Slider>().CurrentValue) return;
-            var qhealally = MenuManager.HealingMenu["Qhealally"].Cast<Slider>().CurrentValue;
-            var qhealtaric = MenuManager.HealingMenu["Qhealtaric"].Cast<Slider>().CurrentValue;
+            if (Champion.ManaPercent < MenuManager.HealingMana) return;
+
+            var qhealally = MenuManager.HealingAlly;
+            var qhealtaric = MenuManager.HealingSelf;
             if (qhealally != 0)
             {
                 var ally = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Magical, true);
@@ -172,8 +160,8 @@ namespace DefenderTaric
 
         public static void InterruptMode(Obj_AI_Base sender, Interrupter.InterruptableSpellEventArgs args)
         {
-            if (MenuManager.SettingMenu["Interruptmode"].Cast<CheckBox>().CurrentValue) return;
-            if (sender != null && MenuManager.SettingMenu["Einterrupt"].Cast<CheckBox>().CurrentValue)
+            if (!MenuManager.InterrupterMode) return;
+            if (sender != null && MenuManager.InterrupterUseE)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Magical);
                 if (target != null)
@@ -183,8 +171,8 @@ namespace DefenderTaric
 
         public static void GapCloserMode(Obj_AI_Base sender, Gapcloser.GapcloserEventArgs args)
         {
-            if (MenuManager.SettingMenu["Gapcmode"].Cast<CheckBox>().CurrentValue) return;
-            if (sender != null && MenuManager.SettingMenu["Egapc"].Cast<CheckBox>().CurrentValue)
+            if (!MenuManager.GapCloserMode) return;
+            if (sender != null && MenuManager.GapCloserUseE)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Magical);
                 if (target != null)

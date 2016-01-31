@@ -3,7 +3,6 @@ using System.Drawing;
 using EloBuddy;
 using EloBuddy.SDK;
 using EloBuddy.SDK.Events;
-using EloBuddy.SDK.Menu.Values;
 
 namespace DefenderTaric
 {
@@ -28,8 +27,6 @@ namespace DefenderTaric
             // Initialize classes
             SpellManager.Initialize();
             MenuManager.Initialize();
-            TargetManager.Initialize();
-            ModeManager.Initialize();
 
             // Listen to Events
             Drawing.OnDraw += Drawing_OnDraw;
@@ -41,13 +38,19 @@ namespace DefenderTaric
 
         private static void Game_OnUpdate(EventArgs args)
         {
-            Champion.SetSkinId(MenuManager.DrawingMenu["DrawS"].Cast<CheckBox>().CurrentValue
-                ? MenuManager.DrawingMenu["Skins"].Cast<Slider>().CurrentValue
+            Champion.SetSkinId(MenuManager.DesignerMode
+                ? MenuManager.DesignerSkin
                 : ChampionSkin);
         }
 
         private static void Drawing_OnDraw(EventArgs args)
         {
+            // Wait for Game Load
+            if (Game.Time < 10) return;
+
+            // No Responce While Dead
+            if (Champion.IsDead) return;
+
             Color color;
 
             switch (Champion.SkinId)
@@ -69,26 +72,27 @@ namespace DefenderTaric
                     break;
             }
 
-            if (!MenuManager.DrawingMenu["DrawM"].Cast<CheckBox>().CurrentValue) return;
-            if (MenuManager.DrawingMenu["Qdraw"].Cast<CheckBox>().CurrentValue && SpellManager.Q.IsLearned)
+            if (!MenuManager.DrawerMode) return;
+            if (MenuManager.DrawQ && SpellManager.Q.IsLearned)
                 Drawing.DrawCircle(Champion.Position, SpellManager.Q.Range, color);
-            if (MenuManager.DrawingMenu["Edraw"].Cast<CheckBox>().CurrentValue && SpellManager.E.IsLearned)
+            if (MenuManager.DrawE && SpellManager.E.IsLearned)
                 Drawing.DrawCircle(Champion.Position, SpellManager.E.Range, color);
-            if (MenuManager.DrawingMenu["WRdraw"].Cast<CheckBox>().CurrentValue && (SpellManager.W.IsLearned || SpellManager.R.IsLearned))
+            if (MenuManager.DrawWr && (SpellManager.W.IsLearned || SpellManager.R.IsLearned))
                 Drawing.DrawCircle(Champion.Position, SpellManager.R.Range, color);
         }
 
         private static void Game_OnTick(EventArgs args)
         {
             // Initialize Leveler
-            if (MenuManager.SettingMenu["Autolvl"].Cast<CheckBox>().CurrentValue && Champion.SpellTrainingPoints >= 1)
+            if (MenuManager.LevelerMode && Champion.SpellTrainingPoints >= 1)
                 LevelerManager.Initialize();
-            MenuManager.ComboMenu["ComboF"].DisplayName = MenuManager.ComboMenu["ComboF"].Cast<Slider>().CurrentValue == 1 ? "ERW" : "EWR";
+
+            MenuManager.ComboMenu["Ucombo"].DisplayName = MenuManager.ComboMode == 1 ? "ERW" : "EWR";
+            
             // No Responce While Dead
             if (Champion.IsDead) return;
 
-            if (MenuManager.DefenderTaricMenu["Easter Egg"].Cast<CheckBox>().CurrentValue
-                && Champion.HasBuff("recall") && !Champion.IsInShopRange())
+            if (MenuManager.EasterEgg && Champion.HasBuff("recall") && !Champion.IsInShopRange())
                 Player.DoEmote(Emote.Joke);
 
             // Mode Activation
@@ -96,9 +100,9 @@ namespace DefenderTaric
             {
                 case Orbwalker.ActiveModes.Combo:
                 {
-                    if (MenuManager.ComboMenu["ComboF"].Cast<Slider>().CurrentValue == 1)
+                    if (MenuManager.ComboMode == 1)
                             ModeManager.EwrComboMode();
-                    if (MenuManager.ComboMenu["ComboF"].Cast<Slider>().CurrentValue == 2)
+                    if (MenuManager.ComboMode == 2)
                             ModeManager.ErwComboMode();
                 }
                     break;
@@ -106,7 +110,7 @@ namespace DefenderTaric
                     ModeManager.HarassMode();
                     break;
             }
-            if (MenuManager.HealingMenu["HealingM"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.HealingMode)
                 ModeManager.HealingMode();
         }
     }

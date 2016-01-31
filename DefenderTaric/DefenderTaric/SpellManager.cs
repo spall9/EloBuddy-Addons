@@ -25,17 +25,17 @@ namespace DefenderTaric
         // Champion Specified Abilities
         public static float WDamage(Obj_AI_Base target)
         {
-            return new float[] { 0, 40, 80, 120, 160, 200 }[Q.Level] + 0.2f * Champion.FlatArmorMod;
+            return new float[] { 0, 40, 80, 120, 160, 200 }[Q.Level] + (0.2f * Champion.FlatArmorMod);
         }
 
         public static float EDamage(Obj_AI_Base target)
         {
-            return new float[] { 0, 40, 70, 100, 130, 160 }[E.Level] + 0.2f * Champion.FlatMagicDamageMod;
+            return new float[] { 0, 40, 70, 100, 130, 160 }[E.Level] + (0.2f * Champion.FlatMagicDamageMod);
         }
 
         public static float RDamage(Obj_AI_Base target)
         {
-            return new float[] { 0, 150, 250, 350 }[R.Level] + 0.5f * Champion.FlatMagicDamageMod;
+            return new float[] { 0, 150, 250, 350 }[R.Level] + (0.5f * Champion.FlatMagicDamageMod);
         }
 
         // Cast Methods
