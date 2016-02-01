@@ -105,7 +105,7 @@ namespace ProtectorLeona
         public static void AutoAttackMode(Obj_AI_Base target)
         {
             if (MenuManager.AutoAttack && Orbwalker.CanAutoAttack && Champion.IsInAutoAttackRange(target))
-                Player.IssueOrder(GameObjectOrder.AttackTo, target);
+                Orbwalker.ForcedTarget = target;
         }
     }
 }
