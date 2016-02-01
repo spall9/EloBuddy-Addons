@@ -35,8 +35,8 @@ namespace AlchemistSinged
         public static void QDisable()
         {
             // Mana Regen Utilizer
-            if (GetManaRegen() > 13) return;
-            Chat.Print(GetManaRegen());
+            if (GetManaRegen() > Champion.Spellbook.GetSpell(SpellSlot.Q).SData.ManaCostArray[Champion.Level]) return;
+            Chat.Print(Champion.Spellbook.GetSpell(SpellSlot.Q).SData.ManaCostArray[Champion.Level]);
             // Disable Conditions
             if (Toggle && !Champion.IsInShopRange()
                 && Champion.CountEnemiesInRange(1000) == 0
@@ -93,36 +93,57 @@ namespace AlchemistSinged
             var additionalManaPerSecond = flatManaPerSecond;
             foreach (var item in Champion.InventoryItems)
             {
-                if (item.Id == ItemId.Morellonomicon ||
-                    item.Id == ItemId.Frostfang ||
-                    item.Id == ItemId.Eye_of_the_Oasis ||
-                    item.Id == ItemId.Ardent_Censer ||
-                    item.Id == ItemId.Eye_of_the_Watchers ||
-                    item.Id == ItemId.Frost_Queens_Claim ||
-                    item.Id == ItemId.Talisman_of_Ascension)
-                    additionalManaPerSecond += flatManaPerSecond;
-                if (item.Id == ItemId.Faerie_Charm ||
-                    item.Id == ItemId.Spellthiefs_Edge ||
-                    item.Id == ItemId.Ancient_Coin ||
-                    item.Id == ItemId.Tear_of_the_Goddess ||
-                    item.Id == ItemId.Tear_of_the_Goddess_Crystal_Scar ||
-                    item.Id == ItemId.Manamune ||
-                    item.Id == ItemId.Manamune_Crystal_Scar)
-                    additionalManaPerSecond += 0.25f * flatManaPerSecond;
-                if (item.Id == ItemId.Dorans_Ring ||
-                    item.Id == ItemId.Forbidden_Idol ||
-                    item.Id == ItemId.Nomads_Medallion ||
-                    item.Id == ItemId.Archangels_Staff ||
-                    item.Id == ItemId.Archangels_Staff_Crystal_Scar)
-                    additionalManaPerSecond += 0.5f * flatManaPerSecond;
-                if (item.Id == ItemId.Chalice_of_Harmony)
-                    additionalManaPerSecond += (float)(0.5f * flatManaPerSecond + ((0.02 * (Champion.MaxMana - Champion.Mana)) / 5));
-                if (item.Id == ItemId.Athenes_Unholy_Grail ||
-                    item.Id == ItemId.Mikaels_Crucible)
-                    additionalManaPerSecond += (float)(flatManaPerSecond + ((0.02 * (Champion.MaxMana - Champion.Mana)) / 5));
+                switch (item.Id)
+                {
+                    // %25
+                    case ItemId.Faerie_Charm:
+                    case ItemId.Spellthiefs_Edge:
+                    case ItemId.Ancient_Coin:
+                    case ItemId.Tear_of_the_Goddess:
+                    case ItemId.Tear_of_the_Goddess_Crystal_Scar:
+                    case ItemId.Manamune:
+                    case ItemId.Manamune_Crystal_Scar:
+                        additionalManaPerSecond += 0.25f * flatManaPerSecond;
+                        break;
+                    // %50
+                    case ItemId.Dorans_Ring:
+                    case ItemId.Forbidden_Idol:
+                    case ItemId.Nomads_Medallion:
+                    case ItemId.Chalice_of_Harmony:
+                    case ItemId.Archangels_Staff:
+                    case ItemId.Archangels_Staff_Crystal_Scar:
+                        additionalManaPerSecond += 0.5f * flatManaPerSecond;
+                        break;
+                    // %100
+                    case ItemId.Morellonomicon:
+                    case ItemId.Frostfang:
+                    case ItemId.Eye_of_the_Oasis:
+                    case ItemId.Ardent_Censer:
+                    case ItemId.Eye_of_the_Watchers:
+                    case ItemId.Frost_Queens_Claim:
+                    case ItemId.Talisman_of_Ascension:
+                    case ItemId.Athenes_Unholy_Grail:
+                    case ItemId.Mikaels_Crucible:
+                        additionalManaPerSecond += flatManaPerSecond;
+                        break;
+                    // Jungle items while in Jungle
+                    case ItemId.Hunters_Talisman:
+                    case ItemId.Stalkers_Blade:
+                    case ItemId.Trackers_Knife:
+                    case ItemId.Skirmishers_Sabre:
+                        break;
+                    // Additionals
+                    case ItemId.Prospectors_Ring:
+                        additionalManaPerSecond += 1.2f;
+                        break;
+                }
             }
             if (Champion.Name == "Singed" && Champion.HasBuff("InsanityPotion"))
                 additionalManaPerSecond += new float[] { 0, 7, 10, 16 }[R.Level];
+            if (Champion.HasBuff("catalystheal"))
+                additionalManaPerSecond += 25;
+            if (Champion.HasBuff("ElixirOfSorcery"))
+                additionalManaPerSecond += 3;
 
             return additionalManaPerSecond;
         }
