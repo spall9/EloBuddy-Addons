@@ -1,6 +1,5 @@
 ﻿using EloBuddy;
 using EloBuddy.SDK;
-using EloBuddy.SDK.Enumerations;
 using EloBuddy.SDK.Events;
 
 namespace ProtectorLeona
@@ -27,9 +26,8 @@ namespace ProtectorLeona
             if (MenuManager.ComboUseQ)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Magical);
-                if (target != null && !target.HasBuff("leonazenithbladeroot"))
+                if (target != null)
                 {
-                    AutoAttackMode(target);
                     SpellManager.CastQ(target);
                     Orbwalker.ResetAutoAttack();
                     AutoAttackMode(target);
@@ -56,9 +54,8 @@ namespace ProtectorLeona
             if (MenuManager.HarassUseQ)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Magical);
-                if (target != null && !target.HasBuff("leonazenithbladeroot"))
+                if (target != null)
                 {
-                    AutoAttackMode(target);
                     SpellManager.CastQ(target);
                     Orbwalker.ResetAutoAttack();
                     AutoAttackMode(target);
@@ -69,25 +66,19 @@ namespace ProtectorLeona
         public static void InterruptMode(Obj_AI_Base sender, Interrupter.InterruptableSpellEventArgs args)
         {
             if (!MenuManager.InterrupterMode) return;
-            if (sender != null && !sender.IsUnderEnemyturret())
+            if (sender != null)
             {
-                if (MenuManager.InterrupterUseEq && args.DangerLevel < DangerLevel.High)
+                if (MenuManager.InterrupterUseQ)
                 {
-                    var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Magical);
-                    if (target != null && !target.IsUnderHisturret())
+                    var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Magical);
+                    if (target != null)
                     {
-                        if (target.Distance(Champion) > Champion.GetAutoAttackRange(target))
-                            SpellManager.CastE(target);
-                        if (Champion.IsInAutoAttackRange(target))
-                        {
-                            AutoAttackMode(target);
-                            SpellManager.CastQ(target);
-                            Orbwalker.ResetAutoAttack();
-                            AutoAttackMode(target);
-                        }
+                        SpellManager.CastQ(target);
+                        Orbwalker.ResetAutoAttack();
+                        AutoAttackMode(target);
                     }
                 }
-                if (MenuManager.InterrupterUseR && args.DangerLevel >= DangerLevel.High)
+                if (MenuManager.InterrupterUseR)
                 {
                     var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Magical);
                     if (target != null)
@@ -99,20 +90,14 @@ namespace ProtectorLeona
         public static void GapCloserMode(Obj_AI_Base sender, Gapcloser.GapcloserEventArgs args)
         {
             if (!MenuManager.GapCloserMode) return;
-            if (sender != null && !sender.IsUnderEnemyturret() && MenuManager.GapCloserUseEq)
+            if (sender != null && MenuManager.GapCloserUseQ)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Magical);
-                if (target != null && !target.IsUnderHisturret())
+                var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Magical);
+                if (target != null)
                 {
-                    if (target.Distance(Champion) > Champion.GetAutoAttackRange(target))
-                        SpellManager.CastE(target);
-                    if (Champion.IsInAutoAttackRange(target))
-                    {
-                        AutoAttackMode(target);
-                        SpellManager.CastQ(target);
-                        Orbwalker.ResetAutoAttack();
-                        AutoAttackMode(target);
-                    }
+                    SpellManager.CastQ(target);
+                    Orbwalker.ResetAutoAttack();
+                    AutoAttackMode(target);
                 }
             }
         }
@@ -120,7 +105,7 @@ namespace ProtectorLeona
         public static void AutoAttackMode(Obj_AI_Base target)
         {
             if (MenuManager.AutoAttack && Orbwalker.CanAutoAttack && Champion.IsInAutoAttackRange(target))
-                Player.IssueOrder(GameObjectOrder.AutoAttack, target);
+                Player.IssueOrder(GameObjectOrder.AttackTo, target);
         }
     }
 }

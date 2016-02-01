@@ -60,11 +60,11 @@ namespace ProtectorLeona
             SettingMenu.AddSeparator(1);
             SettingMenu.AddLabel("Interrupter");
             SettingMenu.Add("Uinterrupt", new CheckBox("Interrupt Mode"));
-            SettingMenu.Add("EQinterrupt", new CheckBox("Use E & Q to interrupt"));
+            SettingMenu.Add("Qinterrupt", new CheckBox("Use Q to interrupt"));
             SettingMenu.Add("Rinterrupt", new CheckBox("Use R to interrupt"));
             SettingMenu.AddLabel("Gap Closer");
             SettingMenu.Add("Ugapc", new CheckBox("Gap Closer Mode"));
-            SettingMenu.Add("EQgapc", new CheckBox("Use E & Q to gapclose"));
+            SettingMenu.Add("Qgapc", new CheckBox("Use Q to gapclose"));
         }
 
         // Assign Global Checks
@@ -90,9 +90,9 @@ namespace ProtectorLeona
         public static bool AutoAttack { get { return SettingMenu["Aattack"].Cast<CheckBox>().CurrentValue; } }
 
         public static bool InterrupterMode { get { return SettingMenu["Uinterrupt"].Cast<CheckBox>().CurrentValue; } }
-        public static bool InterrupterUseEq { get { return SettingMenu["EQinterrupt"].Cast<CheckBox>().CurrentValue; } }
+        public static bool InterrupterUseQ { get { return SettingMenu["Qinterrupt"].Cast<CheckBox>().CurrentValue; } }
         public static bool InterrupterUseR { get { return SettingMenu["Rinterrupt"].Cast<CheckBox>().CurrentValue; } }
         public static bool GapCloserMode { get { return SettingMenu["Ugapc"].Cast<CheckBox>().CurrentValue; } }
-        public static bool GapCloserUseEq { get { return SettingMenu["EQgapc"].Cast<CheckBox>().CurrentValue; } }
+        public static bool GapCloserUseQ { get { return SettingMenu["Qgapc"].Cast<CheckBox>().CurrentValue; } }
     }
 }
