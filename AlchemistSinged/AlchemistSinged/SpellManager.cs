@@ -12,11 +12,11 @@ namespace AlchemistSinged
         public static Spell.Targeted E { get; set; }
         public static Spell.Active R { get; set; }
 
-        // Global Poison Control
-        public static bool IsStackingTear;
-
         // Clone Character Object
         public static AIHeroClient Champion = Program.Champion;
+
+        // Toggle State
+        public static int Toggle { get { return Player.GetSpell(SpellSlot.Q).ToggleState; } } 
 
         public static void Initialize()
         {
@@ -34,15 +34,14 @@ namespace AlchemistSinged
         // Poison Controller
         public static void QDisable()
         {
-            // Disable Bools
-            if (IsStackingTear && Champion.IsInShopRange()) return;
-            if (IsStackingTear)
-                IsStackingTear = false;
+            // Mana Regen Utilizer
+            if (GetManaRegen() > Player.GetSpell(SpellSlot.Q).SData.ManaCostArray[Player.GetSpell(SpellSlot.Q).Level]) return;
 
             // Disable Conditions
-            if (Player.GetSpell(SpellSlot.Q).ToggleState == 2
-                && Champion.CountEnemiesInRange(1000) < 1
-                && !(EntityManager.MinionsAndMonsters.EnemyMinions.Any(a => a.IsInRange(Champion, 1000))))
+            if (Toggle == 2 && !Champion.IsInShopRange()
+                && Champion.CountEnemiesInRange(1000) == 0
+                && EntityManager.MinionsAndMonsters.Minions.Where(a => a.IsEnemy).Count(a => a.IsInRange(Champion, 1000)) == 0
+                && EntityManager.MinionsAndMonsters.Monsters.Count(a => a.IsInRange(Champion, 750)) == 0)
                 CastQ(Champion);
         }
 
@@ -63,8 +62,7 @@ namespace AlchemistSinged
         public static void CastQ(Obj_AI_Base target)
         {
             if (target == null) return;
-            if (Q.IsReady())
-                Q.Cast();
+            Q.Cast();
         }
 
         public static void CastW(Obj_AI_Base target)
@@ -86,6 +84,44 @@ namespace AlchemistSinged
             if (target == null) return;
             if (R.IsReady())
                 R.Cast();
+        }
+
+        public static float GetManaRegen()
+        {
+            var flatManaPerSecond = (Champion.CharData.BaseStaticMPRegen);
+            var additionalManaPerSecond = flatManaPerSecond + (0.11f * Champion.Level);
+            foreach (var item in Champion.InventoryItems)
+            {
+                if (item.Id == ItemId.Morellonomicon ||
+                    item.Id == ItemId.Frostfang ||
+                    item.Id == ItemId.Eye_of_the_Oasis ||
+                    item.Id == ItemId.Ardent_Censer ||
+                    item.Id == ItemId.Eye_of_the_Watchers ||
+                    item.Id == ItemId.Frost_Queens_Claim ||
+                    item.Id == ItemId.Talisman_of_Ascension)
+                    additionalManaPerSecond += flatManaPerSecond;
+                if (item.Id == ItemId.Faerie_Charm ||
+                    item.Id == ItemId.Spellthiefs_Edge ||
+                    item.Id == ItemId.Ancient_Coin ||
+                    item.Id == ItemId.Tear_of_the_Goddess ||
+                    item.Id == ItemId.Tear_of_the_Goddess_Crystal_Scar ||
+                    item.Id == ItemId.Manamune ||
+                    item.Id == ItemId.Manamune_Crystal_Scar)
+                    additionalManaPerSecond += 0.25f * flatManaPerSecond;
+                if (item.Id == ItemId.Dorans_Ring ||
+                    item.Id == ItemId.Forbidden_Idol ||
+                    item.Id == ItemId.Nomads_Medallion ||
+                    item.Id == ItemId.Archangels_Staff ||
+                    item.Id == ItemId.Archangels_Staff_Crystal_Scar)
+                    additionalManaPerSecond += 0.5f * flatManaPerSecond;
+                if (item.Id == ItemId.Chalice_of_Harmony)
+                    additionalManaPerSecond += (float)(0.5f * flatManaPerSecond + ((0.02 * (Champion.MaxMana - Champion.Mana)) / 5));
+                if (item.Id == ItemId.Athenes_Unholy_Grail ||
+                    item.Id == ItemId.Mikaels_Crucible)
+                    additionalManaPerSecond += (float)(flatManaPerSecond + ((0.02 * (Champion.MaxMana - Champion.Mana)) / 5));
+            }
+
+            return additionalManaPerSecond;
         }
     }
 }

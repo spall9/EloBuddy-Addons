@@ -110,6 +110,9 @@ namespace AlchemistSinged
             // Mode Activation
             switch (Orbwalker.ActiveModesFlags)
             {
+                case Orbwalker.ActiveModes.None:
+                    Orbwalker.DisableAttacking = false;
+                    break;
                 case Orbwalker.ActiveModes.Combo:
                     Orbwalker.DisableAttacking = false;
                     ModeManager.ComboMode();
@@ -123,7 +126,6 @@ namespace AlchemistSinged
                     ModeManager.JungleMode();
                     break;
                 case Orbwalker.ActiveModes.LaneClear:
-                    Orbwalker.DisableAttacking = false;
                     ModeManager.LaneClearMode();
                     break;
                 case Orbwalker.ActiveModes.LastHit:
@@ -137,6 +139,8 @@ namespace AlchemistSinged
             }
             if (MenuManager.StackMode)
                 ModeManager.StackMode();
+            if (MenuManager.KiteMode)
+                ModeManager.KiteMode();
         }
     }
 }

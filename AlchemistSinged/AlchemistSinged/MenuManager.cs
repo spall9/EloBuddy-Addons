@@ -64,7 +64,7 @@ namespace AlchemistSinged
             DrawingMenu.Add("Edraw", new CheckBox("Draw E"));
             DrawingMenu.AddSeparator(1);
             DrawingMenu.AddLabel("Skin Designer");
-            DrawingMenu.Add("Udesign", new CheckBox("Draw Skin Design", false));
+            DrawingMenu.Add("Udesign", new CheckBox("Draw Skin Design"));
             DrawingMenu.Add("Sdesign", new Slider("Skin Designer: ", 0, 0, 7));
 
             // Setting Menu

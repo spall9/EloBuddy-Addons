@@ -11,8 +11,9 @@ namespace AlchemistSinged
 
         public static void ComboMode()
         {
-            if (MenuManager.ComboUseQ && Champion.IsMoving && Player.GetSpell(SpellSlot.Q).ToggleState == 1)
+            if (MenuManager.ComboUseQ)
             {
+                if (SpellManager.Toggle == 2) return;
                 var target = TargetManager.GetChampionTarget(250, DamageType.Magical);
                 if (target != null)
                     SpellManager.CastQ(target);
@@ -30,7 +31,7 @@ namespace AlchemistSinged
                     SpellManager.CastE(target);
                 }
             }
-            if (MenuManager.ComboUseR && Champion.IsMoving && Champion.CountEnemiesInRange(SpellManager.W.Range) >= MenuManager.ComboRLimiter)
+            if (MenuManager.ComboUseR && Champion.CountEnemiesInRange(SpellManager.W.Range) >= MenuManager.ComboRLimiter)
             {
                 var target = TargetManager.GetChampionTarget(1000, DamageType.Magical);
                 if (target != null && target.HasBuff("poisontrailtarget"))
@@ -40,8 +41,9 @@ namespace AlchemistSinged
 
         public static void HarassMode()
         {
-            if (MenuManager.HarassUseQ && Champion.IsMoving && Player.GetSpell(SpellSlot.Q).ToggleState == 1)
+            if (MenuManager.HarassUseQ)
             {
+                if (SpellManager.Toggle == 2) return;
                 var target = TargetManager.GetChampionTarget(250, DamageType.Magical);
                 if (target != null)
                     SpellManager.CastQ(target);
@@ -50,8 +52,9 @@ namespace AlchemistSinged
 
         public static void JungleMode()
         {
-            if (MenuManager.JungleUseQ && Champion.IsMoving && Player.GetSpell(SpellSlot.Q).ToggleState == 1)
+            if (MenuManager.JungleUseQ)
             {
+                if (SpellManager.Toggle == 2) return;
                 var target = TargetManager.GetMinionTarget(250, DamageType.Magical, false, true);
                 if (target != null)
                     SpellManager.CastQ(target);
@@ -67,8 +70,9 @@ namespace AlchemistSinged
         public static void LaneClearMode()
         {
             Orbwalker.DisableAttacking = MenuManager.LaneClearAaDisable;
-            if (MenuManager.LaneClearUseQ && Champion.IsMoving && Player.GetSpell(SpellSlot.Q).ToggleState == 1)
+            if (MenuManager.LaneClearUseQ)
             {
+                if (SpellManager.Toggle == 2) return;
                 var target = TargetManager.GetMinionTarget(250, DamageType.Magical);
                 if (target != null)
                     SpellManager.CastQ(target);
@@ -93,15 +97,14 @@ namespace AlchemistSinged
 
         public static void KiteMode()
         {
-            if (MenuManager.KiteMode)
+            var target = TargetManager.GetChampionTarget(1000, DamageType.Magical);
+            if (target != null
+                && !Champion.IsUnderEnemyturret() && !target.IsUnderEnemyturret()
+                && !Champion.IsFacing(target) && target.IsFacing(Champion)
+                && target.Distance(Champion) <= 750)
             {
-                var target = TargetManager.GetChampionTarget(1000, DamageType.Magical);
-                if (target != null
-                    && Player.GetSpell(SpellSlot.Q).ToggleState == 1
-                    && !Champion.IsUnderEnemyturret() && !target.IsUnderEnemyturret()
-                    && !Champion.IsFacing(target) && target.IsFacing(Champion)
-                    && target.Distance(Champion) <= 500)
-                    SpellManager.CastQ(target);
+                if (SpellManager.Toggle == 2) return;
+                SpellManager.CastQ(target);
             }
         }
 
@@ -110,12 +113,11 @@ namespace AlchemistSinged
             foreach (var item in Champion.InventoryItems)
             {
                 if ((item.Id == ItemId.Tear_of_the_Goddess || item.Id == ItemId.Tear_of_the_Goddess_Crystal_Scar
-                    || item.Id == ItemId.Archangels_Staff || item.Id == ItemId.Archangels_Staff_Crystal_Scar
-                    || item.Id == ItemId.Manamune || item.Id == ItemId.Manamune_Crystal_Scar)
-                    && item.Stacks < 750 && Champion.IsInShopRange()
-                    && Player.GetSpell(SpellSlot.Q).ToggleState == 1)
+                     || item.Id == ItemId.Archangels_Staff || item.Id == ItemId.Archangels_Staff_Crystal_Scar
+                     || item.Id == ItemId.Manamune || item.Id == ItemId.Manamune_Crystal_Scar)
+                    && item.Stacks < 750 && Champion.IsInShopRange())
                 {
-                    SpellManager.IsStackingTear = true;
+                    if (SpellManager.Toggle == 2) return;
                     SpellManager.CastQ(Champion);
                 }
             }
