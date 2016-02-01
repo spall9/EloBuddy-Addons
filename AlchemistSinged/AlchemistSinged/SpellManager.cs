@@ -16,7 +16,7 @@ namespace AlchemistSinged
         public static AIHeroClient Champion = Program.Champion;
 
         // Toggle State
-        public static int Toggle { get { return Player.GetSpell(SpellSlot.Q).ToggleState; } } 
+        public static bool Toggle { get { return Champion.HasBuff("PoisonTrail"); } } 
 
         public static void Initialize()
         {
@@ -35,10 +35,10 @@ namespace AlchemistSinged
         public static void QDisable()
         {
             // Mana Regen Utilizer
-            if (GetManaRegen() > Player.GetSpell(SpellSlot.Q).SData.ManaCostArray[Player.GetSpell(SpellSlot.Q).Level]) return;
-
+            if (GetManaRegen() > 13) return;
+            Chat.Print(GetManaRegen());
             // Disable Conditions
-            if (Toggle == 2 && !Champion.IsInShopRange()
+            if (Toggle && !Champion.IsInShopRange()
                 && Champion.CountEnemiesInRange(1000) == 0
                 && EntityManager.MinionsAndMonsters.Minions.Where(a => a.IsEnemy).Count(a => a.IsInRange(Champion, 1000)) == 0
                 && EntityManager.MinionsAndMonsters.Monsters.Count(a => a.IsInRange(Champion, 750)) == 0)
@@ -62,7 +62,8 @@ namespace AlchemistSinged
         public static void CastQ(Obj_AI_Base target)
         {
             if (target == null) return;
-            Q.Cast();
+            if (Q.IsReady())
+                Q.Cast();
         }
 
         public static void CastW(Obj_AI_Base target)
@@ -88,8 +89,8 @@ namespace AlchemistSinged
 
         public static float GetManaRegen()
         {
-            var flatManaPerSecond = (Champion.CharData.BaseStaticMPRegen);
-            var additionalManaPerSecond = flatManaPerSecond + (0.11f * Champion.Level);
+            var flatManaPerSecond = (Champion.CharData.BaseStaticMPRegen + (0.11f * Champion.Level));
+            var additionalManaPerSecond = flatManaPerSecond;
             foreach (var item in Champion.InventoryItems)
             {
                 if (item.Id == ItemId.Morellonomicon ||
@@ -120,6 +121,8 @@ namespace AlchemistSinged
                     item.Id == ItemId.Mikaels_Crucible)
                     additionalManaPerSecond += (float)(flatManaPerSecond + ((0.02 * (Champion.MaxMana - Champion.Mana)) / 5));
             }
+            if (Champion.Name == "Singed" && Champion.HasBuff("InsanityPotion"))
+                additionalManaPerSecond += new float[] { 0, 7, 10, 16 }[R.Level];
 
             return additionalManaPerSecond;
         }

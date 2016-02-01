@@ -13,7 +13,7 @@ namespace AlchemistSinged
         {
             if (MenuManager.ComboUseQ)
             {
-                if (SpellManager.Toggle == 2) return;
+                if (SpellManager.Toggle) return;
                 var target = TargetManager.GetChampionTarget(250, DamageType.Magical);
                 if (target != null)
                     SpellManager.CastQ(target);
@@ -43,7 +43,7 @@ namespace AlchemistSinged
         {
             if (MenuManager.HarassUseQ)
             {
-                if (SpellManager.Toggle == 2) return;
+                if (SpellManager.Toggle) return;
                 var target = TargetManager.GetChampionTarget(250, DamageType.Magical);
                 if (target != null)
                     SpellManager.CastQ(target);
@@ -54,7 +54,7 @@ namespace AlchemistSinged
         {
             if (MenuManager.JungleUseQ)
             {
-                if (SpellManager.Toggle == 2) return;
+                if (SpellManager.Toggle) return;
                 var target = TargetManager.GetMinionTarget(250, DamageType.Magical, false, true);
                 if (target != null)
                     SpellManager.CastQ(target);
@@ -72,7 +72,7 @@ namespace AlchemistSinged
             Orbwalker.DisableAttacking = MenuManager.LaneClearAaDisable;
             if (MenuManager.LaneClearUseQ)
             {
-                if (SpellManager.Toggle == 2) return;
+                if (SpellManager.Toggle) return;
                 var target = TargetManager.GetMinionTarget(250, DamageType.Magical);
                 if (target != null)
                     SpellManager.CastQ(target);
@@ -103,7 +103,7 @@ namespace AlchemistSinged
                 && !Champion.IsFacing(target) && target.IsFacing(Champion)
                 && target.Distance(Champion) <= 750)
             {
-                if (SpellManager.Toggle == 2) return;
+                if (SpellManager.Toggle) return;
                 SpellManager.CastQ(target);
             }
         }
@@ -117,7 +117,7 @@ namespace AlchemistSinged
                      || item.Id == ItemId.Manamune || item.Id == ItemId.Manamune_Crystal_Scar)
                     && item.Stacks < 750 && Champion.IsInShopRange())
                 {
-                    if (SpellManager.Toggle == 2) return;
+                    if (SpellManager.Toggle) return;
                     SpellManager.CastQ(Champion);
                 }
             }
