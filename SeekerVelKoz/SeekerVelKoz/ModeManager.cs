@@ -1,7 +1,6 @@
 ﻿using EloBuddy;
 using EloBuddy.SDK;
 using EloBuddy.SDK.Events;
-using EloBuddy.SDK.Menu.Values;
 
 namespace SeekerVelKoz
 {
@@ -10,84 +9,67 @@ namespace SeekerVelKoz
         // Clone Character Object
         public static AIHeroClient Champion = Program.Champion;
 
-        public static void Initialize()
-        {
-        }
-
         public static void ComboMode()
         {
-            if (MenuManager.ComboMenu["Qcombo"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.ComboUseQ)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Magical);
-                if (target != null && SpellManager.Q.Name == "VelkozQ")
-                {
+                var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Magical, false, true);
+                if (target != null)
                     SpellManager.CastQ(target);
-                }
             }
-            if (MenuManager.ComboMenu["Ecombo"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.ComboUseE)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Magical);
-                if (target != null && (target.HasBuffOfType(BuffType.Slow) || (target.Distance(Champion) < 200)))
+                if (target != null && ((MenuManager.ComboESlow && target.HasBuffOfType(BuffType.Slow)) || !MenuManager.ComboESlow))
                     SpellManager.CastE(target);
             }
-            if (MenuManager.ComboMenu["Wcombo"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.ComboUseW)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.W.Range, DamageType.Magical);
-                if (target != null &&
-                    (target.HasBuffOfType(BuffType.Knockback) || target.HasBuffOfType(BuffType.Knockup)
-                    || target.HasBuffOfType(BuffType.Snare) || target.HasBuffOfType(BuffType.Stun)))
+                if (target != null && ((MenuManager.ComboWKnock && target.HasBuffOfType(BuffType.Knockback)) || !MenuManager.ComboWKnock))
                     SpellManager.CastW(target);
             }
-            if (MenuManager.ComboMenu["Rcombo"].Cast<CheckBox>().CurrentValue 
-                && Champion.CountEnemiesInRange(SpellManager.R.Range) >= MenuManager.ComboMenu["Rlimiter"].Cast<Slider>().CurrentValue
-                && !Champion.IsUnderTurret())
+            if (MenuManager.ComboUseR && Champion.CountEnemiesInRange(SpellManager.R.Range) >= MenuManager.ComboRLimiter && !Champion.IsUnderTurret())
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.R.Range, DamageType.Magical);
-                if (target != null && !Player.HasBuff("VelkozR") && target.Distance(Champion) >= SpellManager.R.Range * 0.5f
-                    && target.Distance(Champion) <= SpellManager.R.Range - 100)
+                if (target != null && ((MenuManager.ComboRCooldown && !SpellManager.Q.IsReady() && !SpellManager.W.IsReady() && !SpellManager.E.IsReady()) || !MenuManager.ComboRCooldown))
                     SpellManager.CastR(target);
             }
         }
 
         public static void HarassMode()
         {
-            if (Champion.ManaPercent < MenuManager.HarassMenu["Harassmana"].Cast<Slider>().CurrentValue) return;
-            if (MenuManager.HarassMenu["Qharass"].Cast<CheckBox>().CurrentValue && SpellManager.Q.Name == "VelkozQ")
+            if (Champion.ManaPercent <= MenuManager.HarassMana) return;
+            if (MenuManager.HarassUseQ)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Magical);
+                var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Magical, false, true);
                 if (target != null)
                     SpellManager.CastQ(target);
             }
-            if (MenuManager.HarassMenu["Eharass"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.HarassUseE)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Magical);
                 if (target != null)
                     SpellManager.CastE(target);
             }
-            if (MenuManager.HarassMenu["Wharass"].Cast<CheckBox>().CurrentValue)
-            {
-                var target = TargetManager.GetChampionTarget(SpellManager.W.Range, DamageType.Magical);
-                if (target != null)
-                    SpellManager.CastW(target);
-            }
         }
 
         public static void JungleMode()
         {
-            if (Champion.ManaPercent < MenuManager.JungleMenu["Junglemana"].Cast<Slider>().CurrentValue) return;
-            if (MenuManager.JungleMenu["Qjungle"].Cast<CheckBox>().CurrentValue && SpellManager.Q.Name == "VelkozQ")
+            if (Champion.ManaPercent < MenuManager.JungleMana) return;
+            if (MenuManager.JungleUseQ)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Magical, false, true);
+                var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Magical, false, true, true);
                 if (target != null)
                     SpellManager.CastQ(target);
             }
-            if (MenuManager.JungleMenu["Ejungle"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.JungleUseE)
             {
                 var target = TargetManager.GetMinionTarget(SpellManager.E.Range, DamageType.Magical, false, true);
                 if (target != null)
                     SpellManager.CastE(target);
             }
-            if (MenuManager.JungleMenu["Wjungle"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.JungleUseW)
             {
                 var target = TargetManager.GetMinionTarget(SpellManager.W.Range, DamageType.Magical, false, true);
                 if (target != null)
@@ -97,20 +79,20 @@ namespace SeekerVelKoz
 
         public static void LaneClearMode()
         {
-            if (Champion.ManaPercent < MenuManager.LaneClearMenu["Lanecmana"].Cast<Slider>().CurrentValue) return;
-            if (MenuManager.LaneClearMenu["Qlanec"].Cast<CheckBox>().CurrentValue && SpellManager.Q.Name == "VelkozQ")
+            if (Champion.ManaPercent < MenuManager.LaneClearMana) return;
+            if (MenuManager.LaneClearUseQ)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Magical);
+                var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Magical, false, false, true);
                 if (target != null)
                     SpellManager.CastQ(target);
             }
-            if (MenuManager.LaneClearMenu["Elanec"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.LaneClearUseE)
             {
                 var target = TargetManager.GetMinionTarget(SpellManager.E.Range, DamageType.Magical);
                 if (target != null)
                     SpellManager.CastE(target);
             }
-            if (MenuManager.LaneClearMenu["Wlanec"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.LaneClearUseW)
             {
                 var target = TargetManager.GetMinionTarget(SpellManager.W.Range, DamageType.Magical);
                 if (target != null)
@@ -120,22 +102,22 @@ namespace SeekerVelKoz
 
         public static void LastHitMode()
         {
-            if (Champion.ManaPercent < MenuManager.LastHitMenu["Lasthitmana"].Cast<Slider>().CurrentValue) return;
-            if (MenuManager.LastHitMenu["Qlasthit"].Cast<CheckBox>().CurrentValue && SpellManager.Q.Name == "VelkozQ")
+            if (Champion.ManaPercent < MenuManager.LastHitMana) return;
+            if (MenuManager.LastHitUseQ)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Magical, false, false, SpellManager.QDamage());
+                var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Magical, false, false, true, SpellManager.QDamage());
                 if (target != null)
                     SpellManager.CastQ(target);
             }
-            if (MenuManager.LastHitMenu["Elasthit"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.LastHitUseE)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.E.Range, DamageType.Magical, false, false, SpellManager.EDamage());
+                var target = TargetManager.GetMinionTarget(SpellManager.E.Range, DamageType.Magical, false, false, false, SpellManager.EDamage());
                 if (target != null)
                     SpellManager.CastE(target);
             }
-            if (MenuManager.LastHitMenu["Wlasthit"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.LastHitUseW)
             {
-                var target = TargetManager.GetMinionTarget(SpellManager.W.Range, DamageType.Magical, false, false, SpellManager.WDamage());
+                var target = TargetManager.GetMinionTarget(SpellManager.W.Range, DamageType.Magical, false, false, false, SpellManager.WDamage());
                 if (target != null)
                     SpellManager.CastW(target);
             }
@@ -143,28 +125,28 @@ namespace SeekerVelKoz
 
         public static void KsMode()
         {
-            if (MenuManager.KillStealMenu["Qks"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.KsUseQ)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Magical, false, SpellManager.QDamage());
+                var target = TargetManager.GetChampionTarget(SpellManager.Q.Range, DamageType.Magical, false, true, SpellManager.QDamage());
                 if (target != null)
                     SpellManager.CastQ(target);
             }
-            if (MenuManager.KillStealMenu["Eks"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.KsUseE)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Magical, false, SpellManager.EDamage());
+                var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Magical, false, false, SpellManager.EDamage());
                 if (target != null)
                     SpellManager.CastE(target);
             }
-            if (MenuManager.KillStealMenu["Wks"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.KsUseW)
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.W.Range, DamageType.Magical, false, SpellManager.WDamage());
+                var target = TargetManager.GetChampionTarget(SpellManager.W.Range, DamageType.Magical, false, false, SpellManager.WDamage());
                 if (target != null)
                     SpellManager.CastW(target);
             }
-            if (MenuManager.KillStealMenu["Rks"].Cast<CheckBox>().CurrentValue && !Champion.IsUnderTurret())
+            if (MenuManager.KsUseR && Champion.CountEnemiesInRange(SpellManager.R.Range) >= MenuManager.KsUltLimiter && !Champion.IsUnderTurret())
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.R.Range, DamageType.Magical, false, SpellManager.RDamage());
-                if (target != null && !Player.HasBuff("VelkozR"))
+                var target = TargetManager.GetChampionTarget(SpellManager.R.Range, DamageType.Magical, false, false, SpellManager.RDamage());
+                if (target != null)
                     SpellManager.CastR(target);
             }
         }
@@ -173,9 +155,7 @@ namespace SeekerVelKoz
         {
             var target = TargetManager.GetChampionTarget(SpellManager.R.Range, DamageType.Magical);
             if (target != null)
-            {
                 Champion.Spellbook.UpdateChargeableSpell(SpellSlot.R, target.ServerPosition, false, false);
-            }
             else
             {
                 var mtarget = TargetManager.GetMinionTarget(SpellManager.R.Range, DamageType.Magical);
@@ -190,19 +170,22 @@ namespace SeekerVelKoz
             {
                 if ((item.Id == ItemId.Tear_of_the_Goddess || item.Id == ItemId.Tear_of_the_Goddess_Crystal_Scar ||
                      item.Id == ItemId.Archangels_Staff || item.Id == ItemId.Archangels_Staff_Crystal_Scar ||
-                     item.Id == ItemId.Manamune || item.Id == ItemId.Manamune_Crystal_Scar) && item.Stacks < 750 &&
-                    Champion.IsInShopRange())
+                     item.Id == ItemId.Manamune || item.Id == ItemId.Manamune_Crystal_Scar)
+                    && Champion.IsInShopRange())
                 {
-                    if (SpellManager.Q.Name == "VelkozQ")
+                    if ((int)(Game.Time - SpellManager.StackerStamp) >= 2)
+                    {
                         SpellManager.CastQ(Champion);
+                        SpellManager.StackerStamp = Game.Time;
+                    }
                 }
             }
         }
 
         public static void InterruptMode(Obj_AI_Base sender, Interrupter.InterruptableSpellEventArgs args)
         {
-            if (MenuManager.SettingMenu["Interruptmode"].Cast<CheckBox>().CurrentValue) return;
-            if (sender != null && MenuManager.SettingMenu["Einterrupt"].Cast<CheckBox>().CurrentValue)
+            if (!MenuManager.InterrupterMode) return;
+            if (sender != null && MenuManager.InterrupterUseE)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Magical);
                 if (target != null)
@@ -212,8 +195,8 @@ namespace SeekerVelKoz
 
         public static void GapCloserMode(Obj_AI_Base sender, Gapcloser.GapcloserEventArgs args)
         {
-            if (MenuManager.SettingMenu["Gapcmode"].Cast<CheckBox>().CurrentValue) return;
-            if (sender != null && MenuManager.SettingMenu["Egapc"].Cast<CheckBox>().CurrentValue)
+            if (!MenuManager.GapCloserMode) return;
+            if (sender != null && MenuManager.GapCloserUseE)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Magical);
                 if (target != null)

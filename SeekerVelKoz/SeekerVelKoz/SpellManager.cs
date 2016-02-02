@@ -1,6 +1,10 @@
-﻿using EloBuddy;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using EloBuddy;
 using EloBuddy.SDK;
 using EloBuddy.SDK.Enumerations;
+using SharpDX;
 
 namespace SeekerVelKoz
 {
@@ -13,8 +17,20 @@ namespace SeekerVelKoz
 
         public static MissileClient Qmiss = null;
 
+        public const int MissileSpeed = 2100;
+        public const int CastDelay = 250;
+        public const int SpellWidth = 45;
+        public const int SpellRange = 1100;
+
+        public static MissileClient Handle { get; set; }
+        public static Vector2 Direction { get; set; }
+        public static List<Vector2> Perpendiculars { get; set; }
+
         // Clone Character Object
         public static AIHeroClient Champion = Program.Champion;
+
+        // Tear Timestamp
+        public static float StackerStamp = 0;
 
         public static void Initialize()
         {
@@ -65,7 +81,7 @@ namespace SeekerVelKoz
         public static void CastQ(Obj_AI_Base target)
         {
             if (target == null) return;
-            if (Q.IsReady())
+            if (Q.IsReady() && Q.Name == "VelkozQ")
                 Q.Cast(target);
         }
 
@@ -86,8 +102,56 @@ namespace SeekerVelKoz
         public static void CastR(Obj_AI_Base target)
         {
             if (target == null) return;
-            if (R.IsReady())
+            if (R.IsReady() && !Champion.HasBuff("VelkozR"))
                 R.Cast(target);
+        }
+
+        public static void OnCreate(GameObject sender, EventArgs args)
+        {
+            // Check if the sender is a MissleClient
+            var missile = sender as MissileClient;
+            if (missile != null && missile.SpellCaster.IsMe && missile.SData.Name == "VelkozQMissile")
+            {
+                // Apply the needed values
+                Handle = missile;
+                Direction = (missile.EndPosition.To2D() - missile.StartPosition.To2D()).Normalized();
+                Perpendiculars.Add(Direction.Perpendicular());
+                Perpendiculars.Add(Direction.Perpendicular2());
+            }
+        }
+
+        public static void QSplit(EventArgs args)
+        {
+            // Check if the missile is active
+            if (Handle != null && Q.IsReady() && Q.Name == "velkozqsplitactivate")
+            {
+                foreach (var perpendicular in Perpendiculars)
+                {
+                    if (Handle != null)
+                    {
+                        var startPos = Handle.Position.To2D();
+                        var endPos = Handle.Position.To2D() + SpellRange * perpendicular;
+
+                        var collisionObjects = ObjectManager.Get<Obj_AI_Base>()
+                            .Where(o => o.IsEnemy && !o.IsDead && !o.IsStructure() && !o.IsWard() && !o.IsInvulnerable
+                                    && o.Distance(Champion, true) < (SpellRange + 200).Pow()
+                                    && o.ServerPosition.To2D().Distance(startPos, endPos, true, true) <= (SpellWidth * 2 + o.BoundingRadius).Pow());
+
+                        var colliding = collisionObjects
+                            .Where(o => o.Type == GameObjectType.AIHeroClient && o.IsValidTarget()
+                                    && Prediction.Position.Collision.LinearMissileCollision(o, startPos, endPos, MissileSpeed, SpellWidth, CastDelay, (int)o.BoundingRadius))
+                                .OrderBy(o => o.Distance(Champion, true)).FirstOrDefault();
+
+                        if (colliding != null)
+                        {
+                            Player.CastSpell(SpellSlot.Q);
+                            Handle = null;
+                        }
+                    }
+                }
+            }
+            else
+                Handle = null;
         }
     }
 }

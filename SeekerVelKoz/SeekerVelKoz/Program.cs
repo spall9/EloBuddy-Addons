@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Drawing;
+using System.Collections.Generic;
 using EloBuddy;
 using EloBuddy.SDK;
 using EloBuddy.SDK.Events;
-using EloBuddy.SDK.Menu.Values;
+using SharpDX;
+using Color = System.Drawing.Color;
 
 namespace SeekerVelKoz
 {
@@ -27,14 +28,14 @@ namespace SeekerVelKoz
             // Initialize classes
             SpellManager.Initialize();
             MenuManager.Initialize();
-            TargetManager.Initialize();
-            ModeManager.Initialize();
-            QSplit.Initialize();
+            SpellManager.Perpendiculars = new List<Vector2>();
 
             // Listen to Events
             Drawing.OnDraw += Drawing_OnDraw;
             Game.OnUpdate += Game_OnUpdate;
             Game.OnTick += Game_OnTick;
+            //Game.OnUpdate += SpellManager.QSplit;
+            //GameObject.OnCreate += SpellManager.OnCreate;
             Interrupter.OnInterruptableSpell += ModeManager.InterruptMode;
             Gapcloser.OnGapcloser += ModeManager.GapCloserMode;
         }
@@ -42,13 +43,20 @@ namespace SeekerVelKoz
         public static void Game_OnUpdate(EventArgs args)
         {
             // Initialize Skin Designer
-            Player.SetSkinId(MenuManager.DrawingMenu["DrawS"].Cast<CheckBox>().CurrentValue
-                ? MenuManager.DrawingMenu["Skins"].Cast<Slider>().CurrentValue
+            Player.SetSkinId(MenuManager.DesignerMode
+                ? MenuManager.DesignerSkin
                 : ChampionSkin);
         }
 
         public static void Drawing_OnDraw(EventArgs args)
         {
+            // Wait for Game Load
+            if (Game.Time < 10) return;
+
+            // No Responce While Dead
+            if (Champion.IsDead) return;
+
+
             Color color;
 
             // Setup Designer Coloration
@@ -69,25 +77,28 @@ namespace SeekerVelKoz
             }
 
             // Apply Designer Color into Circle
-            if (!MenuManager.DrawingMenu["DrawM"].Cast<CheckBox>().CurrentValue) return;
-            if (MenuManager.DrawingMenu["QWdraw"].Cast<CheckBox>().CurrentValue && (SpellManager.Q.IsLearned || SpellManager.W.IsLearned))
+            if (!MenuManager.DrawerMode) return;
+            if (MenuManager.DrawQw && (SpellManager.Q.IsLearned || SpellManager.W.IsLearned))
                 Drawing.DrawCircle(Champion.Position, SpellManager.Q.Range, color);
-            if (MenuManager.DrawingMenu["Edraw"].Cast<CheckBox>().CurrentValue && SpellManager.E.IsLearned)
+            if (MenuManager.DrawE && SpellManager.E.IsLearned)
                 Drawing.DrawCircle(Champion.Position, SpellManager.E.Range, color);
-            if (MenuManager.DrawingMenu["Rdraw"].Cast<CheckBox>().CurrentValue && SpellManager.R.IsLearned)
+            if (MenuManager.DrawR && SpellManager.R.IsLearned)
                 Drawing.DrawCircle(Champion.Position, SpellManager.R.Range, color);
         }
 
         public static void Game_OnTick(EventArgs args)
         {
             // Initialize Leveler
-            if (MenuManager.SettingMenu["Autolvl"].Cast<CheckBox>().CurrentValue && Champion.SpellTrainingPoints >= 1)
+            if (MenuManager.LevelerMode && Champion.SpellTrainingPoints >= 1)
                 LevelerManager.Initialize();
+
             // No Responce While Dead
             if (Champion.IsDead) return;
 
             // Mode Activation
-            if (Orbwalker.IsAutoAttacking) return;
+            if (MenuManager.UltimateFollower && Champion.HasBuff("VelkozR"))
+                ModeManager.UltFollowMode();
+
             switch (Orbwalker.ActiveModesFlags)
             {
                 case Orbwalker.ActiveModes.Combo:
@@ -106,12 +117,10 @@ namespace SeekerVelKoz
                     ModeManager.LastHitMode();
                     break;
             }
-            if (MenuManager.KillStealMenu["KSmode"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.KsMode)
                 ModeManager.KsMode();
-            if (MenuManager.SettingMenu["StackM"].Cast<CheckBox>().CurrentValue)
+            if (MenuManager.StackMode)
                 ModeManager.StackMode();
-            if (MenuManager.SettingMenu["Rfollow"].Cast<CheckBox>().CurrentValue && Champion.HasBuff("VelkozR"))
-                ModeManager.UltFollowMode();
         }
     }
 }
