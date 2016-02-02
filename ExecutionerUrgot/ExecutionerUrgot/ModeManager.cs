@@ -40,7 +40,7 @@ namespace ExecutionerUrgot
 
         public static void HarassMode()
         {
-            if (Champion.ManaPercent < MenuManager.HarassMana) return;
+            if (Champion.ManaPercent <= MenuManager.HarassMana) return;
             if (MenuManager.HarassUseE)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Physical);
@@ -57,7 +57,7 @@ namespace ExecutionerUrgot
 
         public static void JungleMode()
         {
-            if (Champion.ManaPercent < MenuManager.JungleMana) return;
+            if (Champion.ManaPercent <= MenuManager.JungleMana) return;
             if (MenuManager.JungleUseQ)
             {
                 var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Physical, false, true, true);
@@ -74,7 +74,7 @@ namespace ExecutionerUrgot
 
         public static void LaneClearMode()
         {
-            if (Champion.ManaPercent < MenuManager.LaneClearMana) return;
+            if (Champion.ManaPercent <= MenuManager.LaneClearMana) return;
             if (MenuManager.LaneClearUseQ)
             {
                 var target = TargetManager.GetMinionTarget(SpellManager.Q.Range, DamageType.Physical, false, false, true);
@@ -91,7 +91,7 @@ namespace ExecutionerUrgot
 
         public static void LastHitMode()
         {
-            if (Champion.ManaPercent < MenuManager.LastHitMana) return;
+            if (Champion.ManaPercent <= MenuManager.LastHitMana) return;
             if (Orbwalker.CanAutoAttack && Orbwalker.IsAutoAttacking) return;
             if (MenuManager.LastHitUseQ)
             {

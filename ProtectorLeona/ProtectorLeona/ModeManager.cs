@@ -44,7 +44,7 @@ namespace ProtectorLeona
 
         public static void HarassMode()
         {
-            if (Champion.ManaPercent < MenuManager.HarassMana) return;
+            if (Champion.ManaPercent <= MenuManager.HarassMana) return;
             if (MenuManager.HarassUseE)
             {
                 var target = TargetManager.GetChampionTarget(SpellManager.E.Range, DamageType.Magical);

@@ -14,7 +14,7 @@ namespace DefenderTaric
         {
             var herotype = EntityManager.Heroes.AllHeroes;
             var target = herotype
-                .OrderByDescending(a => a.HealthPercent)
+                .OrderBy(a => a.HealthPercent)
                 .FirstOrDefault(a => WithinRange(a, range) && IsTargetValid(a)
                                 && IsFriendOrFoe(a, isAlly)
                                 && IsColliding(a, collision, range) && CalculateKs(a, damagetype, ksdamage));
@@ -34,7 +34,7 @@ namespace DefenderTaric
             if (miniontype.Length == 0) return null;
 
             var target = miniontype
-                .OrderByDescending(a => a.HealthPercent)
+                .OrderBy(a => a.HealthPercent)
                 .FirstOrDefault(a => WithinRange(a, range) && IsTargetValid(a)
                                 && IsFriendOrFoe(a, isAlly) && IsMonsterOrMinion(a, isMonster)
                                 && IsColliding(a, collision, range) && CalculateKs(a, damagetype, ksdamage));
@@ -45,7 +45,7 @@ namespace DefenderTaric
         {
             var turrettype = EntityManager.Turrets.AllTurrets;
             var target = turrettype
-                .OrderByDescending(a => a.HealthPercent)
+                .OrderBy(a => a.HealthPercent)
                 .FirstOrDefault(a => WithinRange(a, range) && IsTargetValid(a) && IsFriendOrFoe(a, isAlly));
             return target;
         }
@@ -77,7 +77,7 @@ namespace DefenderTaric
 
         public static bool WithinRange(Obj_AI_Base target, float range)
         {
-            return target.IsValidTarget(range) && target.Distance(Champion) <= range;
+            return target.IsValidTarget(range) && target.IsInRange(Champion, range);
         }
 
         public static bool CollisionCheck(Obj_AI_Base target, float range)

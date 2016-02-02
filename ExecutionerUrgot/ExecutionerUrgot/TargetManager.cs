@@ -14,7 +14,7 @@ namespace ExecutionerUrgot
         {
             var herotype = EntityManager.Heroes.AllHeroes;
             var target = herotype
-                .OrderByDescending(a => a.HealthPercent).ThenBy(a => a.HasBuff("urgotcorrosivedebuff")) 
+                .OrderBy(a => a.HealthPercent).ThenBy(a => a.HasBuff("urgotcorrosivedebuff")) 
                 .FirstOrDefault(a => WithinRange(a, range) && IsTargetValid(a)
                                 && IsFriendOrFoe(a, isAlly)
                                 && IsColliding(a, collision, range) && CalculateKs(a, damagetype, ksdamage));
@@ -34,7 +34,7 @@ namespace ExecutionerUrgot
             if (miniontype.Length == 0) return null;
 
             var target = miniontype
-                .OrderByDescending(a => a.HealthPercent).ThenBy(a => a.HasBuff("urgotcorrosivedebuff"))
+                .OrderBy(a => a.HealthPercent).ThenBy(a => a.HasBuff("urgotcorrosivedebuff"))
                 .FirstOrDefault(a => WithinRange(a, range) && IsTargetValid(a)
                                 && IsFriendOrFoe(a, isAlly) && IsMonsterOrMinion(a, isMonster)
                                 && IsColliding(a, collision, range) && CalculateKs(a, damagetype, ksdamage));
@@ -45,7 +45,7 @@ namespace ExecutionerUrgot
         {
             var turrettype = EntityManager.Turrets.AllTurrets;
             var target = turrettype
-                .OrderByDescending(a => a.HealthPercent)
+                .OrderBy(a => a.HealthPercent)
                 .FirstOrDefault(a => WithinRange(a, range) && IsTargetValid(a) && IsFriendOrFoe(a, isAlly));
             return target;
         }
@@ -80,9 +80,9 @@ namespace ExecutionerUrgot
             return ((range == SpellManager.Q.Range && !target.HasBuff("urgotcorrosivedebuff") && target.IsValidTarget(range))
                 || (range == SpellManager.Q.Range && target.HasBuff("urgotcorrosivedebuff") && target.IsValidTarget(SpellManager.Q2.Range))
                 || (range != SpellManager.Q.Range && target.IsValidTarget(range)))
-                && ((range == SpellManager.Q.Range && !target.HasBuff("urgotcorrosivedebuff") && target.Distance(Champion) <= range)
-                || (range == SpellManager.Q.Range && target.HasBuff("urgotcorrosivedebuff") && target.Distance(Champion) <= SpellManager.Q2.Range)
-                || (range != SpellManager.Q.Range && target.Distance(Champion) <= range));
+                && ((range == SpellManager.Q.Range && !target.HasBuff("urgotcorrosivedebuff") && target.IsInRange(Champion, range))
+                || (range == SpellManager.Q.Range && target.HasBuff("urgotcorrosivedebuff") && target.IsInRange(Champion, SpellManager.Q2.Range))
+                || (range != SpellManager.Q.Range && target.IsInRange(Champion, range)));
         }
 
         public static bool CollisionCheck(Obj_AI_Base target, float range)
