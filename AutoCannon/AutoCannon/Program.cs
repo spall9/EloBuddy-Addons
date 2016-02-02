@@ -1,79 +1,40 @@
 ﻿using System;
 using System.Drawing;
-using System.Linq;
+using AlchemistSinged;
 using EloBuddy;
 using EloBuddy.SDK;
 using EloBuddy.SDK.Enumerations;
 using EloBuddy.SDK.Events;
-using EloBuddy.SDK.Menu;
 using EloBuddy.SDK.Menu.Values;
 
 namespace AutoCannon
 {
-    /* Created by Counter */
-
+    // Created by Counter
     internal class Program
     {
-        // Menus
-        public static Menu AutoCannonMenu, SettingsMenu;
+        // Grab Player Attributes
+        public static AIHeroClient Champion { get { return Player.Instance; } }
+
         // Skills
         public static Spell.Skillshot Throw;
 
-        // Grab Player
-        public static AIHeroClient Champion
-        {
-            get { return Player.Instance; }
-        }
-
-        // Grab Enemy
-        public static Obj_AI_Base GetEnemy(float range, GameObjectType gametype)
-        {
-            return ObjectManager.Get<Obj_AI_Base>()
-                .OrderBy(a => a.Health).FirstOrDefault(a => a.IsEnemy
-                                                            && a.Type == gametype && !Champion.IsRecalling()
-                                                            && !a.IsDead && a.IsValidTarget(range) && !a.IsInvulnerable
-                                                            && a.Distance(Champion) <= range);
-        }
-
-        // Grab KSable Enemy
-        public static Obj_AI_Base GetKs(float range, float damage, GameObjectType gametype)
-        {
-            return ObjectManager.Get<Obj_AI_Base>()
-                .OrderBy(a => a.Health).FirstOrDefault(a => a.IsEnemy
-                                                            && a.Type == gametype
-                                                            && !a.IsDead && a.IsValidTarget(range) && !a.IsInvulnerable
-                                                            && !a.HasBuff("ChronoShift")
-                                                            && a.Health <= damage
-                                                            && a.Distance(Champion) <= range);
-        }
-
-        private static void Main()
+        public static void Main()
         {
             Loading.OnLoadingComplete += Loading_OnLoadingComplete;
         }
 
-        private static void Loading_OnLoadingComplete(EventArgs args)
+        public static void Loading_OnLoadingComplete(EventArgs args)
         {
             if (Game.MapId != GameMapId.HowlingAbyss) return;
 
-            // Draw Menus
-            AutoCannonMenu = MainMenu.AddMenu("AutoCannon", "AutoCannon");
-            AutoCannonMenu.AddGroupLabel("AutoCannon");
-            AutoCannonMenu.AddLabel("Created by Counter");
-            AutoCannonMenu.AddLabel("This addon will shoot Mark/Poros. :) <3");
-            AutoCannonMenu.AddLabel("Also has a KS feature for priority kills!! ;) xD");
-
-            SettingsMenu = AutoCannonMenu.AddSubMenu("Settings", "Settings");
-            SettingsMenu.AddGroupLabel("Settings");
-            SettingsMenu.AddLabel("Keep in mind that the script won't dash to target. This must be done manually.");
-            SettingsMenu.AddSeparator();
-            SettingsMenu.AddLabel("Press F5 to update these numbers for Drawing.");
+            // Initialize classes
+            MenuManager.Initialize();
 
             // Setting variable
             SpellDataInst sumspell = null;
             if (Player.GetSpell(SpellSlot.Summoner1).Name == "summonersnowball")
                 sumspell = Player.GetSpell(SpellSlot.Summoner1);
-            if (Player.GetSpell(SpellSlot.Summoner2).Name == "summonersnowball")
+            else if (Player.GetSpell(SpellSlot.Summoner2).Name == "summonersnowball")
                 sumspell = Player.GetSpell(SpellSlot.Summoner2);
             if (Player.GetSpell(SpellSlot.Summoner1).Name == "summonerporothrow")
                 sumspell = Player.GetSpell(SpellSlot.Summoner1);
@@ -85,16 +46,16 @@ namespace AutoCannon
                 switch (sumspell.Name)
                 {
                     case "summonersnowball":
-                        SettingsMenu.Add("markrange", new Slider("SS: Mark range - 0 is off", 1600, 0, 1600));
+                        MenuManager.SettingsMenu.Add("markrange", new Slider("SS: Mark range - 0 is off", 1600, 0, 1600));
                         break;
                     case "summonerporothrow":
-                        SettingsMenu.Add("pororange", new Slider("SS: Poro Throw range - 0 is off", 2500, 0, 2500));
+                        MenuManager.SettingsMenu.Add("pororange", new Slider("SS: Poro Throw range - 0 is off", 2500, 0, 2500));
                         break;
                 }
 
                 var range = sumspell.Name == "summonersnowball"
-                    ? SettingsMenu["markrange"].Cast<Slider>().CurrentValue
-                    : SettingsMenu["pororange"].Cast<Slider>().CurrentValue;
+                    ? MenuManager.SettingsMenu["markrange"].Cast<Slider>().CurrentValue
+                    : MenuManager.SettingsMenu["pororange"].Cast<Slider>().CurrentValue;
                 Throw = new Spell.Skillshot(sumspell.Slot, (uint) range, SkillShotType.Linear)
                 {
                     MinimumHitChance = HitChance.High,
@@ -106,27 +67,28 @@ namespace AutoCannon
             }
         }
 
-        private static void Game_OnTick(EventArgs args)
+        public static void Game_OnTick(EventArgs args)
         {
             // Mark Calculations
             if (!Throw.IsOnCooldown && Throw.Name != "snowballfollowupcast" && Throw.Name != "porothrowfollowupcast")
             {
-                // calculate damage
+                // Calculate Damage
                 var damage = Throw.Name == "summonersnowball" ? 10 + 5*Champion.Level : 20 + 10*Champion.Level;
 
-                var kstarget = GetKs(Throw.Range, damage, GameObjectType.AIHeroClient);
+                // Cast
+                var kstarget = TargetManager.GetChampionTarget(Throw.Range, DamageType.True, false, true, damage);
                 if (kstarget != null)
-                    Throw.Cast(Throw.GetPrediction(kstarget).CastPosition);
+                    Throw.Cast(kstarget);
                 else
                 {
-                    var target = GetEnemy(Throw.Range, GameObjectType.AIHeroClient);
+                    var target = TargetManager.GetChampionTarget(Throw.Range, DamageType.True, false, true);
                     if (target != null)
-                        Throw.Cast(Throw.GetPrediction(target).CastPosition);
+                        Throw.Cast(target);
                 }
             }
         }
 
-        private static void Drawing_OnDraw(EventArgs args)
+        public static void Drawing_OnDraw(EventArgs args)
         {
             Drawing.DrawCircle(Champion.Position, Throw.Range, Color.CadetBlue);
         }
