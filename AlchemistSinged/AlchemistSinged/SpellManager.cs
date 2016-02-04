@@ -36,7 +36,7 @@ namespace AlchemistSinged
         {
             // Mana Regen Utilizer
             if (GetManaRegen() > Champion.Spellbook.GetSpell(SpellSlot.Q).SData.ManaCostArray[Champion.Level]) return;
-            Chat.Print(Champion.Spellbook.GetSpell(SpellSlot.Q).SData.ManaCostArray[Champion.Level]);
+            
             // Disable Conditions
             if (Toggle && !Champion.IsInShopRange()
                 && Champion.CountEnemiesInRange(1000) == 0

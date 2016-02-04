@@ -15,10 +15,10 @@ namespace SeekerVelKoz
             var herotype = EntityManager.Heroes.AllHeroes;
             var target = herotype
                 .OrderByDescending(a => a.HealthPercent)
-                .FirstOrDefault(a => WithinRange(a, range) && IsTargetValid(a)
+                .Where(a => WithinRange(a, range) && IsTargetValid(a)
                                 && IsFriendOrFoe(a, isAlly)
                                 && IsColliding(a, collision, range) && CalculateKs(a, damagetype, ksdamage));
-            return target;
+            return TargetSelector.GetTarget(target, damagetype);
         }
 
         public static Obj_AI_Minion GetMinionTarget(float range, DamageType damagetype, bool isAlly = false, bool isMonster = false, bool collision = false, float ksdamage = -1)
