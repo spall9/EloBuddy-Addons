@@ -21,7 +21,7 @@ namespace MagicianRyze
 
         public static void Loading_OnLoadingComplete(EventArgs args)
         {
-            // Validate Player.Instace is Addon Champion
+            // Validate Player.Instance is Addon Champion
             if (Champion.ChampionName != "Ryze") return;
             ChampionSkin = Champion.SkinId;
 

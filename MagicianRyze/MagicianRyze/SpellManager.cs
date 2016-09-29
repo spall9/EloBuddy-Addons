@@ -9,7 +9,7 @@ namespace MagicianRyze
         public static Spell.Skillshot Q { get; set; }
         public static Spell.Targeted W { get; set; }
         public static Spell.Targeted E { get; set; }
-        public static Spell.Active R { get; set; }
+        public static Spell.Skillshot R { get; set; }
 
         // Clone Character Object
         public static AIHeroClient Champion = Program.Champion;
@@ -20,28 +20,28 @@ namespace MagicianRyze
         public static void Initialize()
         {
             // Initialize spells
-            Q = new Spell.Skillshot(SpellSlot.Q, 900, SkillShotType.Linear, 250, 1700, 50)
+            Q = new Spell.Skillshot(SpellSlot.Q, 1000, SkillShotType.Linear, 250, 1700, 70)
             {
                 MinimumHitChance = HitChance.High,
                 AllowedCollisionCount = 0
             };
-            W = new Spell.Targeted(SpellSlot.W, 600);
+            W = new Spell.Targeted(SpellSlot.W, 615);
             E = new Spell.Targeted(SpellSlot.E, 600);
-            R = new Spell.Active(SpellSlot.R);
+            R = new Spell.Skillshot(SpellSlot.R, 1750, SkillShotType.Circular, 2250, 1700, 475);
         }
 
         // Champion Specified Abilities
         public static float QDamage()
         {
-            return new float[] { 0, 60, 85, 110, 135, 160 }[Q.Level] 
-                + (0.55f * Champion.FlatMagicDamageMod )
+            return new float[] { 0, 60, 85, 110, 135, 160, 185 }[Q.Level] 
+                + (0.45f * Champion.TotalMagicalDamage )
                 + (new[] { 0f, 0.02f, 0.025f, 0.03f, 0.035f, 0.04f }[Q.Level] * Champion.MaxMana);
         }
 
         public static float WDamage()
         {
             return new float[] { 0, 80, 100, 120, 140, 160 }[W.Level]
-                + (0.4f * Champion.FlatMagicDamageMod)
+                + (0.2f * Champion.FlatMagicDamageMod)
                 + (0.025f * Champion.MaxMana);
         }
 
