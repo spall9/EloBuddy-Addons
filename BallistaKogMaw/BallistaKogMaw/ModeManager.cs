@@ -189,10 +189,8 @@ namespace BallistaKogMaw
         {
             foreach (var item in Champion.InventoryItems)
             {
-                if ((item.Id == ItemId.Tear_of_the_Goddess || item.Id == ItemId.Tear_of_the_Goddess_Crystal_Scar ||
-                     item.Id == ItemId.Archangels_Staff || item.Id == ItemId.Archangels_Staff_Crystal_Scar ||
-                     item.Id == ItemId.Manamune || item.Id == ItemId.Manamune_Crystal_Scar)
-                    && Champion.IsInShopRange())
+                if ((item.Id == ItemId.Tear_of_the_Goddess || item.Id == ItemId.Archangels_Staff
+                    || item.Id == ItemId.Manamune) && Champion.IsInShopRange())
                 {
                     if ((int)(Game.Time - SpellManager.StackerStamp) >= 2)
                     {
