@@ -1,4 +1,5 @@
-﻿using EloBuddy;
+﻿using System;
+using EloBuddy;
 using EloBuddy.SDK;
 using EloBuddy.SDK.Enumerations;
 
@@ -26,16 +27,27 @@ namespace MagicianRyze
                 AllowedCollisionCount = 0
             };
             W = new Spell.Targeted(SpellSlot.W, 615);
-            E = new Spell.Targeted(SpellSlot.E, 600);
-            R = new Spell.Skillshot(SpellSlot.R, 1750, SkillShotType.Circular, 2250, 1700, 475);
+            E = new Spell.Targeted(SpellSlot.E, 615);
+            R = new Spell.Skillshot(SpellSlot.R, 1750, SkillShotType.Circular, 2250, int.MaxValue, 475);
+        }
+
+        // Updating spells
+        public static void ConfigSpells(EventArgs args)
+        {
+            if (R.Level == 2 && R.Range == 1750)
+                R = new Spell.Skillshot(SpellSlot.R, 3000, SkillShotType.Circular, 2250, int.MaxValue, 475);
         }
 
         // Champion Specified Abilities
+        public static float BonusMana()
+        {
+            return Champion.MaxMana - (392.4f + 52f * Champion.Level);
+        }
         public static float QDamage()
         {
             return new float[] { 0, 60, 85, 110, 135, 160, 185 }[Q.Level] 
-                + (0.45f * Champion.TotalMagicalDamage )
-                + (new[] { 0f, 0.02f, 0.025f, 0.03f, 0.035f, 0.04f }[Q.Level] * Champion.MaxMana);
+                + (0.45f * Champion.TotalMagicalDamage)
+                + (0.03f * (Champion.MaxMana - (Champion.Level)));
         }
 
         public static float WDamage()

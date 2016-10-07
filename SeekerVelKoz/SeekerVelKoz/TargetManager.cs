@@ -65,9 +65,9 @@ namespace SeekerVelKoz
             return !target.IsDead && !target.IsZombie && !Champion.IsRecalling() && BuffStatus(target);
         }
 
-        public static bool IsFriendOrFoe(Obj_AI_Base target, bool check)
+        public static bool IsFriendOrFoe(Obj_AI_Base target, bool ally)
         {
-            return (check && target.IsAlly && !target.IsMe) || (!check && target.IsEnemy);
+            return (ally && target.IsAlly && !target.IsMe) || (!ally && target.IsEnemy);
         }
 
         public static bool IsMonsterOrMinion(Obj_AI_Base target, bool check)

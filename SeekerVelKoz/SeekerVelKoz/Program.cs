@@ -28,14 +28,11 @@ namespace SeekerVelKoz
             // Initialize classes
             SpellManager.Initialize();
             MenuManager.Initialize();
-            SpellManager.Perpendiculars = new List<Vector2>();
 
             // Listen to Events
             Drawing.OnDraw += Drawing_OnDraw;
             Game.OnUpdate += Game_OnUpdate;
             Game.OnTick += Game_OnTick;
-            //Game.OnUpdate += SpellManager.QSplit;
-            //GameObject.OnCreate += SpellManager.OnCreate;
             Interrupter.OnInterruptableSpell += ModeManager.InterruptMode;
             Gapcloser.OnGapcloser += ModeManager.GapCloserMode;
         }
@@ -58,7 +55,6 @@ namespace SeekerVelKoz
 
 
             Color color;
-
             // Setup Designer Coloration
             switch (Champion.SkinId)
             {
@@ -119,8 +115,6 @@ namespace SeekerVelKoz
             }
             if (MenuManager.KsMode)
                 ModeManager.KsMode();
-            if (MenuManager.StackMode)
-                ModeManager.StackMode();
         }
     }
 }

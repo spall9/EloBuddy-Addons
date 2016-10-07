@@ -100,9 +100,7 @@ namespace AlchemistSinged
                     case ItemId.Spellthiefs_Edge:
                     case ItemId.Ancient_Coin:
                     case ItemId.Tear_of_the_Goddess:
-                    case ItemId.Tear_of_the_Goddess_Crystal_Scar:
                     case ItemId.Manamune:
-                    case ItemId.Manamune_Crystal_Scar:
                         additionalManaPerSecond += 0.25f * flatManaPerSecond;
                         break;
                     // %50
@@ -111,7 +109,6 @@ namespace AlchemistSinged
                     case ItemId.Nomads_Medallion:
                     case ItemId.Chalice_of_Harmony:
                     case ItemId.Archangels_Staff:
-                    case ItemId.Archangels_Staff_Crystal_Scar:
                         additionalManaPerSecond += 0.5f * flatManaPerSecond;
                         break;
                     // %100
@@ -131,10 +128,6 @@ namespace AlchemistSinged
                     case ItemId.Stalkers_Blade:
                     case ItemId.Trackers_Knife:
                     case ItemId.Skirmishers_Sabre:
-                        break;
-                    // Additionals
-                    case ItemId.Prospectors_Ring:
-                        additionalManaPerSecond += 1.2f;
                         break;
                 }
             }

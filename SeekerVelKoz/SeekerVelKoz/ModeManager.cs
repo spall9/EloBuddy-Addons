@@ -145,7 +145,7 @@ namespace SeekerVelKoz
             }
             if (MenuManager.KsUseR && Champion.CountEnemiesInRange(SpellManager.R.Range) >= MenuManager.KsUltLimiter && !Champion.IsUnderTurret())
             {
-                var target = TargetManager.GetChampionTarget(SpellManager.R.Range, DamageType.Magical, false, false, SpellManager.RDamage());
+                var target = TargetManager.GetChampionTarget(SpellManager.R.Range, DamageType.Magical, false, false, SpellManager.RTotalDamage());
                 if (target != null)
                     SpellManager.CastR(target);
             }
@@ -161,24 +161,6 @@ namespace SeekerVelKoz
                 var mtarget = TargetManager.GetMinionTarget(SpellManager.R.Range, DamageType.Magical);
                 if (mtarget != null)
                     Champion.Spellbook.UpdateChargeableSpell(SpellSlot.R, mtarget.ServerPosition, false, false);
-            }
-        }
-
-        public static void StackMode()
-        {
-            foreach (var item in Champion.InventoryItems)
-            {
-                if ((item.Id == ItemId.Tear_of_the_Goddess || item.Id == ItemId.Tear_of_the_Goddess_Crystal_Scar ||
-                     item.Id == ItemId.Archangels_Staff || item.Id == ItemId.Archangels_Staff_Crystal_Scar ||
-                     item.Id == ItemId.Manamune || item.Id == ItemId.Manamune_Crystal_Scar)
-                    && Champion.IsInShopRange())
-                {
-                    if ((int)(Game.Time - SpellManager.StackerStamp) >= 2)
-                    {
-                        SpellManager.CastQ(Champion);
-                        SpellManager.StackerStamp = Game.Time;
-                    }
-                }
             }
         }
 
