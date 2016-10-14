@@ -1,26 +1,30 @@
-﻿using System.Linq;
-using EloBuddy;
+﻿using EloBuddy;
 using EloBuddy.SDK;
 using EloBuddy.SDK.Enumerations;
+using EloBuddy.SDK.Events;
+using EloBuddy.SDK.Menu;
+using EloBuddy.SDK.Menu.Values;
+using SharpDX;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace AlchemistSinged
 {
-    internal class SpellManager
+    class Calculations
     {
+        // Declare Spells
         public static Spell.Active Q { get; set; }
         public static Spell.Skillshot W { get; set; }
         public static Spell.Targeted E { get; set; }
         public static Spell.Active R { get; set; }
 
-        // Clone Character Object
-        public static AIHeroClient Champion = Program.Champion;
-
         // Toggle State
-        public static bool Toggle { get { return Champion.HasBuff("PoisonTrail"); } } 
+        public static bool Toggle { get { return Program.Champion.HasBuff("PoisonTrail"); } } 
 
+        // Initialize method
         public static void Initialize()
         {
-            // Initialize spells
             Q = new Spell.Active(SpellSlot.Q);
             W = new Spell.Skillshot(SpellSlot.W, 1000, SkillShotType.Circular, 500, 700, 350)
             {
@@ -31,31 +35,19 @@ namespace AlchemistSinged
             R = new Spell.Active(SpellSlot.R);
         }
 
-        // Poison Controller
-        public static void QDisable()
-        {
-            // Mana Regen Utilizer
-            if (GetManaRegen() > Champion.Spellbook.GetSpell(SpellSlot.Q).SData.ManaCostArray[Champion.Level]) return;
-            
-            // Disable Conditions
-            if (Toggle && !Champion.IsInShopRange()
-                && Champion.CountEnemiesInRange(1000) == 0
-                && EntityManager.MinionsAndMonsters.Minions.Where(a => a.IsEnemy).Count(a => a.IsInRange(Champion, 1000)) == 0
-                && EntityManager.MinionsAndMonsters.Monsters.Count(a => a.IsInRange(Champion, 750)) == 0)
-                CastQ(Champion);
-        }
-
-        // Champion Specified Abilities
+        // TOGGLE: Singed leaves a trail of poison behind him that lasts for 3.25 seconds.
+        // Enemies caught in the path are poisoned for 2 seconds and dealt magic damage
+        // each 0.25 seconds for the duration. Continual exposure renews the poison.
         public static float QDamage()
         {
-            return new float[] { 0, 44, 68, 92, 116, 140 }[Q.Level]
-                + (0.6f * Champion.FlatMagicDamageMod);
+            return (44 + (24 * Q.Level)) + (0.6f * Program.Champion.FlatMagicDamageMod);
         }
 
-        public static float EDamage()
+        // ACTIVE: Singed flings the target enemy over his shoulder, dealing them magic damage that is capped against minions and monsters.
+        // If the target lands onto his Mega Adhesive, they are temporarily rooted.
+        public static float EDamage(Obj_AI_Base target)
         {
-            return new float[] { 0, 50, 65, 80, 95, 110 }[E.Level]
-                   + (0.75f * Champion.FlatMagicDamageMod);
+            return (50 + (15 * E.Level)) + (target.MaxHealth * (6 + (0.5f * E.Level))) + (0.75f * Program.Champion.FlatMagicDamageMod);
         }
 
         // Cast Methods
@@ -87,11 +79,25 @@ namespace AlchemistSinged
                 R.Cast();
         }
 
+        // Poison Controller
+        public static void QDisable()
+        {
+            // Mana Regen Utilizer
+            if (GetManaRegen() > Program.Champion.Spellbook.GetSpell(SpellSlot.Q).SData.ManaCostArray[Program.Champion.Level]) return;
+            
+            // Disable Conditions
+            if (Toggle && !Program.Champion.IsInShopRange()
+                && Program.Champion.CountEnemiesInRange(1000) == 0
+                && EntityManager.MinionsAndMonsters.Minions.Where(a => a.IsEnemy).Count(a => a.IsInRange(Program.Champion, 1000)) == 0
+                && EntityManager.MinionsAndMonsters.Monsters.Count(a => a.IsInRange(Program.Champion, 750)) == 0)
+                CastQ(Program.Champion);
+        }
+
         public static float GetManaRegen()
         {
-            var flatManaPerSecond = (Champion.CharData.BaseStaticMPRegen + (0.11f * Champion.Level));
+            var flatManaPerSecond = (Program.Champion.CharData.BaseStaticMPRegen + (0.11f * Program.Champion.Level));
             var additionalManaPerSecond = flatManaPerSecond;
-            foreach (var item in Champion.InventoryItems)
+            foreach (var item in Program.Champion.InventoryItems)
             {
                 switch (item.Id)
                 {
@@ -131,11 +137,11 @@ namespace AlchemistSinged
                         break;
                 }
             }
-            if (Champion.Name == "Singed" && Champion.HasBuff("InsanityPotion"))
+            if (Program.Champion.Name == "Singed" && Program.Champion.HasBuff("InsanityPotion"))
                 additionalManaPerSecond += new float[] { 0, 7, 10, 16 }[R.Level];
-            if (Champion.HasBuff("catalystheal"))
+            if (Program.Champion.HasBuff("catalystheal"))
                 additionalManaPerSecond += 25;
-            if (Champion.HasBuff("ElixirOfSorcery"))
+            if (Program.Champion.HasBuff("ElixirOfSorcery"))
                 additionalManaPerSecond += 3;
 
             return additionalManaPerSecond;
