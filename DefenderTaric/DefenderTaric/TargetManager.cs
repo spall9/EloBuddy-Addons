@@ -1,57 +1,64 @@
-﻿using System.Linq;
-using EloBuddy;
+﻿using EloBuddy;
 using EloBuddy.SDK;
+using EloBuddy.SDK.Enumerations;
+using EloBuddy.SDK.Events;
+using EloBuddy.SDK.Menu;
+using EloBuddy.SDK.Menu.Values;
+using SharpDX;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DefenderTaric
 {
-    internal class TargetManager
+    class TargetManager
     {
-        // Clone Character Object
-        public static AIHeroClient Champion = Program.Champion;
-
-        // Target Selectors
-        public static AIHeroClient GetChampionTarget(float range, DamageType damagetype, bool isAlly = false, bool collision = false, float ksdamage = -1f)
+        // Assign TargetSelector with valid Champion target
+        public static AIHeroClient GetChampionTarget(float range, DamageType damagetype, bool IsAlly = false)
         {
-            var herotype = EntityManager.Heroes.AllHeroes;
-            var target = herotype
+            return TargetSelector.GetTarget(EntityManager.Heroes.AllHeroes
                 .OrderBy(a => a.HealthPercent)
-                .Where(a => WithinRange(a, range) && IsTargetValid(a)
-                                && IsFriendOrFoe(a, isAlly)
-                                && IsColliding(a, collision, range) && CalculateKs(a, damagetype, ksdamage));
-            return TargetSelector.GetTarget(target, damagetype);
+                .Where(a => IsTargetValid(a)
+                    && IsFriendOrFoe(a, IsAlly)
+                    && a.IsInRange(Program.Champion, range))
+                , damagetype);
         }
 
-        public static Obj_AI_Minion GetMinionTarget(float range, DamageType damagetype, bool isAlly = false, bool isMonster = false, bool collision = false, float ksdamage = -1)
+        public static Obj_AI_Minion GetMinionTarget(float range, DamageType damagetype, bool isAlly = false)
         {
-            var teamtype = EntityManager.UnitTeam.Enemy;
-            if (isAlly)
-                teamtype = EntityManager.UnitTeam.Ally;
-            var miniontype = EntityManager.MinionsAndMonsters.GetLaneMinions(teamtype, Champion.ServerPosition, range).ToArray();
-            if (isMonster)
-                miniontype = EntityManager.MinionsAndMonsters.GetJungleMonsters(Champion.ServerPosition, range).ToArray();
+            EntityManager.UnitTeam team = isAlly ? EntityManager.UnitTeam.Ally : EntityManager.UnitTeam.Enemy;
+            var miniontype = EntityManager.MinionsAndMonsters.GetLaneMinions(team, Program.Champion.Position, range).ToArray();
 
             // Check list objects
             if (miniontype.Length == 0) return null;
 
-            var target = miniontype
+            return miniontype
                 .OrderBy(a => a.HealthPercent)
-                .FirstOrDefault(a => WithinRange(a, range) && IsTargetValid(a)
-                                && IsFriendOrFoe(a, isAlly) && IsMonsterOrMinion(a, isMonster)
-                                && IsColliding(a, collision, range) && CalculateKs(a, damagetype, ksdamage));
-            return target;
+                .FirstOrDefault(a => IsTargetValid(a) && a.IsInRange(a, range));
+        }
+        
+        public static Obj_AI_Minion GetMonsterTarget(float range, DamageType damagetype)
+        {
+            var miniontype = EntityManager.MinionsAndMonsters.GetJungleMonsters(Program.Champion.Position, range).ToArray();
+
+            // Check list objects
+            if (miniontype.Length == 0) return null;
+
+            return miniontype
+                .OrderBy(a => a.HealthPercent)
+                .FirstOrDefault(a => IsTargetValid(a));
         }
 
+        // Locate valid Turret target
         public static Obj_AI_Turret GetTurretTarget(float range, bool isAlly = false)
         {
-            var turrettype = EntityManager.Turrets.AllTurrets;
-            var target = turrettype
+            return EntityManager.Turrets.AllTurrets
                 .OrderBy(a => a.HealthPercent)
-                .FirstOrDefault(a => WithinRange(a, range) && IsTargetValid(a) && IsFriendOrFoe(a, isAlly));
-            return target;
+                .FirstOrDefault(a => IsTargetValid(a)
+                    && IsFriendOrFoe(a, isAlly));
         }
 
-
-        // Secondary Checks
+        // Reject targets with buffs that prevent damage or conditions
         public static bool BuffStatus(Obj_AI_Base target)
         {
             return !target.Buffs.Any(a => a.IsValid()
@@ -60,39 +67,22 @@ namespace DefenderTaric
                                           && a.Type == BuffType.SpellShield);
         }
 
+        // Is this target alive and meet all conditions?
         public static bool IsTargetValid(Obj_AI_Base target)
         {
-            return !target.IsDead && !target.IsZombie && !Champion.IsRecalling() && BuffStatus(target);
+            return !target.IsDead && !target.IsZombie && !Program.Champion.IsRecalling() && BuffStatus(target);
         }
 
-        public static bool IsFriendOrFoe(Obj_AI_Base target, bool check)
+        // Is this traget friend or foe?
+        public static bool IsFriendOrFoe(Obj_AI_Base target, bool ally)
         {
-            return (check && target.IsAlly && !target.IsMe) || (!check && target.IsEnemy);
+            return (ally && target.IsAlly && !target.IsMe) || (!ally && target.IsEnemy);
         }
 
-        public static bool IsMonsterOrMinion(Obj_AI_Base target, bool check)
+        // Does this target have low enough Health to kill?
+        public static bool CalculateKS(Obj_AI_Base target, DamageType damagetype, float damage)
         {
-            return ((check && target.IsMonster) || (!check && !target.IsMonster));
-        }
-
-        public static bool WithinRange(Obj_AI_Base target, float range)
-        {
-            return target.IsValidTarget(range) && target.IsInRange(Champion, range);
-        }
-
-        public static bool CollisionCheck(Obj_AI_Base target, float range)
-        {
-            return target != null && Prediction.Position.Collision.LinearMissileCollision(target, Champion.Position.To2D(), target.Position.To2D().Extend(target, range), 1700, 50, 250);
-        }
-
-        public static bool IsColliding(Obj_AI_Base target, bool check, float range)
-        {
-            return ((check && CollisionCheck(target, range)) || !check);
-        }
-
-        public static bool CalculateKs(Obj_AI_Base target, DamageType damagetype, float damage)
-        {
-            return (damage > -1f && target.Health <= Champion.CalculateDamageOnUnit(target, damagetype, damage)) || damage == -1;
+            return target.Health <= Program.Champion.CalculateDamageOnUnit(target, damagetype, damage);
         }
     }
 }

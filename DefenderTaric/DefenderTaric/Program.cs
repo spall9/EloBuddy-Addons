@@ -1,117 +1,138 @@
-﻿using System;
-using System.Drawing;
-using EloBuddy;
+﻿using EloBuddy;
 using EloBuddy.SDK;
+using EloBuddy.SDK.Enumerations;
 using EloBuddy.SDK.Events;
+using EloBuddy.SDK.Menu;
+using EloBuddy.SDK.Menu.Values;
+using SharpDX;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 
 namespace DefenderTaric
 {
-    // Created by Counter
-    internal class Program
+    class Program
     {
-        // Grab Player Attributes
+        // Global player Champion instance variable
         public static AIHeroClient Champion { get { return Player.Instance; } }
-        public static int ChampionSkin;
 
-        public static void Main()
+        // Base Champion skin value
+        public static int ChampionSkin;
+        
+        // Main method for Loading.OnLoadingComplete call
+        public static void Main(string[] args)
         {
+            // Listen to Loading events
             Loading.OnLoadingComplete += Loading_OnLoadingComplete;
         }
 
-        public static void Loading_OnLoadingComplete(EventArgs args)
+        // Upon Loading list of events, preform Loading_OnLoadingComplete events
+        private static void Loading_OnLoadingComplete(EventArgs args)
         {
-            // Validate Player.Instace is Addon Champion
+            // Check Champion has correct Champion.Name
             if (Champion.ChampionName != "Taric") return;
+
+            // Declare base skin id
             ChampionSkin = Champion.SkinId;
 
-            // Initialize classes
-            SpellManager.Initialize();
-            MenuManager.Initialize();
+            // Addon working properly, write success
+            Console.WriteLine("DefenderTaric successfully injected!");
+            Console.WriteLine("Source by Counter");
 
-            // Listen to Events
+            // Initialize classes
+            Display.Initialize();
+            Calculations.Initialize();
+            Functions.Initialize();
+
+            // Listen to events
             Drawing.OnDraw += Drawing_OnDraw;
             Game.OnUpdate += Game_OnUpdate;
             Game.OnTick += Game_OnTick;
-            Interrupter.OnInterruptableSpell += ModeManager.InterruptMode;
-            Gapcloser.OnGapcloser += ModeManager.GapCloserMode;
         }
 
+        // Upon Game.OnUpdate list of events, add Game_OnUpdate method
         private static void Game_OnUpdate(EventArgs args)
         {
-            Champion.SetSkinId(MenuManager.DesignerMode
-                ? MenuManager.DesignerSkin
-                : ChampionSkin);
+            // Designer skin
+            Champion.SetSkinId(Display.GetCheckBoxValue("Designer") ? Display.GetSliderValue("Skin") : ChampionSkin);
         }
 
+        // Upon Drawing.OnDraw list of events, add Drawing_OnDraw method
         private static void Drawing_OnDraw(EventArgs args)
         {
-            // Wait for Game Load
+            // Wait for Game Load <-- Prevents grahpical problems
             if (Game.Time < 10) return;
 
-            // No Responce While Dead
+            // No responce while dead
             if (Champion.IsDead) return;
 
-            Color color;
-
+            // Designer colors
+            System.Drawing.Color color;
             switch (Champion.SkinId)
             {
                 default:
-                    color = Color.Transparent;
-                    break;
-                case 0:
-                    color = Color.LightSkyBlue;
+                    color = System.Drawing.Color.BlueViolet;
                     break;
                 case 1:
-                    color = Color.Green;
+                    color = System.Drawing.Color.Green;
                     break;
                 case 2:
-                    color = Color.HotPink;
+                    color = System.Drawing.Color.HotPink;
                     break;
                 case 3:
-                    color = Color.DarkRed;
+                    color = System.Drawing.Color.Firebrick;
+                    break;
+                case 4:
+                    color = System.Drawing.Color.LightBlue;
                     break;
             }
 
-            if (!MenuManager.DrawerMode) return;
-            if (MenuManager.DrawQ && SpellManager.Q.IsLearned)
-                Drawing.DrawCircle(Champion.Position, SpellManager.Q.Range, color);
-            if (MenuManager.DrawE && SpellManager.E.IsLearned)
-                Drawing.DrawCircle(Champion.Position, SpellManager.E.Range, color);
-            if (MenuManager.DrawWr && (SpellManager.W.IsLearned || SpellManager.R.IsLearned))
-                Drawing.DrawCircle(Champion.Position, SpellManager.R.Range, color);
+            // Designer
+            if (!Display.GetCheckBoxValue("Drawer")) return;
+            if (Display.GetCheckBoxValue("DrawA") && !Orbwalker.DrawRange)
+                Drawing.DrawCircle(Champion.Position, Champion.GetAutoAttackRange(), color);
+            if (Display.GetCheckBoxValue("DrawQ") && Calculations.Q.IsLearned)
+                Drawing.DrawCircle(Champion.Position, Calculations.Q.Range, color);
+            if (Display.GetCheckBoxValue("DrawW") && Calculations.W.IsLearned)
+                Drawing.DrawCircle(Champion.Position, Calculations.W.Range, color);
+            if (Display.GetCheckBoxValue("DrawE") && Calculations.E.IsLearned)
+                Drawing.DrawCircle(Champion.Position, Calculations.E.Range, color);
+            if (Display.GetCheckBoxValue("DrawR") && Calculations.R.IsLearned)
+                Drawing.DrawCircle(Champion.Position, Calculations.R.Range, color);
         }
 
+        // Upon Game.OnTick list of events, add Game_OnTick method
         private static void Game_OnTick(EventArgs args)
-        {
-            // Initialize Leveler
-            if (MenuManager.LevelerMode && Champion.SpellTrainingPoints >= 1)
-                LevelerManager.Initialize();
-
-            MenuManager.ComboMenu["Ucombo"].DisplayName = MenuManager.ComboMode == 1 ? "ERW" : "EWR";
-            
-            // No Responce While Dead
+        {         
+            // No responce while dead
             if (Champion.IsDead) return;
 
-            if (MenuManager.EasterEgg && Champion.HasBuff("recall") && !Champion.IsInShopRange())
-                Player.DoEmote(Emote.Joke);
-
-            // Mode Activation
+            // Initialize flag functions
             switch (Orbwalker.ActiveModesFlags)
             {
                 case Orbwalker.ActiveModes.Combo:
-                {
-                    if (MenuManager.ComboMode == 1)
-                            ModeManager.EwrComboMode();
-                    if (MenuManager.ComboMode == 2)
-                            ModeManager.ErwComboMode();
-                }
+                    Functions.Combo();
                     break;
                 case Orbwalker.ActiveModes.Harass:
-                    ModeManager.HarassMode();
+                    Functions.Harass();
+                    break;
+                case Orbwalker.ActiveModes.Flee:
+                    Functions.Flee();
+                    break;
+                case Orbwalker.ActiveModes.LaneClear:
+                    Functions.LaneClear();
+                    break;
+                case Orbwalker.ActiveModes.LastHit:
+                    Functions.LastHit();
+                    break;
+                case Orbwalker.ActiveModes.JungleClear:
+                    Functions.JungleClear();
                     break;
             }
-            if (MenuManager.HealingMode)
-                ModeManager.HealingMode();
+
+            // Initalize Assistance functions
+            Functions.Assistance();
         }
     }
 }
