@@ -87,11 +87,14 @@ namespace AlchemistSinged
 
             // Settings menu
             CreateSubMenu(ref Settings, "Settings");
-            CreateGroupLabel(Settings, "Settings");
-            CreateLabel(Settings, "Poison Trail Kiter");
+            CreateGroupLabel(Settings, "Automatic Tear Stacker");
+            CreateCheckBox(Settings, "Stacker", "Stack Tear");
+            CreateGroupLabel(Settings, "Q Disabler");
+            CreateLabel(Settings, "(Disable if no enemies around or not at base)");
+            CreateCheckBox(Settings, "DisablerQ", "Disable Q");
+            CreateGroupLabel(Settings, "Poison Trail Kiter");
+            CreateLabel(Settings, "(If enemy facing you, but you facing away)");
             CreateCheckBox(Settings, "Kiter", "Use Q to Kite");
-            CreateLabel(Settings, "Automatic Tear Stacker");
-            CreateCheckBox(Settings, "Stacker", "Stack Tear items");
             CreateGroupLabel(Settings, "Interrupter");
             CreateCheckBox(Settings, "InterrupterE", "Use E to interrupt");
             CreateGroupLabel(Settings, "Gap Closer");

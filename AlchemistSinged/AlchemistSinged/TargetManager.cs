@@ -34,7 +34,8 @@ namespace AlchemistSinged
 
             return miniontype
                 .OrderBy(a => a.HealthPercent)
-                .FirstOrDefault(a => IsTargetValid(a) && a.IsInRange(a, range));
+                .FirstOrDefault(a => IsTargetValid(a)
+                    && a.IsInRange(a, range));
         }
         
         public static Obj_AI_Minion GetMonsterTarget(float range, DamageType damagetype)

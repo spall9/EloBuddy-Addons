@@ -24,10 +24,9 @@ namespace AlchemistSinged
         {
             if (Display.GetCheckBoxValue("ComboQ"))
             {
-                if (Calculations.Toggle) return;
                 var target = TargetManager.GetChampionTarget(250, Calculations.Q.DamageType);
                 if (target != null)
-                    Calculations.CastQ(target);
+                    Calculations.ToggleQ_On(target);
             }
 
             if (Display.GetCheckBoxValue("ComboE"))
@@ -36,10 +35,7 @@ namespace AlchemistSinged
                 if (target != null && Calculations.E.IsReady())
                 {
                     if (Display.GetCheckBoxValue("ComboW") && Calculations.W.IsReady())
-                    {
-                        var pos = Prediction.Position.PredictUnitPosition(target, Calculations.W.CastDelay/2).Extend(Program.Champion, 550).To3D();
-                            Calculations.W.Cast(pos);
-                    }
+                        Calculations.W.Cast(Prediction.Position.PredictUnitPosition(target, Calculations.W.CastDelay/2).Extend(Program.Champion, 550).To3D());
                     Calculations.CastE(target);
                 }
             }
@@ -48,7 +44,7 @@ namespace AlchemistSinged
                 && Program.Champion.CountEnemiesInRange(Calculations.W.Range) >= Display.GetSliderValue("ComboL"))
             {
                 var target = TargetManager.GetChampionTarget(1000, Calculations.R.DamageType);
-                if (target != null && target.HasBuff("poisontrailtarget"))
+                if (target != null)
                     Calculations.CastR(Program.Champion);
             }
         }
@@ -58,38 +54,33 @@ namespace AlchemistSinged
         {
             if (Display.GetCheckBoxValue("HarassQ"))
             {
-                if (Calculations.Toggle) return;
                 var target = TargetManager.GetChampionTarget(250, Calculations.Q.DamageType);
                 if (target != null)
-                    Calculations.CastQ(target);
+                    Calculations.ToggleQ_On(target);
             }
         }
 
         // Flee method
         public static void Flee()
         {
-            var target = TargetManager.GetChampionTarget(1000, Calculations.Q.DamageType);
-            if (target != null
-                && !Program.Champion.IsUnderEnemyturret() && !target.IsUnderEnemyturret()
-                && !Program.Champion.IsFacing(target) && target.IsFacing(Program.Champion)
-                && target.Distance(Program.Champion) <= 750)
+            if (Display.GetCheckBoxValue("FleeE"))
             {
-                if (Calculations.Toggle) return;
-                Calculations.CastQ(target);
+                var target = TargetManager.GetChampionTarget(Calculations.E.Range, Calculations.E.DamageType);
+                if (target != null)
+                    Calculations.CastE(target);
             }
         }
 
         // LaneClear method
         public static void LaneClear()
         {
-            Orbwalker.DisableAttacking = Display.GetCheckBoxValue("DisablerAA");
             if (Display.GetCheckBoxValue("LaneClearQ"))
             {
-                if (Calculations.Toggle) return;
                 var target = TargetManager.GetMinionTarget(250, Calculations.Q.DamageType);
                 if (target != null)
-                    Calculations.CastQ(target);
+                    Calculations.ToggleQ_On(target);
             }
+
             if (Display.GetCheckBoxValue("LaneClearE"))
             {
                 var target = TargetManager.GetMinionTarget(Calculations.E.Range, Calculations.E.DamageType);
@@ -114,11 +105,11 @@ namespace AlchemistSinged
         {
             if (Display.GetCheckBoxValue("JungleClearQ"))
             {
-                if (Calculations.Toggle) return;
                 var target = TargetManager.GetMonsterTarget(250, Calculations.Q.DamageType);
                 if (target != null)
-                    Calculations.CastQ(target);
+                    Calculations.ToggleQ_On(target);
             }
+
             if (Display.GetCheckBoxValue("JungleClearE"))
             {
                 var target = TargetManager.GetMonsterTarget(Calculations.E.Range, Calculations.E.DamageType);
@@ -132,13 +123,20 @@ namespace AlchemistSinged
         {
             foreach (var item in Program.Champion.InventoryItems)
             {
-                if ((item.Id == ItemId.Tear_of_the_Goddess || item.Id == ItemId.Archangels_Staff 
-                    || item.Id == ItemId.Manamune) && item.Stacks < 750 && Program.Champion.IsInShopRange())
-                {
-                    if (Calculations.Toggle) return;
-                    Calculations.CastQ(Program.Champion);
-                }
+                if (Program.Champion.IsInShopRange()
+                    && (item.Id == ItemId.Tear_of_the_Goddess || item.Id == ItemId.Archangels_Staff || item.Id == ItemId.Manamune))
+                    Calculations.ToggleQ_On(Program.Champion);
             }
+        }
+
+        // Kiter method
+        public static void Kiter()
+        {
+            var target = TargetManager.GetMonsterTarget(250, Calculations.Q.DamageType);
+            if (target != null &&  !Program.Champion.IsUnderEnemyturret()
+                && !Program.Champion.IsFacing(target) && target.IsFacing(Program.Champion)
+                && target.Distance(Program.Champion) <= 750)
+                Calculations.ToggleQ_On(target);
         }
 
         // Interrupter method
@@ -155,14 +153,6 @@ namespace AlchemistSinged
         // GapCloser method
         public static void GapCloser(Obj_AI_Base sender, Gapcloser.GapcloserEventArgs args)
         {
-            if (sender != null && args != null)
-            {
-                var spell = args.SpellName;
-                if (spell == "TristanaR" || spell == "BlindMonkRKick" || spell == "MalazaharNetherGrasp"
-                    || spell == "GalioIdolOfDurand" || spell == "VayneCondemn" || spell == "JayceThunderingBlow" || spell == "Headbutt")
-                    if (args.Target.IsMe)
-                        Calculations.CastE(sender);
-            }
             if (sender != null && Display.GetCheckBoxValue("GapCloserE"))
             {
                 var target = TargetManager.GetChampionTarget(Calculations.E.Range, Calculations.E.DamageType);

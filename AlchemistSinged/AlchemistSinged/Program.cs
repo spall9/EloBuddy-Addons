@@ -77,7 +77,7 @@ namespace AlchemistSinged
                     color = System.Drawing.Color.LimeGreen;
                     break;
                 case 1:
-                    color = System.Drawing.Color.Red;
+                    color = System.Drawing.Color.LightGray;
                     break;
                 case 2:
                     color = System.Drawing.Color.GreenYellow;
@@ -119,7 +119,8 @@ namespace AlchemistSinged
             if (Champion.IsDead) return;
 
             // Listen to Events
-            Calculations.QDisable();
+            if (Display.GetCheckBoxValue("DisablerQ"))
+                Calculations.QDisable();
 
             // Initialize flag functions
             switch (Orbwalker.ActiveModesFlags)
@@ -140,7 +141,7 @@ namespace AlchemistSinged
                     Functions.Flee();
                     break;
                 case Orbwalker.ActiveModes.LaneClear:
-                    Orbwalker.DisableAttacking = false;
+                    Orbwalker.DisableAttacking = Display.GetCheckBoxValue("DisablerAA");
                     Functions.LaneClear();
                     break;
                 case Orbwalker.ActiveModes.LastHit:
@@ -153,11 +154,11 @@ namespace AlchemistSinged
                     break;
             }
 
-            // Const functions
+            // Additional functions
             if (Display.GetCheckBoxValue("Stacker"))
                 Functions.Stacker();
             if (Display.GetCheckBoxValue("Kiter"))
-                Functions.Flee();
+                Functions.Kiter();
         }
     }
 }
